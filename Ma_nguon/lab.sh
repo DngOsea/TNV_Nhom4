@@ -6,8 +6,8 @@ cd "$root" || exit 2
 lesson="3"
 port="8103"
 usage() {
-  printf 'Cách dùng: bash lab.sh check | run | test | extend | db-config | sql\n'
-  printf 'check: kiểm tra môi trường; run: chạy bài; test: kiểm tra mẫu; extend: kiểm tra mở rộng.\n'
+  printf 'Cách dùng: bash lab.sh check | run | test | extend | btl-test | db-config | sql\n'
+  printf 'check: kiểm tra môi trường; run: chạy bài; test: kiểm tra mẫu; extend: kiểm tra mở rộng; btl-test: kiểm thử Đề tài 06 BTL.\n'
   printf 'db-config và sql chỉ dùng cho Lab 05. Dừng máy chủ bằng Ctrl+C.\n'
 }
 need_php() {
@@ -52,6 +52,9 @@ case "${1:-help}" in
     check_env || exit 2
     echo 'BÀI TỰ MỞ RỘNG: có ca chưa đạt trước khi bạn hoàn thiện là bình thường.'
     if [[ "$lesson" == 1 ]]; then bash tests/extension.sh; else php tests/extension.php; fi ;;
+  btl-test)
+    check_env || exit 2
+    php tests/assignment_test.php && echo "" && php tests/auth_test.php ;;
   db-config)
     [[ "$lesson" == 5 ]] || { echo 'Lệnh này chỉ dùng ở Lab 05.'; exit 2; }
     need_php || exit 2
