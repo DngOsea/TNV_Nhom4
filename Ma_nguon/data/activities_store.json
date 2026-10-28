@@ -1,0 +1,249 @@
+[
+    {
+        "id": 101,
+        "title": "Chủ Nhật Xanh Hà Nội 2026 — Dọn Sạch Rác Tuyến Sông Tô Lịch & Cải Tạo Mảng Xanh Ven Bờ",
+        "category": "thuc_te_moi_truong",
+        "category_name": "Hoạt Động Thực Địa & Môi Trường Xanh",
+        "date_string": "Chủ Nhật hàng tuần (Giai đoạn 1: 25\/10\/2026)",
+        "time_range": "07:00 – 11:30",
+        "location": "Dọc tuyến Sông Tô Lịch, Quận Cầu Giấy & Đống Đa, Hà Nội",
+        "meeting_point": "Cầu Cống Mọc, Đường Giáp Nhất, Quận Thanh Xuân, Hà Nội",
+        "capacity": 40,
+        "registered": 32,
+        "leader_name": "Phạm Minh Quân",
+        "leader_phone": "0908.123.456",
+        "shifts": [
+            "Ca Sáng (07:00 – 11:30)"
+        ],
+        "skills_needed": [
+            "Thể lực tốt",
+            "Hậu cần khuân vác",
+            "Biết bơi lội",
+            "Ý thức kỷ luật"
+        ],
+        "benefits": [
+            "Áo TNV Môi Trường",
+            "Nước uống và bữa phụ trưa",
+            "Cấp Giấy chứng nhận 8 giờ tình nguyện",
+            "Cộng điểm rèn luyện"
+        ],
+        "summary": "Ra quân dọn sạch rác thải trôi nổi dọc tuyến sông Tô Lịch, bóc xóa quảng cáo rác ven đường và trồng hàng cây xanh tạo cảnh quan.",
+        "status": "recruiting"
+    },
+    {
+        "id": 102,
+        "title": "Hành Trình Xanh Tây Bắc — Ươm Mầm & Trồng 10.000 Cây Rừng Phòng Hộ Mù Cang Chải",
+        "category": "thuc_te_moi_truong",
+        "category_name": "Hoạt Động Thực Địa & Môi Trường Xanh",
+        "date_string": "Thứ Bảy, 31\/10\/2026",
+        "time_range": "05:00 – 18:00",
+        "location": "Xã La Pán Tẩn, Huyện Mù Cang Chải, Tỉnh Yên Bái (Vùng cao Tây Bắc)",
+        "meeting_point": "Cổng Công viên Thống Nhất, Hà Nội (Xe đón tập trung lúc 05:00)",
+        "capacity": 60,
+        "registered": 58,
+        "leader_name": "Trần Hoàng Nam",
+        "leader_phone": "0912.456.789",
+        "shifts": [
+            "Cả ngày (05:00 – 18:00)"
+        ],
+        "skills_needed": [
+            "Không say xe",
+            "Chịu được leo dốc đồi núi",
+            "Làm việc nhóm",
+            "Nhiếp ảnh, truyền thông"
+        ],
+        "benefits": [
+            "Xe đưa đón 2 chiều từ Hà Nội",
+            "Suất ăn đặc sản Tây Bắc",
+            "Bảo hiểm tai nạn du lịch",
+            "Huy hiệu Đại sứ Rừng Xanh Tây Bắc"
+        ],
+        "summary": "Đồng hành cùng bà con đồng bào H'Mông và kiểm lâm gieo ươm cây dổi, sa mộc phủ xanh đồi trọc, củng cố đai rừng phòng hộ chống sạt lở mùa mưa.",
+        "status": "recruiting"
+    },
+    {
+        "id": 103,
+        "title": "Ngày Hội Sống Xanh Thủ Đô — Thu Gom Pin Cũ, Rác Điện Tử Đổi Cây Sen Đá & Sách",
+        "category": "thuc_te_moi_truong",
+        "category_name": "Hoạt Động Thực Địa & Môi Trường Xanh",
+        "date_string": "Chủ Nhật, 08\/11\/2026",
+        "time_range": "08:00 – 16:30",
+        "location": "Công viên Thống Nhất (Cổng Trần Nhân Tông), Hai Bà Trưng, Hà Nội",
+        "meeting_point": "Khu nhà tròn trung tâm Công viên Thống Nhất",
+        "capacity": 25,
+        "registered": 19,
+        "leader_name": "Nguyễn Hà My",
+        "leader_phone": "0933.789.012",
+        "shifts": [
+            "Ca Sáng (08:00 – 12:00)",
+            "Ca Chiều (12:30 – 16:30)"
+        ],
+        "skills_needed": [
+            "Giao tiếp tốt",
+            "Phân loại rác cơ bản",
+            "Chăm sóc cây cảnh mini",
+            "Hoạt náo viên"
+        ],
+        "benefits": [
+            "Tặng 01 chậu sen đá để bàn",
+            "Cơm trưa hộp thân thiện môi trường",
+            "Chứng chỉ tình nguyện viên sự kiện"
+        ],
+        "summary": "Thiết lập 5 trạm thu gom pin axit, điện thoại cũ hỏng tại Hà Nội và hướng dẫn các bạn trẻ phương pháp tái chế rác hữu cơ tại hộ gia đình.",
+        "status": "recruiting"
+    },
+    {
+        "id": 201,
+        "title": "Giọt Hồng Nghĩa Tình 2026 — Ngày Hội Hiến Máu Cứu Người Nghĩa Tình Thủ Đô",
+        "category": "hien_mau_y_te",
+        "category_name": "Hiến Máu Nhân Đạo & Hỗ Trợ Y Tế",
+        "date_string": "Thứ Bảy, 24\/10\/2026",
+        "time_range": "06:30 – 12:00",
+        "location": "Viện Huyết học — Truyền máu Trung ương, Phạm Văn Bạch, Cầu Giấy, Hà Nội",
+        "meeting_point": "Sảnh Trung tâm Hội trường Tầng 2, Viện Huyết học",
+        "capacity": 35,
+        "registered": 31,
+        "leader_name": "Lê Nguyễn Phương Thảo",
+        "leader_phone": "0988.555.777",
+        "shifts": [
+            "Ca Sáng (06:30 – 12:00)"
+        ],
+        "skills_needed": [
+            "Ân cần chu đáo",
+            "Hỗ trợ y tế sau hiến",
+            "Nhập liệu vi tính",
+            "Sơ cấp cứu cơ bản"
+        ],
+        "benefits": [
+            "Áo TNV Y Tế",
+            "Suất ăn nhẹ bổ dưỡng",
+            "Xét nghiệm máu miễn phí 6 chỉ số",
+            "Giấy khen Hội Chữ Thập Đỏ"
+        ],
+        "summary": "Hỗ trợ bác sĩ Viện Truyền máu đo huyết áp, phát trà đường, chăm sóc người hiến máu và điều phối hàng trăm lượt thanh niên, sinh viên Thủ đô hiến máu.",
+        "status": "recruiting"
+    },
+    {
+        "id": 202,
+        "title": "Tiếp Sức Bệnh Nhân Nghèo — Phát Cháo Dinh Dưỡng & Hỗ Trợ Tại Viện K Tân Triều",
+        "category": "hien_mau_y_te",
+        "category_name": "Hiến Máu Nhân Đạo & Hỗ Trợ Y Tế",
+        "date_string": "Thứ Hai đến Thứ Sáu (Ca trực sáng)",
+        "time_range": "05:45 – 09:30",
+        "location": "Bệnh Viện K (Cơ sở Tân Triều), Số 30 Cầu Bươu, Thanh Trì, Hà Nội",
+        "meeting_point": "Cổng số 1 Bệnh viện K Tân Triều",
+        "capacity": 20,
+        "registered": 16,
+        "leader_name": "Lê Nguyễn Phương Thảo",
+        "leader_phone": "0988.555.777",
+        "shifts": [
+            "Ca Sáng Sớm (05:45 – 09:30)"
+        ],
+        "skills_needed": [
+            "Dậy sớm đúng giờ",
+            "Đồng cảm kiên nhẫn",
+            "Biết sơ chế chia cháo",
+            "Khẩu trang y tế"
+        ],
+        "benefits": [
+            "Suất ăn sáng tại bếp viện",
+            "Hỗ trợ xăng xe ca trực",
+            "Chứng nhận công tác xã hội y tế"
+        ],
+        "summary": "Nấu và trao tận tay 600 bát cháo ấm nóng, hướng dẫn bệnh nhân tỉnh xa làm thủ tục BHYT và đẩy xe lăn hỗ trợ người già điều trị tại Viện K.",
+        "status": "recruiting"
+    },
+    {
+        "id": 301,
+        "title": "Tiếp Sức Mùa Thi Thủ Đô 2026 — Đội Xe Ôm Tình Nguyện & Điều Tiết Giao Thông Cổng Trường",
+        "category": "tiep_suc_giao_duc",
+        "category_name": "Tiếp Sức Mùa Thi & Giáo Dục Cộng Đồng",
+        "date_string": "Chiến dịch trọng điểm (26\/10 – 29\/10\/2026)",
+        "time_range": "06:00 – 17:30 (Hai ca)",
+        "location": "15 Điểm Thi Tốt Nghiệp THPT tại Hà Nội (ĐH Sư Phạm HN, THPT Chu Văn An, THPT Kim Liên)",
+        "meeting_point": "Cụm văn phòng Đoàn các trường Đại học tại Cầu Giấy & Đống Đa, Hà Nội",
+        "capacity": 80,
+        "registered": 74,
+        "leader_name": "Trần Hoàng Nam",
+        "leader_phone": "0912.456.789",
+        "shifts": [
+            "Ca Sáng (06:00 – 11:30)",
+            "Ca Chiều (12:30 – 17:30)",
+            "Cả ngày (06:00 – 17:30)"
+        ],
+        "skills_needed": [
+            "Có xe máy và bằng lái xe",
+            "Thông thạo đường xá Hà Nội",
+            "Nhiệt tình hoạt náo",
+            "Giữ gìn trật tự"
+        ],
+        "benefits": [
+            "Áo đồng phục Tiếp Sức Mùa Thi",
+            "Nón tai bèo",
+            "Hỗ trợ xăng xe 100.000đ\/ngày",
+            "Bằng khen Thành Đoàn Hà Nội"
+        ],
+        "summary": "Túc trực đón đưa thí sinh đi lạc, phát tặng nước mát, bút chì 2B, áo mưa và phân luồng giao thông chống ùn tắc tại các cổng trường thi Hà Nội.",
+        "status": "recruiting"
+    },
+    {
+        "id": 401,
+        "title": "Bếp Ăn 0 Đồng Hà Nội — Nấu 1.500 Suất Cơm Yêu Thương Trao Bệnh Nhân Nghèo Viện Bạch Mai",
+        "category": "cuu_tro_an_sinh",
+        "category_name": "Cứu Trợ Khẩn Cấp & Bếp Ăn 0 Đồng",
+        "date_string": "Chủ Nhật hàng tuần (Bắt đầu 06:30)",
+        "time_range": "06:30 – 12:30",
+        "location": "Bếp Thiện Nguyện D2L, Ngõ 1 Lê Thanh Nghị, Hai Bà Trưng, Hà Nội (Gần BV Bạch Mai)",
+        "meeting_point": "Sân trước Bếp Thiện Nguyện D2L Lê Thanh Nghị",
+        "capacity": 30,
+        "registered": 27,
+        "leader_name": "Phạm Minh Quân",
+        "leader_phone": "0908.123.456",
+        "shifts": [
+            "Ca Sáng (06:30 – 12:30)"
+        ],
+        "skills_needed": [
+            "Phụ bếp sơ chế rau củ",
+            "Xào nấu số lượng lớn",
+            "Chia hộp cơm",
+            "Vệ sinh bếp"
+        ],
+        "benefits": [
+            "Bữa trưa thân mật cùng đội",
+            "Áo tạp dề Bếp 0 Đồng",
+            "Chứng nhận tình nguyện viên nhân ái"
+        ],
+        "summary": "Cùng các đầu bếp tình nguyện sơ chế rau củ, nấu 1.500 suất cơm mặn và canh nóng chuyển đến bà con xóm chạy thận Lê Thanh Nghị và bệnh nhân nghèo BV Bạch Mai, Việt Đức.",
+        "status": "recruiting"
+    },
+    {
+        "id": 501,
+        "title": "Mái Ấm Tuổi Vàng — Thăm Khám, Cắt Tóc & Chăm Sóc Người Già Neo Đơn Viện Dưỡng Lão Ba Vì",
+        "category": "cham_soc_yeu_thuong",
+        "category_name": "Chăm Sóc Người Cao Tuổi & Trẻ Em Khuyết Tật",
+        "date_string": "Chủ Nhật, 01\/11\/2026",
+        "time_range": "07:30 – 12:00",
+        "location": "Trung Tâm Chăm Sóc Người Cao Tuổi Hà Nội, Xã Thụy An, Huyện Ba Vì, Hà Nội",
+        "meeting_point": "Cổng Viện Dưỡng Lão Ba Vì (Xe đón từ Bến xe Mỹ Đình)",
+        "capacity": 25,
+        "registered": 22,
+        "leader_name": "Lê Nguyễn Phương Thảo",
+        "leader_phone": "0988.555.777",
+        "shifts": [
+            "Ca Sáng (07:30 – 12:00)"
+        ],
+        "skills_needed": [
+            "Lắng nghe tâm sự",
+            "Biết cắt tóc, gội đầu",
+            "Văn nghệ ca hát",
+            "Bóp tay chân cho các cụ"
+        ],
+        "benefits": [
+            "Chứng nhận tình nguyện viên nhân ái",
+            "Bữa trưa ấm áp tại viện",
+            "Thư cảm ơn của Viện"
+        ],
+        "summary": "Mang lại sự ấm áp cho 90 cụ già neo đơn, đo huyết áp, xoa bóp xương khớp khi mùa đông về, cắt tỉa móng tay và tổ chức sinh nhật chung cho các cụ.",
+        "status": "recruiting"
+    }
+]

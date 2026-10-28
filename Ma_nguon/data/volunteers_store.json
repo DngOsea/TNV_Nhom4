@@ -1,0 +1,562 @@
+[
+    {
+        "id": "TNV-001",
+        "name": "Lê Nguyễn Phương Thảo",
+        "skills": [
+            "y_te"
+        ],
+        "available_shifts": [
+            "CA-03",
+            "CA-04",
+            "CA-10"
+        ],
+        "registered_at": "2026-10-20 08:00:00",
+        "max_shifts": 2,
+        "phone": "0988.555.771",
+        "unit": "ĐH Bách Khoa Hà Nội",
+        "email": "tnv-001@d2l.org",
+        "status": "active",
+        "hours": 10
+    },
+    {
+        "id": "TNV-002",
+        "name": "Bác sĩ trẻ Trần Tuấn Anh",
+        "skills": [
+            "y_te",
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-03",
+            "CA-04",
+            "CA-10"
+        ],
+        "registered_at": "2026-10-20 08:15:00",
+        "max_shifts": 2,
+        "phone": "0988.555.772",
+        "unit": "ĐH Y Hà Nội",
+        "email": "tnv-002@d2l.org",
+        "status": "active",
+        "hours": 15
+    },
+    {
+        "id": "TNV-003",
+        "name": "Đặng Mai Lan",
+        "skills": [
+            "y_te"
+        ],
+        "available_shifts": [
+            "CA-03",
+            "CA-10"
+        ],
+        "registered_at": "2026-10-20 08:30:00",
+        "max_shifts": 2,
+        "phone": "0988.555.773",
+        "unit": "ĐH Sư Phạm Hà Nội",
+        "email": "tnv-003@d2l.org",
+        "status": "active",
+        "hours": 12
+    },
+    {
+        "id": "TNV-004",
+        "name": "Hoàng Yến Nhi",
+        "skills": [
+            "y_te",
+            "truyen_thong"
+        ],
+        "available_shifts": [
+            "CA-04",
+            "CA-10",
+            "CA-11"
+        ],
+        "registered_at": "2026-10-20 08:45:00",
+        "max_shifts": 2,
+        "phone": "0988.555.774",
+        "unit": "ĐH Ngoại Thương",
+        "email": "tnv-004@d2l.org",
+        "status": "active",
+        "hours": 29
+    },
+    {
+        "id": "TNV-005",
+        "name": "Trịnh Quốc Bảo",
+        "skills": [
+            "su_pham"
+        ],
+        "available_shifts": [
+            "CA-07",
+            "CA-09"
+        ],
+        "registered_at": "2026-10-20 09:00:00",
+        "max_shifts": 2,
+        "phone": "0977.111.005",
+        "unit": "ĐH Kinh Tế Quốc Dân",
+        "email": "tnv-005@d2l.org",
+        "status": "active",
+        "hours": 48
+    },
+    {
+        "id": "TNV-006",
+        "name": "Vũ Thị Minh Hằng",
+        "skills": [
+            "su_pham"
+        ],
+        "available_shifts": [
+            "CA-07",
+            "CA-09"
+        ],
+        "registered_at": "2026-10-20 09:10:00",
+        "max_shifts": 2,
+        "phone": "0977.111.006",
+        "unit": "ĐH Giao Thông Vận Tải",
+        "email": "tnv-006@d2l.org",
+        "status": "active",
+        "hours": 34
+    },
+    {
+        "id": "TNV-007",
+        "name": "Nguyễn Khánh Linh",
+        "skills": [
+            "su_pham",
+            "truyen_thong"
+        ],
+        "available_shifts": [
+            "CA-07",
+            "CA-09",
+            "CA-11"
+        ],
+        "registered_at": "2026-10-20 09:20:00",
+        "max_shifts": 2,
+        "phone": "0977.111.007",
+        "unit": "Thanh Niên Xung Kích Thành Đoàn",
+        "email": "tnv-007@d2l.org",
+        "status": "active",
+        "hours": 42
+    },
+    {
+        "id": "TNV-008",
+        "name": "Phan Thanh Tùng",
+        "skills": [
+            "su_pham",
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-07",
+            "CA-09",
+            "CA-01"
+        ],
+        "registered_at": "2026-10-20 09:30:00",
+        "max_shifts": 2,
+        "phone": "0977.111.008",
+        "unit": "ĐH Bách Khoa Hà Nội",
+        "email": "tnv-008@d2l.org",
+        "status": "active",
+        "hours": 44
+    },
+    {
+        "id": "TNV-009",
+        "name": "Trần Hoàng Nam",
+        "skills": [
+            "dieu_phoi"
+        ],
+        "available_shifts": [
+            "CA-05",
+            "CA-06",
+            "CA-12"
+        ],
+        "registered_at": "2026-10-20 09:40:00",
+        "max_shifts": 2,
+        "phone": "0912.456.789",
+        "unit": "ĐH Y Hà Nội",
+        "email": "tnv-009@d2l.org",
+        "status": "active",
+        "hours": 15
+    },
+    {
+        "id": "TNV-010",
+        "name": "Lê Hữu Đạt",
+        "skills": [
+            "dieu_phoi"
+        ],
+        "available_shifts": [
+            "CA-05",
+            "CA-06"
+        ],
+        "registered_at": "2026-10-20 09:50:00",
+        "max_shifts": 2,
+        "phone": "0912.456.710",
+        "unit": "ĐH Sư Phạm Hà Nội",
+        "email": "tnv-010@d2l.org",
+        "status": "active",
+        "hours": 44
+    },
+    {
+        "id": "TNV-011",
+        "name": "Trịnh Gia Huy",
+        "skills": [
+            "dieu_phoi",
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-05",
+            "CA-06",
+            "CA-01"
+        ],
+        "registered_at": "2026-10-20 10:00:00",
+        "max_shifts": 2,
+        "phone": "0912.456.711",
+        "unit": "ĐH Ngoại Thương",
+        "email": "tnv-011@d2l.org",
+        "status": "active",
+        "hours": 46
+    },
+    {
+        "id": "TNV-012",
+        "name": "Bùi Hoàng Long",
+        "skills": [
+            "dieu_phoi"
+        ],
+        "available_shifts": [
+            "CA-05",
+            "CA-06"
+        ],
+        "registered_at": "2026-10-20 10:10:00",
+        "max_shifts": 2,
+        "phone": "0912.456.712",
+        "unit": "ĐH Kinh Tế Quốc Dân",
+        "email": "tnv-012@d2l.org",
+        "status": "active",
+        "hours": 32
+    },
+    {
+        "id": "TNV-013",
+        "name": "Phạm Minh Quân",
+        "skills": [
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-01",
+            "CA-02",
+            "CA-08"
+        ],
+        "registered_at": "2026-10-20 10:20:00",
+        "max_shifts": 2,
+        "phone": "0908.123.456",
+        "unit": "ĐH Giao Thông Vận Tải",
+        "email": "tnv-013@d2l.org",
+        "status": "active",
+        "hours": 42
+    },
+    {
+        "id": "TNV-014",
+        "name": "Ngô Thị Thanh Thảo",
+        "skills": [
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-01",
+            "CA-02",
+            "CA-08"
+        ],
+        "registered_at": "2026-10-20 10:30:00",
+        "max_shifts": 2,
+        "phone": "0908.123.414",
+        "unit": "Thanh Niên Xung Kích Thành Đoàn",
+        "email": "tnv-014@d2l.org",
+        "status": "active",
+        "hours": 33
+    },
+    {
+        "id": "TNV-015",
+        "name": "Đoàn Nhật Quang",
+        "skills": [
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-01",
+            "CA-02",
+            "CA-08"
+        ],
+        "registered_at": "2026-10-20 10:40:00",
+        "max_shifts": 2,
+        "phone": "0908.123.415",
+        "unit": "ĐH Bách Khoa Hà Nội",
+        "email": "tnv-015@d2l.org",
+        "status": "active",
+        "hours": 45
+    },
+    {
+        "id": "TNV-016",
+        "name": "Võ Đình Trọng",
+        "skills": [
+            "hau_can",
+            "dieu_phoi"
+        ],
+        "available_shifts": [
+            "CA-01",
+            "CA-02",
+            "CA-06"
+        ],
+        "registered_at": "2026-10-20 10:50:00",
+        "max_shifts": 2,
+        "phone": "0908.123.416",
+        "unit": "ĐH Y Hà Nội",
+        "email": "tnv-016@d2l.org",
+        "status": "active",
+        "hours": 10
+    },
+    {
+        "id": "TNV-017",
+        "name": "Lý Gia Hân",
+        "skills": [
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-01",
+            "CA-08"
+        ],
+        "registered_at": "2026-10-20 11:00:00",
+        "max_shifts": 2,
+        "phone": "0908.123.417",
+        "unit": "ĐH Sư Phạm Hà Nội",
+        "email": "tnv-017@d2l.org",
+        "status": "active",
+        "hours": 21
+    },
+    {
+        "id": "TNV-018",
+        "name": "Trần Văn Hùng",
+        "skills": [
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-02",
+            "CA-08"
+        ],
+        "registered_at": "2026-10-20 11:10:00",
+        "max_shifts": 2,
+        "phone": "0908.123.418",
+        "unit": "ĐH Ngoại Thương",
+        "email": "tnv-018@d2l.org",
+        "status": "active",
+        "hours": 28
+    },
+    {
+        "id": "TNV-019",
+        "name": "Nguyễn Hà My",
+        "skills": [
+            "truyen_thong"
+        ],
+        "available_shifts": [
+            "CA-11",
+            "CA-12"
+        ],
+        "registered_at": "2026-10-20 11:20:00",
+        "max_shifts": 2,
+        "phone": "0933.789.012",
+        "unit": "ĐH Kinh Tế Quốc Dân",
+        "email": "tnv-019@d2l.org",
+        "status": "active",
+        "hours": 30
+    },
+    {
+        "id": "TNV-020",
+        "name": "Đỗ Minh Khang",
+        "skills": [
+            "truyen_thong"
+        ],
+        "available_shifts": [
+            "CA-11",
+            "CA-12"
+        ],
+        "registered_at": "2026-10-20 11:30:00",
+        "max_shifts": 2,
+        "phone": "0933.789.020",
+        "unit": "ĐH Giao Thông Vận Tải",
+        "email": "tnv-020@d2l.org",
+        "status": "active",
+        "hours": 38
+    },
+    {
+        "id": "TNV-021",
+        "name": "Vũ Thảo Vy",
+        "skills": [
+            "truyen_thong",
+            "su_pham"
+        ],
+        "available_shifts": [
+            "CA-11",
+            "CA-12",
+            "CA-07"
+        ],
+        "registered_at": "2026-10-20 11:40:00",
+        "max_shifts": 2,
+        "phone": "0933.789.021",
+        "unit": "Thanh Niên Xung Kích Thành Đoàn",
+        "email": "tnv-021@d2l.org",
+        "status": "active",
+        "hours": 22
+    },
+    {
+        "id": "TNV-022",
+        "name": "Dương Quốc Thái",
+        "skills": [
+            "truyen_thong"
+        ],
+        "available_shifts": [
+            "CA-11",
+            "CA-12"
+        ],
+        "registered_at": "2026-10-20 11:50:00",
+        "max_shifts": 2,
+        "phone": "0933.789.022",
+        "unit": "ĐH Bách Khoa Hà Nội",
+        "email": "tnv-022@d2l.org",
+        "status": "active",
+        "hours": 32
+    },
+    {
+        "id": "TNV-023",
+        "name": "Hoàng Thu Trang",
+        "skills": [
+            "dieu_phoi"
+        ],
+        "available_shifts": [
+            "CA-05",
+            "CA-06"
+        ],
+        "registered_at": "2026-10-20 12:00:00",
+        "max_shifts": 2,
+        "phone": "0944.222.023",
+        "unit": "ĐH Y Hà Nội",
+        "email": "tnv-023@d2l.org",
+        "status": "active",
+        "hours": 34
+    },
+    {
+        "id": "TNV-024",
+        "name": "Mai Tuấn Kiệt",
+        "skills": [
+            "dieu_phoi",
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-06",
+            "CA-08"
+        ],
+        "registered_at": "2026-10-20 12:10:00",
+        "max_shifts": 2,
+        "phone": "0944.222.024",
+        "unit": "ĐH Sư Phạm Hà Nội",
+        "email": "tnv-024@d2l.org",
+        "status": "active",
+        "hours": 42
+    },
+    {
+        "id": "TNV-025",
+        "name": "Lâm Ngọc Diệp",
+        "skills": [
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-01",
+            "CA-08"
+        ],
+        "registered_at": "2026-10-20 12:20:00",
+        "max_shifts": 2,
+        "phone": "0944.222.025",
+        "unit": "ĐH Ngoại Thương",
+        "email": "tnv-025@d2l.org",
+        "status": "active",
+        "hours": 30
+    },
+    {
+        "id": "TNV-026",
+        "name": "Phạm Hồng Nhung",
+        "skills": [
+            "y_te"
+        ],
+        "available_shifts": [
+            "CA-03",
+            "CA-10"
+        ],
+        "registered_at": "2026-10-20 12:30:00",
+        "max_shifts": 2,
+        "phone": "0944.222.026",
+        "unit": "ĐH Kinh Tế Quốc Dân",
+        "email": "tnv-026@d2l.org",
+        "status": "active",
+        "hours": 36
+    },
+    {
+        "id": "TNV-027",
+        "name": "Trịnh Anh Dũng",
+        "skills": [
+            "hau_can"
+        ],
+        "available_shifts": [
+            "CA-02",
+            "CA-08"
+        ],
+        "registered_at": "2026-10-20 12:40:00",
+        "max_shifts": 2,
+        "phone": "0944.222.027",
+        "unit": "ĐH Giao Thông Vận Tải",
+        "email": "tnv-027@d2l.org",
+        "status": "active",
+        "hours": 31
+    },
+    {
+        "id": "TNV-028",
+        "name": "Bùi Quỳnh Chi",
+        "skills": [
+            "su_pham"
+        ],
+        "available_shifts": [
+            "CA-07",
+            "CA-09"
+        ],
+        "registered_at": "2026-10-20 12:50:00",
+        "max_shifts": 2,
+        "phone": "0944.222.028",
+        "unit": "Thanh Niên Xung Kích Thành Đoàn",
+        "email": "tnv-028@d2l.org",
+        "status": "active",
+        "hours": 27
+    },
+    {
+        "id": "TNV-029",
+        "name": "Hà Quốc Cường",
+        "skills": [
+            "dieu_phoi"
+        ],
+        "available_shifts": [
+            "CA-05",
+            "CA-06"
+        ],
+        "registered_at": "2026-10-20 13:00:00",
+        "max_shifts": 2,
+        "phone": "0944.222.029",
+        "unit": "ĐH Bách Khoa Hà Nội",
+        "email": "tnv-029@d2l.org",
+        "status": "active",
+        "hours": 11
+    },
+    {
+        "id": "TNV-030",
+        "name": "Tạ Thùy Dung",
+        "skills": [
+            "truyen_thong"
+        ],
+        "available_shifts": [
+            "CA-11",
+            "CA-12"
+        ],
+        "registered_at": "2026-10-20 13:10:00",
+        "max_shifts": 2,
+        "phone": "0944.222.030",
+        "unit": "ĐH Y Hà Nội",
+        "email": "tnv-030@d2l.org",
+        "status": "active",
+        "hours": 13
+    }
+]

@@ -216,6 +216,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // 3B. XỬ LÝ BÁO VẮNG HÀNG LOẠT (TICK CHỌN NHIỀU NGƯỜI CÙNG LÚC TRONG CA)
+    if ($action === 'bulk_report_absent') {
+        $shiftId = field($_POST, 'shift_id');
+        $volunteerIds = isset($_POST['volunteer_ids']) && is_array($_POST['volunteer_ids']) ? $_POST['volunteer_ids'] : [];
+
+        if (empty($volunteerIds)) {
+            $_SESSION['flash_msg'] = [
+                'type' => 'warning',
+                'title' => 'Chưa Chọn Tình Nguyện Viên',
+                'content' => 'Vui lòng tích chọn ít nhất 1 tình nguyện viên để thực hiện báo vắng hàng loạt.',
+            ];
+            header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+            exit;
+        }
+
+        $count = 0;
+        if (isset($dutySchedules[$shiftId])) {
+            foreach ($dutySchedules[$shiftId]['assigned_volunteers'] as &$v) {
+                if (in_array($v['id'], $volunteerIds, true)) {
+                    $v['status'] = 'absent';
+                    $count++;
+                }
+            }
+            unset($v);
+        }
+
+        $_SESSION['flash_msg'] = [
+            'type' => 'warning',
+            'title' => 'Đã Ghi Nhận Báo Vắng Hàng Loạt',
+            'content' => "Đã ghi nhận báo vắng cho {$count} tình nguyện viên tại ca trực {$shiftId}. Trạng thái quân số đã được cập nhật để Ban Chỉ Huy điều động thay thế.",
+        ];
+        header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+        exit;
+    }
+
+    // 3C. KHÔI PHỤC CA TRỰC HÀNG LOẠT (HỦY BÁO VẮNG CHO NHIỀU NGƯỜI)
+    if ($action === 'bulk_restore_duty') {
+        $shiftId = field($_POST, 'shift_id');
+        $volunteerIds = isset($_POST['volunteer_ids']) && is_array($_POST['volunteer_ids']) ? $_POST['volunteer_ids'] : [];
+
+        if (empty($volunteerIds)) {
+            $_SESSION['flash_msg'] = [
+                'type' => 'warning',
+                'title' => 'Chưa Chọn Tình Nguyện Viên',
+                'content' => 'Vui lòng tích chọn ít nhất 1 tình nguyện viên để khôi phục trạng thái ca trực.',
+            ];
+            header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+            exit;
+        }
+
+        $count = 0;
+        if (isset($dutySchedules[$shiftId])) {
+            foreach ($dutySchedules[$shiftId]['assigned_volunteers'] as &$v) {
+                if (in_array($v['id'], $volunteerIds, true)) {
+                    $v['status'] = 'confirmed';
+                    $count++;
+                }
+            }
+            unset($v);
+        }
+
+        $_SESSION['flash_msg'] = [
+            'type' => 'success',
+            'title' => 'Khôi Phục Trạng Thái Có Mặt Thành Công',
+            'content' => "Đã khôi phục trạng thái nhận ca cho {$count} tình nguyện viên tại ca trực {$shiftId}.",
+        ];
+        header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+        exit;
+    }
+
     // 4. THAY THẾ NHÂN SỰ VẮNG MẶT (CHỈ BAN CHỈ HUY MỚI CÓ QUYỀN ĐIỀU ĐỘNG THAY THẾ)
     if ($action === 'replace_volunteer') {
         if (!Auth::isCoordinator()) {
@@ -374,6 +444,7 @@ require __DIR__ . '/../templates/header.php';
     <div class="heading-container">
         <span class="sub-badge">ĐIỀU PHỐI LỰC LƯỢNG THỰC ĐỊA</span>
         <h1>Bảng Phân Công & Điều Phối Tình Nguyện Viên</h1>
+        <div class="neon-divider-glow"></div>
         <p>Hệ thống giám sát điều phối nhân sự, tự động phân bổ ca trực theo chuyên môn và hỗ trợ xử lý thay thế nhân sự kịp thời.</p>
     </div>
 </div>
@@ -581,7 +652,16 @@ require __DIR__ . '/../templates/header.php';
                         <tr class="dispatch-data-row <?= $hasAbsent ? 'row-has-absent' : '' ?>" id="shift-row-<?= htmlspecialchars($sId) ?>"
                             data-search="<?= htmlspecialchars(strtolower($duty['shift_code'] . ' ' . $duty['activity_title'] . ' ' . $duty['location'] . ' ' . $duty['leader'] . ' ' . implode(' ', array_column($duty['assigned_volunteers'], 'name')))) ?>">
                             <td>
-                                <span class="t-shift-badge"><?= htmlspecialchars($duty['shift_code']) ?></span>
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px;">
+                                    <span class="t-shift-badge"><?= htmlspecialchars($duty['shift_code']) ?></span>
+                                    <button type="button" class="btn-inspect-eye" title="Xem chi tiết lực lượng & Báo vắng hàng loạt" onclick='openForceInspectorModal(<?= htmlspecialchars(json_encode($duty), ENT_QUOTES, "UTF-8") ?>)'>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <span>Lực Lượng</span>
+                                    </button>
+                                </div>
                                 <div class="t-act-title"><?= htmlspecialchars($duty['activity_title']) ?></div>
                                 <span class="t-act-location"><?= htmlspecialchars($duty['location']) ?></span>
                                 <span style="font-size: 0.76rem; color: #475569; display: block; margin-top: 3px;">
@@ -687,8 +767,17 @@ require __DIR__ . '/../templates/header.php';
             <div class="compact-shift-card <?= $hasAbsent ? 'card-has-absent' : '' ?>" id="shift-card-<?= htmlspecialchars($sId) ?>"
                  data-search="<?= htmlspecialchars(strtolower($duty['shift_code'] . ' ' . $duty['activity_title'] . ' ' . $duty['location'] . ' ' . $duty['leader'] . ' ' . implode(' ', array_column($duty['assigned_volunteers'], 'name')))) ?>">
                 <div class="compact-main-info">
-                    <span class="t-shift-badge"><?= htmlspecialchars($duty['shift_code']) ?></span>
-                    <h4 class="t-act-title" style="margin: 4px 0;"><?= htmlspecialchars($duty['activity_title']) ?></h4>
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                        <span class="t-shift-badge"><?= htmlspecialchars($duty['shift_code']) ?></span>
+                        <button type="button" class="btn-inspect-eye" title="Xem chi tiết lực lượng & Báo vắng hàng loạt" onclick='openForceInspectorModal(<?= htmlspecialchars(json_encode($duty), ENT_QUOTES, "UTF-8") ?>)'>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <span>Lực Lượng</span>
+                        </button>
+                    </div>
+                    <h4 class="t-act-title" style="margin: 6px 0 4px;"><?= htmlspecialchars($duty['activity_title']) ?></h4>
                     <span class="t-act-location"><?= htmlspecialchars($duty['location']) ?></span>
                     <div style="margin-top: 6px;">
                         <span class="t-time-pill"><?= htmlspecialchars($duty['shift_name']) ?></span>
@@ -920,5 +1009,204 @@ window.onclick = function(event) {
 };
 </script>
 <?php endif; ?>
+
+<!-- ========================================================
+     MODAL XEM LỰC LƯỢNG CA TRỰC & BÁO VẮNG HÀNG LOẠT (EYE INSPECTOR)
+     ======================================================== -->
+<div id="shift_force_inspector_modal" class="app-modal" role="dialog" aria-modal="true" style="display: none;">
+    <div class="modal-backdrop" onclick="closeForceInspectorModal()"></div>
+    <div class="modal-window" style="max-width: 820px; width: 95%;">
+        <div class="modal-header">
+            <div>
+                <span class="modal-category-badge cat-dieu_phoi" id="insp_shift_code_badge">CA-01</span>
+                <h3 class="modal-title" id="insp_shift_title" style="margin-top: 4px;">Chi Tiết Lực Lượng Ca Trực</h3>
+            </div>
+            <button type="button" class="modal-close-btn" onclick="closeForceInspectorModal()">&times;</button>
+        </div>
+
+        <form id="insp_bulk_form" method="POST" action="/phan_cong.php">
+            <input type="hidden" name="action" id="insp_action" value="bulk_report_absent">
+            <input type="hidden" name="shift_id" id="insp_shift_id" value="">
+
+            <div class="modal-body" style="padding: 16px 22px;">
+                <!-- Thông tin tóm tắt ca trực -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; font-size: 0.83rem;">
+                    <div>
+                        <span style="color: #64748b; font-size: 0.74rem; display: block;">Khung giờ ca:</span>
+                        <strong id="insp_time_slot" style="color: #0f172a;">—</strong>
+                    </div>
+                    <div>
+                        <span style="color: #64748b; font-size: 0.74rem; display: block;">Địa bàn thực địa:</span>
+                        <strong id="insp_location" style="color: #0f172a;">—</strong>
+                    </div>
+                    <div>
+                        <span style="color: #64748b; font-size: 0.74rem; display: block;">Chỉ huy phụ trách:</span>
+                        <strong id="insp_leader" style="color: #0f172a;">—</strong>
+                    </div>
+                    <div>
+                        <span style="color: #64748b; font-size: 0.74rem; display: block;">Chỉ tiêu quân số:</span>
+                        <strong id="insp_capacity" style="color: #059669;">—</strong>
+                    </div>
+                </div>
+
+                <!-- Thanh tìm kiếm & Chọn hàng loạt -->
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <!-- Ô tìm kiếm tức thời trong ca -->
+                    <div style="flex: 1; min-width: 240px; position: relative;">
+                        <input type="text" id="insp_search_input" class="table-search-input" style="width: 100%; padding: 6px 10px 6px 30px; font-size: 0.84rem;" placeholder="Tìm nhanh theo tên, SĐT, chuyên môn trong ca..." oninput="filterInspectorVolunteers()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+
+                    <!-- Tick chọn tất cả & Đếm -->
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.83rem; font-weight: 600; cursor: pointer; color: #1e293b;">
+                            <input type="checkbox" id="insp_select_all" onchange="toggleSelectAllInspector(this.checked)">
+                            <span>Chọn tất cả (<span id="insp_visible_count">0</span>)</span>
+                        </label>
+                        <span class="neon-tag-indicator" style="font-size: 0.72rem;">Đã chọn: <strong id="insp_selected_count">0</strong></span>
+                    </div>
+                </div>
+
+                <!-- Danh sách lực lượng trong ca -->
+                <div id="insp_volunteers_list" style="max-height: 330px; overflow-y: auto; display: flex; flex-direction: column; gap: 7px; padding-right: 2px;">
+                    <!-- Javascript renders dynamic volunteer rows here -->
+                </div>
+            </div>
+
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <button type="button" class="btn-cancel" onclick="closeForceInspectorModal()">Đóng Cửa Sổ</button>
+
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-cmd btn-cmd-ghost" style="font-size: 0.83rem;" onclick="submitBulkAction('bulk_restore_duty')">
+                        Khôi Phục Có Mặt
+                    </button>
+                    <button type="button" class="btn-cmd btn-cmd-danger" style="background: #dc2626; color: #ffffff; font-size: 0.83rem; border: none; padding: 7px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;" onclick="submitBulkAction('bulk_report_absent')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                        Xác Nhận Báo Vắng Hàng Loạt
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentInspectorDuty = null;
+
+function openForceInspectorModal(dutyData) {
+    currentInspectorDuty = dutyData;
+    document.getElementById('insp_shift_id').value = dutyData.id;
+    document.getElementById('insp_shift_code_badge').textContent = dutyData.shift_code;
+    document.getElementById('insp_shift_title').textContent = dutyData.activity_title;
+    document.getElementById('insp_time_slot').textContent = dutyData.shift_name + ' (' + (dutyData.time_slot || '') + ')';
+    document.getElementById('insp_location').textContent = dutyData.location;
+    document.getElementById('insp_leader').textContent = dutyData.leader + ' (' + (dutyData.leader_role || 'Chỉ huy') + ')';
+    
+    const activeCount = (dutyData.assigned_volunteers || []).filter(v => v.status !== 'absent').length;
+    document.getElementById('insp_capacity').textContent = activeCount + ' / ' + dutyData.needed_count + ' TNV';
+
+    // Reset input search & select all
+    document.getElementById('insp_search_input').value = '';
+    document.getElementById('insp_select_all').checked = false;
+
+    renderInspectorVolunteers(dutyData.assigned_volunteers || []);
+    document.getElementById('shift_force_inspector_modal').style.display = 'flex';
+}
+
+function closeForceInspectorModal() {
+    document.getElementById('shift_force_inspector_modal').style.display = 'none';
+}
+
+function renderInspectorVolunteers(volunteers) {
+    const container = document.getElementById('insp_volunteers_list');
+    container.innerHTML = '';
+
+    if (!volunteers || volunteers.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 28px; color: #64748b; font-size: 0.88rem;">Chưa có tình nguyện viên nào được phân công trong ca trực này.</div>';
+        document.getElementById('insp_visible_count').textContent = '0';
+        updateInspectorSelectedCount();
+        return;
+    }
+
+    let visibleCount = 0;
+    const filterText = document.getElementById('insp_search_input').value.toLowerCase().trim();
+
+    volunteers.forEach(v => {
+        const isAbsent = (v.status === 'absent');
+        const searchTarget = ((v.name || '') + ' ' + (v.id || '') + ' ' + (v.phone || '') + ' ' + (v.role || '') + ' ' + (v.skills || []).join(' ')).toLowerCase();
+
+        if (filterText !== '' && !searchTarget.includes(filterText)) {
+            return;
+        }
+
+        visibleCount++;
+        const row = document.createElement('div');
+        row.className = 'insp-volunteer-row ' + (isAbsent ? 'row-is-absent' : '');
+        row.setAttribute('data-vid', v.id);
+
+        row.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="volunteer_ids[]" value="${v.id}" class="chk-insp-volunteer" onchange="updateInspectorSelectedCount()">
+                <span class="t-v-avatar" style="${isAbsent ? 'background:#dc2626;' : 'background:#059669;'} font-size: 0.8rem;">
+                    ${(v.name || 'T').charAt(0)}
+                </span>
+                <div>
+                    <strong style="font-size: 0.88rem; ${isAbsent ? 'text-decoration: line-through; color: #991b1b;' : 'color: #0f172a;'}">
+                        ${v.name}
+                    </strong>
+                    ${v.registered_online ? '<span style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.67rem; font-weight: 700; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">Online</span>' : ''}
+                    <span style="font-size: 0.73rem; color: #64748b; margin-left: 6px;">
+                        ${isAbsent ? '<strong style="color: #dc2626;">(BÁO VẮNG)</strong>' : (v.replacement_for ? '<span style="color:#0284c7;">(Thay cho: ' + v.replacement_for + ')</span>' : '(' + (v.role || 'TNV Thực Địa') + ')')}
+                    </span>
+                    <div style="font-size: 0.72rem; color: #64748b; margin-top: 2px;">
+                        ${v.phone ? v.phone : ''} ${v.unit ? '• ' + v.unit : ''}
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 0.76rem;">
+                ${isAbsent ? '<span style="color: #dc2626; font-weight: 700;">Đang vắng</span>' : '<span style="color: #059669; font-weight: 600;">Sẵn sàng</span>'}
+            </div>
+        `;
+        container.appendChild(row);
+    });
+
+    document.getElementById('insp_visible_count').textContent = visibleCount;
+    updateInspectorSelectedCount();
+}
+
+function filterInspectorVolunteers() {
+    if (currentInspectorDuty) {
+        renderInspectorVolunteers(currentInspectorDuty.assigned_volunteers || []);
+    }
+}
+
+function toggleSelectAllInspector(checked) {
+    document.querySelectorAll('.chk-insp-volunteer').forEach(chk => {
+        chk.checked = checked;
+    });
+    updateInspectorSelectedCount();
+}
+
+function updateInspectorSelectedCount() {
+    const selected = document.querySelectorAll('.chk-insp-volunteer:checked').length;
+    document.getElementById('insp_selected_count').textContent = selected;
+}
+
+function submitBulkAction(actionName) {
+    const selected = document.querySelectorAll('.chk-insp-volunteer:checked');
+    if (selected.length === 0) {
+        alert('Vui lòng tích chọn ít nhất 1 tình nguyện viên để thực hiện thao tác.');
+        return;
+    }
+
+    const actionText = (actionName === 'bulk_report_absent') ? 'báo vắng' : 'khôi phục có mặt';
+    if (!confirm('Xác nhận ' + actionText + ' cho ' + selected.length + ' tình nguyện viên đã chọn?')) {
+        return;
+    }
+
+    document.getElementById('insp_action').value = actionName;
+    document.getElementById('insp_bulk_form').submit();
+}
+</script>
 
 <?php require __DIR__ . '/../templates/footer.php'; ?>

@@ -199,6 +199,9 @@ $topAnnouncements[] = [
                 <a href="/phan_cong.php" class="nav-item <?= $currentPath === '/phan_cong.php' ? 'active' : '' ?>" style="color: #dc2626; font-weight: 600;">
                     Điều Phối Ca Trực
                 </a>
+                <a href="/quan_ly_tnv.php" class="nav-item <?= $currentPath === '/quan_ly_tnv.php' ? 'active' : '' ?>">
+                    Quản Lý TNV
+                </a>
                 <a href="/doi_soat_thuat_toan.php" class="nav-item <?= $currentPath === '/doi_soat_thuat_toan.php' ? 'active' : '' ?>">
                     Đối Soát Phân Công
                 </a>
