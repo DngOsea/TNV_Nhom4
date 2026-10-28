@@ -8,6 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require __DIR__ . '/../src/Input.php';
 require __DIR__ . '/../src/Auth.php';
 require __DIR__ . '/../src/AssignmentEngine.php';
+require_once __DIR__ . '/../src/RegistrationManager.php';
 
 // BẮT BUỘC QUYỀN ĐIỀU PHỐI VIÊN (BAN CHỈ HUY)
 // Tình nguyện viên và khách sẽ được chuyển hướng về trang Lịch Trực Thành Viên
@@ -74,6 +75,8 @@ if (!isset($_SESSION['btl_duty_schedule']) || !is_array($_SESSION['btl_duty_sche
 }
 
 $dutySchedules = &$_SESSION['btl_duty_schedule'];
+// TỰ ĐỘNG ĐỒNG BỘ CÁC ĐƠN ĐĂNG KÝ TRỰC TUYẾN MỚI TỪ REGISTER.PHP SANG CA TRỰC
+RegistrationManager::syncIntoSchedule($_SESSION['btl_duty_schedule']);
 $flashMessage = $_SESSION['flash_msg'] ?? null;
 unset($_SESSION['flash_msg']);
 
@@ -115,6 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $dutySchedules[$sId]['is_confirmed'] = false;
             }
         }
+        // Giữ lại các TNV đã đăng ký trực tuyến vào ca tương ứng
+        RegistrationManager::syncIntoSchedule($_SESSION['btl_duty_schedule']);
         $_SESSION['flash_msg'] = [
             'type' => 'success',
             'title' => 'Đã Hoàn Tất Phân Bổ Tự Động',
@@ -327,6 +332,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $_SESSION['btl_duty_schedule'] = initDefaultSchedule($rawShifts, $allVolunteers);
+        RegistrationManager::syncIntoSchedule($_SESSION['btl_duty_schedule']);
         $_SESSION['flash_msg'] = [
             'type' => 'info',
             'title' => 'Đã Thiết Lập Lại Bảng Phân Công',
@@ -451,6 +457,78 @@ require __DIR__ . '/../templates/header.php';
         </div>
     </div>
 
+    <!-- KHUNG THEO DÕI ĐƠN ĐĂNG KÝ TRỰC TUYẾN TIẾP NHẬN TỨC THÌ (REAL-TIME SYNC) -->
+    <?php 
+    $onlineRegistrations = RegistrationManager::getAll();
+    $onlineCount = count($onlineRegistrations);
+    ?>
+    <div class="online-sync-card" style="margin-bottom: 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden;">
+        <div style="padding: 14px 18px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);"></span>
+                <strong style="font-size: 0.92rem; color: #0f172a;">Hồ Sơ Đăng Ký Cần Phê Duyệt</strong>
+                <span style="background: #e0f2fe; color: #0369a1; font-size: 0.74rem; font-weight: 700; padding: 2px 8px; border-radius: 10px;">
+                    <?= $onlineCount ?> hồ sơ
+                </span>
+            </div>
+            <span style="font-size: 0.78rem; color: #64748b;">
+                Tự động đồng bộ và biên chế vào ca trực khi TNV hoàn tất đăng ký online
+            </span>
+        </div>
+        
+        <?php if ($onlineCount === 0): ?>
+            <div style="padding: 20px; text-align: center; color: #64748b; font-size: 0.85rem;">
+                Chưa có đơn đăng ký trực tuyến mới nào. Khi tình nguyện viên nộp hồ sơ qua trang <em>Hồ Sơ Năng Lực & Đăng Ký</em>, thông tin sẽ lập tức xuất hiện tại đây và tự động gán vào ca trực tương ứng.
+            </div>
+        <?php else: ?>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.84rem; text-align: left;">
+                    <thead>
+                        <tr style="background: #fdfdfd; border-bottom: 1px solid #e2e8f0; color: #475569; font-weight: 600;">
+                            <th style="padding: 9px 16px;">Mã Thẻ / Thời Gian</th>
+                            <th style="padding: 9px 16px;">Tình Nguyện Viên</th>
+                            <th style="padding: 9px 16px;">Chiến Dịch & Ca Đăng Ký</th>
+                            <th style="padding: 9px 16px;">Ca Trực Được Biên Chế</th>
+                            <th style="padding: 9px 16px;">Trạng Thái Điều Phối</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach (array_slice($onlineRegistrations, 0, 5) as $reg): ?>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 9px 16px;">
+                                    <strong style="color: #0369a1;"><?= htmlspecialchars($reg['pass_id'] ?? '') ?></strong>
+                                    <div style="font-size: 0.73rem; color: #64748b;"><?= htmlspecialchars($reg['registered_at'] ?? '') ?></div>
+                                </td>
+                                <td style="padding: 9px 16px;">
+                                    <strong style="color: #0f172a;"><?= htmlspecialchars($reg['name'] ?? '') ?></strong>
+                                    <div style="font-size: 0.74rem; color: #64748b;"><?= htmlspecialchars($reg['phone'] ?? '') ?> &bull; <?= htmlspecialchars($reg['email'] ?? '') ?></div>
+                                    <div style="font-size: 0.73rem; color: #475569;"><?= htmlspecialchars($reg['unit'] ?? '') ?></div>
+                                </td>
+                                <td style="padding: 9px 16px;">
+                                    <div style="font-weight: 600; color: #334155;"><?= htmlspecialchars($reg['event_title'] ?? '') ?></div>
+                                    <span style="font-size: 0.74rem; color: #0284c7; background: #f0f9ff; padding: 1px 6px; border-radius: 4px; display: inline-block; margin-top: 2px;">
+                                        <?= htmlspecialchars($reg['shift_name'] ?? '') ?>
+                                    </span>
+                                </td>
+                                <td style="padding: 9px 16px;">
+                                    <a href="#shift-row-<?= htmlspecialchars($reg['shift_code'] ?? 'CA-01') ?>" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 600; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 3px 8px; border-radius: 4px; font-size: 0.76rem;">
+                                        <?= htmlspecialchars($reg['shift_code'] ?? 'CA-01') ?> &rarr; Đến ca trực
+                                    </a>
+                                </td>
+                                <td style="padding: 9px 16px;">
+                                    <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 600; font-size: 0.78rem; color: #059669;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        Đã biên chế vào ca
+                                    </span>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+    </div>
+
     <!-- BỘ LỌC VÀ ĐIỀU KHIỂN CHẾ ĐỘ XEM TRỰC QUAN -->
     <div class="table-control-bar">
         <!-- Bộ lọc ca trực -->
@@ -549,6 +627,9 @@ require __DIR__ . '/../templates/header.php';
                                                     <strong style="font-size: 0.85rem; color: #1e293b; <?= $isAbsent ? 'text-decoration: line-through; color: #991b1b;' : '' ?>">
                                                         <?= htmlspecialchars($v['name']) ?>
                                                     </strong>
+                                                    <?php if (!empty($v['registered_online'])): ?>
+                                                        <span style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.68rem; font-weight: 700; padding: 1px 5px; border-radius: 4px; margin-left: 4px;">Đăng Ký Online</span>
+                                                    <?php endif; ?>
                                                     <span style="font-size: 0.72rem; color: #64748b; margin-left: 6px;">
                                                         <?php if ($isAbsent): ?>
                                                             <strong style="color: #dc2626;">(BÁO VẮNG)</strong>
@@ -558,6 +639,11 @@ require __DIR__ . '/../templates/header.php';
                                                             (<?= htmlspecialchars($v['role'] ?? 'TNV') ?>)
                                                         <?php endif; ?>
                                                     </span>
+                                                    <?php if (!empty($v['phone'])): ?>
+                                                        <div style="font-size: 0.70rem; color: #64748b; margin-top: 2px;">
+                                                            <?= htmlspecialchars($v['phone']) ?> <?= !empty($v['unit']) ? '• ' . htmlspecialchars($v['unit']) : '' ?>
+                                                        </div>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
 
@@ -635,6 +721,9 @@ require __DIR__ . '/../templates/header.php';
                                     <span style="font-size: 0.82rem; font-weight: 600; <?= $isAbsent ? 'text-decoration:line-through; color:#991b1b;' : 'color:#1e293b;' ?>">
                                         <?= htmlspecialchars($v['name']) ?>
                                     </span>
+                                    <?php if (!empty($v['registered_online'])): ?>
+                                        <span style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.67rem; font-weight: 700; padding: 1px 4px; border-radius: 3px;">Online</span>
+                                    <?php endif; ?>
                                     <?php if ($isAbsent): ?>
                                         <span style="font-size: 0.7rem; color: #dc2626; font-weight: 700;">(VẮNG)</span>
                                     <?php elseif (!empty($v['replacement_for'])): ?>

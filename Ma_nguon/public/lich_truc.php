@@ -8,6 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require __DIR__ . '/../src/Input.php';
 require __DIR__ . '/../src/Auth.php';
 require __DIR__ . '/../src/AssignmentEngine.php';
+require_once __DIR__ . '/../src/RegistrationManager.php';
 
 $btlData = require __DIR__ . '/../data/btl_dataset.php';
 $allSkills = $btlData['skills'];
@@ -67,6 +68,7 @@ if (!isset($_SESSION['btl_duty_schedule']) || !is_array($_SESSION['btl_duty_sche
 }
 
 $dutySchedules = &$_SESSION['btl_duty_schedule'];
+RegistrationManager::syncIntoSchedule($_SESSION['btl_duty_schedule']);
 $currentUser = Auth::getUser();
 $flashMessage = $_SESSION['flash_msg'] ?? null;
 unset($_SESSION['flash_msg']);

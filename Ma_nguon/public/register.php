@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require __DIR__ . '/../src/Input.php';
+require_once __DIR__ . '/../src/RegistrationManager.php';
 $volunteerData = require __DIR__ . '/../data/volunteer_data.php';
 $categories = $volunteerData['categories'];
 $events = $volunteerData['activities'];
@@ -47,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($result['errors'])) {
+            $passId = 'TNV-2026-' . strtoupper(substr(md5($email . time()), 0, 6));
             $result['data']['phone'] = $phone;
             $result['data']['dob'] = $dob;
             $result['data']['gender'] = $gender;
@@ -57,7 +59,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $result['data']['expectations'] = $expectations ?: 'Cống hiến sức trẻ vì cộng đồng.';
             $result['data']['emergency_contact'] = $emergencyContact;
             $result['data']['emergency_phone'] = $emergencyPhone;
-            $result['data']['pass_id'] = 'TNV-2026-' . strtoupper(substr(md5($email . time()), 0, 6));
+            $result['data']['pass_id'] = $passId;
+
+            // Tìm thông tin chiến dịch đã chọn
+            $eventTitle = 'Chiến dịch tình nguyện';
+            foreach ($events as $ev) {
+                if ((string)$ev['id'] === (string)$selectedEventId) {
+                    $eventTitle = $ev['title'];
+                    break;
+                }
+            }
+
+            // Đồng bộ trực tiếp sang Ban Chỉ Huy / Điều phối viên
+            $shiftCode = RegistrationManager::mapEventToShiftCode($selectedEventId, $shift);
+            $regRecord = [
+                'pass_id' => $passId,
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'dob' => $dob,
+                'gender' => $gender,
+                'event_id' => (string)$selectedEventId,
+                'event_title' => $eventTitle,
+                'shift_code' => $shiftCode,
+                'shift_name' => $shift,
+                'unit' => $unit ?: 'Thanh niên tình nguyện',
+                'skills' => $skills,
+                'experience' => $experience,
+                'expectations' => $expectations ?: 'Cống hiến sức trẻ vì cộng đồng.',
+                'emergency_contact' => $emergencyContact,
+                'emergency_phone' => $emergencyPhone,
+                'registered_at' => date('d/m/Y H:i'),
+                'status' => 'confirmed'
+            ];
+            RegistrationManager::save($regRecord);
+
+            if (isset($_SESSION['btl_duty_schedule']) && is_array($_SESSION['btl_duty_schedule'])) {
+                RegistrationManager::syncIntoSchedule($_SESSION['btl_duty_schedule']);
+            }
         }
     }
 }
