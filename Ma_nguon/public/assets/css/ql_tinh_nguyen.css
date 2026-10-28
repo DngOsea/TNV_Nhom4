@@ -5650,13 +5650,13 @@ body.modal-open {
 .btn-inspect-eye {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 9px;
+    gap: 6px;
+    padding: 6px 12px;
     background: #f0fdf4;
     color: #047857;
     border: 1px solid #86efac;
-    border-radius: 6px;
-    font-size: 0.74rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -5665,30 +5665,129 @@ body.modal-open {
     background: #022c22;
     color: #00ff88;
     border-color: #00ff88;
-    box-shadow: 0 0 10px rgba(0, 255, 136, 0.45);
+    box-shadow: 0 0 12px rgba(0, 255, 136, 0.45);
     transform: translateY(-1px);
+}
+.btn-inspect-eye-lg {
+    padding: 7px 14px;
+    font-size: 0.82rem;
 }
 
 .insp-volunteer-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
+    padding: 9px 12px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
     transition: all 0.15s ease;
 }
 .insp-volunteer-row:hover {
     background: #ffffff;
-    border-color: #cbd5e1;
+    border-color: #94a3b8;
 }
 .insp-volunteer-row.row-selected {
-    background: #f0fdf4;
-    border-color: #86efac;
+    background: #ecfdf5 !important;
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 1px #10b981;
 }
 .insp-volunteer-row.row-is-absent {
     background: #fef2f2;
     border-color: #fca5a5;
 }
+
+/* 18. NÚT ĐĂNG KÝ HOẠT ĐỘNG TRONG MODAL CHI TIẾT (BO GÓC & FONT CHỮ) */
+.modal-cta-btn,
+#modal_act_register_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    text-decoration: none;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    border: 1px solid #10b981;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.modal-cta-btn:hover,
+#modal_act_register_btn:hover {
+    background: #022c22 !important;
+    color: #00ff88 !important;
+    border-color: #00ff88 !important;
+    box-shadow: 0 0 16px rgba(0, 255, 136, 0.5);
+    transform: translateY(-1px);
+}
+.modal-cta-btn:active,
+#modal_act_register_btn:active {
+    transform: translateY(0);
+}
+.btn-modal-close {
+    padding: 9px 18px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-modal-close:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #94a3b8;
+}
+
+/* 19. CÁC NÚT THAO TÁC CỘT CHỈNH SỬA & XÓA (QUẢN LÝ TNV) */
+.btn-col-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #86efac;
+    background: #f0fdf4;
+    color: #047857;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-col-edit:hover {
+    background: #022c22;
+    color: #00ff88;
+    border-color: #00ff88;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.45);
+    transform: translateY(-1px);
+}
+.btn-col-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-col-delete:hover {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #b91c1c;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.45);
+    transform: translateY(-1px);
+}
+
 

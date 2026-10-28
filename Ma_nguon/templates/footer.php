@@ -65,7 +65,10 @@
 
         <div class="modal-footer">
             <button type="button" class="btn-cancel btn-modal-close">Đóng lại</button>
-            <a id="modal_act_register_btn" href="/register.php" class="btn-primary modal-cta-btn">Đăng Ký Tham Gia Hoạt Động</a>
+            <a id="modal_act_register_btn" href="/register.php" class="btn-primary modal-cta-btn">
+                <span>Đăng Ký Tham Gia Hoạt Động</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
         </div>
     </div>
 </div>

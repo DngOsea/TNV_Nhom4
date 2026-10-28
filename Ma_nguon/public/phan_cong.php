@@ -200,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (isset($dutySchedules[$shiftId])) {
             foreach ($dutySchedules[$shiftId]['assigned_volunteers'] as &$v) {
-                if ($v['id'] === $volunteerId) {
+                if ((string)$v['id'] === (string)$volunteerId) {
                     $v['status'] = 'absent';
                     $_SESSION['flash_msg'] = [
                         'type' => 'warning',
@@ -212,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             unset($v);
         }
-        header('Location: /phan_cong.php#shift-' . urlencode($shiftId));
+        header('Location: /phan_cong.php?inspect_shift=' . urlencode($shiftId) . '#shift-row-' . urlencode($shiftId));
         exit;
     }
 
@@ -227,14 +227,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'title' => 'Chưa Chọn Tình Nguyện Viên',
                 'content' => 'Vui lòng tích chọn ít nhất 1 tình nguyện viên để thực hiện báo vắng hàng loạt.',
             ];
-            header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+            header('Location: /phan_cong.php?inspect_shift=' . urlencode($shiftId) . '#shift-row-' . urlencode($shiftId));
             exit;
         }
 
         $count = 0;
         if (isset($dutySchedules[$shiftId])) {
+            $strVids = array_map('strval', $volunteerIds);
             foreach ($dutySchedules[$shiftId]['assigned_volunteers'] as &$v) {
-                if (in_array($v['id'], $volunteerIds, true)) {
+                if (in_array((string)$v['id'], $strVids, true)) {
                     $v['status'] = 'absent';
                     $count++;
                 }
@@ -247,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => 'Đã Ghi Nhận Báo Vắng Hàng Loạt',
             'content' => "Đã ghi nhận báo vắng cho {$count} tình nguyện viên tại ca trực {$shiftId}. Trạng thái quân số đã được cập nhật để Ban Chỉ Huy điều động thay thế.",
         ];
-        header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+        header('Location: /phan_cong.php?inspect_shift=' . urlencode($shiftId) . '#shift-row-' . urlencode($shiftId));
         exit;
     }
 
@@ -262,14 +263,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'title' => 'Chưa Chọn Tình Nguyện Viên',
                 'content' => 'Vui lòng tích chọn ít nhất 1 tình nguyện viên để khôi phục trạng thái ca trực.',
             ];
-            header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+            header('Location: /phan_cong.php?inspect_shift=' . urlencode($shiftId) . '#shift-row-' . urlencode($shiftId));
             exit;
         }
 
         $count = 0;
         if (isset($dutySchedules[$shiftId])) {
+            $strVids = array_map('strval', $volunteerIds);
             foreach ($dutySchedules[$shiftId]['assigned_volunteers'] as &$v) {
-                if (in_array($v['id'], $volunteerIds, true)) {
+                if (in_array((string)$v['id'], $strVids, true)) {
                     $v['status'] = 'confirmed';
                     $count++;
                 }
@@ -282,7 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => 'Khôi Phục Trạng Thái Có Mặt Thành Công',
             'content' => "Đã khôi phục trạng thái nhận ca cho {$count} tình nguyện viên tại ca trực {$shiftId}.",
         ];
-        header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+        header('Location: /phan_cong.php?inspect_shift=' . urlencode($shiftId) . '#shift-row-' . urlencode($shiftId));
         exit;
     }
 
@@ -633,11 +635,11 @@ require __DIR__ . '/../templates/header.php';
             <table class="duty-table-modern" id="main_dispatch_table">
                 <thead>
                     <tr>
-                        <th style="width: 22%;">Mã & Hoạt Động</th>
+                        <th style="width: 25%;">Mã & Hoạt Động</th>
                         <th style="width: 14%;">Khung Giờ</th>
-                        <th style="width: 15%;">Kỹ Năng Yêu Cầu</th>
-                        <th style="width: 14%;">Quân Số</th>
-                        <th style="width: 35%;">Lực Lượng Thực Địa & Thao Tác Điều Động</th>
+                        <th style="width: 18%;">Kỹ Năng Yêu Cầu</th>
+                        <th style="width: 15%;">Quân Số</th>
+                        <th style="width: 28%; text-align: center;">Kiểm Tra Lực Lượng</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -652,15 +654,11 @@ require __DIR__ . '/../templates/header.php';
                         <tr class="dispatch-data-row <?= $hasAbsent ? 'row-has-absent' : '' ?>" id="shift-row-<?= htmlspecialchars($sId) ?>"
                             data-search="<?= htmlspecialchars(strtolower($duty['shift_code'] . ' ' . $duty['activity_title'] . ' ' . $duty['location'] . ' ' . $duty['leader'] . ' ' . implode(' ', array_column($duty['assigned_volunteers'], 'name')))) ?>">
                             <td>
-                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                                     <span class="t-shift-badge"><?= htmlspecialchars($duty['shift_code']) ?></span>
-                                    <button type="button" class="btn-inspect-eye" title="Xem chi tiết lực lượng & Báo vắng hàng loạt" onclick='openForceInspectorModal(<?= htmlspecialchars(json_encode($duty), ENT_QUOTES, "UTF-8") ?>)'>
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                            <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                        <span>Lực Lượng</span>
-                                    </button>
+                                    <?php if ($hasAbsent): ?>
+                                        <span style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-size: 0.7rem; font-weight: 700; padding: 1px 6px; border-radius: 4px;">Có người vắng</span>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="t-act-title"><?= htmlspecialchars($duty['activity_title']) ?></div>
                                 <span class="t-act-location"><?= htmlspecialchars($duty['location']) ?></span>
@@ -693,59 +691,25 @@ require __DIR__ . '/../templates/header.php';
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <div style="display: flex; flex-direction: column; gap: 8px;">
-                                    <?php foreach ($duty['assigned_volunteers'] as $v): 
-                                        $isAbsent = ($v['status'] === 'absent');
-                                    ?>
-                                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; background: <?= $isAbsent ? '#fef2f2' : '#f8fafc' ?>; border: 1px solid <?= $isAbsent ? '#fca5a5' : '#e2e8f0' ?>; padding: 5px 10px; border-radius: 6px;">
-                                            <div style="display: flex; align-items: center; gap: 8px;">
-                                                <span class="t-v-avatar" style="<?= $isAbsent ? 'background:#dc2626;' : 'background:#059669;' ?>">
-                                                    <?= mb_substr($v['name'], 0, 1) ?>
-                                                </span>
-                                                <div>
-                                                    <strong style="font-size: 0.85rem; color: #1e293b; <?= $isAbsent ? 'text-decoration: line-through; color: #991b1b;' : '' ?>">
-                                                        <?= htmlspecialchars($v['name']) ?>
-                                                    </strong>
-                                                    <?php if (!empty($v['registered_online'])): ?>
-                                                        <span style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.68rem; font-weight: 700; padding: 1px 5px; border-radius: 4px; margin-left: 4px;">Đăng Ký Online</span>
-                                                    <?php endif; ?>
-                                                    <span style="font-size: 0.72rem; color: #64748b; margin-left: 6px;">
-                                                        <?php if ($isAbsent): ?>
-                                                            <strong style="color: #dc2626;">(BÁO VẮNG)</strong>
-                                                        <?php elseif (!empty($v['replacement_for'])): ?>
-                                                            <span style="color: #0284c7; font-weight: 600;">(Thay cho: <?= htmlspecialchars($v['replacement_for']) ?>)</span>
-                                                        <?php else: ?>
-                                                            (<?= htmlspecialchars($v['role'] ?? 'TNV') ?>)
-                                                        <?php endif; ?>
-                                                    </span>
-                                                    <?php if (!empty($v['phone'])): ?>
-                                                        <div style="font-size: 0.70rem; color: #64748b; margin-top: 2px;">
-                                                            <?= htmlspecialchars($v['phone']) ?> <?= !empty($v['unit']) ? '• ' . htmlspecialchars($v['unit']) : '' ?>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <?php if (!$isAbsent): ?>
-                                                    <form method="POST" style="margin: 0; display: inline-block;" onsubmit="return confirm('Xác nhận báo vắng cho đồng chí <?= htmlspecialchars(addslashes($v['name'])) ?>?')">
-                                                        <input type="hidden" name="action" value="report_absent">
-                                                        <input type="hidden" name="shift_id" value="<?= htmlspecialchars($sId) ?>">
-                                                        <input type="hidden" name="volunteer_id" value="<?= htmlspecialchars($v['id']) ?>">
-                                                        <button type="submit" class="t-btn-action t-btn-warn" style="padding: 3px 8px; font-size: 0.74rem;" title="Báo vắng nhân sự ca này">
-                                                            Báo vắng
-                                                        </button>
-                                                    </form>
-                                                <?php else: ?>
-                                                    <button type="button" class="t-btn-action t-btn-replace" style="padding: 4px 10px; font-size: 0.74rem;"
-                                                            onclick="openReplaceModal('<?= htmlspecialchars($sId) ?>', '<?= htmlspecialchars($duty['shift_name']) ?>', '<?= htmlspecialchars($v['id']) ?>', '<?= htmlspecialchars(addslashes($v['name'])) ?>')">
-                                                        Thay người
-                                                    </button>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
+                            <td style="text-align: center; vertical-align: middle;">
+                                <button type="button" class="btn-inspect-eye btn-inspect-eye-lg" title="Kiểm tra toàn bộ lực lượng & Báo vắng hàng loạt" onclick='openForceInspectorModal(<?= htmlspecialchars(json_encode($duty), ENT_QUOTES, "UTF-8") ?>)'>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <span>Kiểm Tra Lực Lượng (<?= count($duty['assigned_volunteers']) ?>)</span>
+                                </button>
+                                <?php 
+                                $absentVolunteersCount = count(array_filter($duty['assigned_volunteers'], fn($v) => ($v['status'] ?? '') === 'absent'));
+                                ?>
+                                <div style="margin-top: 6px; font-size: 0.76rem;">
+                                    <?php if ($absentVolunteersCount > 0): ?>
+                                        <span style="color: #dc2626; font-weight: 700; background: #fef2f2; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px; display: inline-block;">
+                                            <?= $absentVolunteersCount ?> TNV báo vắng
+                                        </span>
+                                    <?php else: ?>
+                                        <span style="color: #059669; font-weight: 600;">Quân số sẵn sàng</span>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
@@ -763,19 +727,16 @@ require __DIR__ . '/../templates/header.php';
             $activeAssignedCount = count(array_filter($duty['assigned_volunteers'], fn($v) => $v['status'] !== 'absent'));
             $isFull = $activeAssignedCount >= $needed;
             $hasAbsent = count(array_filter($duty['assigned_volunteers'], fn($v) => $v['status'] === 'absent')) > 0;
+            $absentVolunteersCount = count(array_filter($duty['assigned_volunteers'], fn($v) => ($v['status'] ?? '') === 'absent'));
         ?>
             <div class="compact-shift-card <?= $hasAbsent ? 'card-has-absent' : '' ?>" id="shift-card-<?= htmlspecialchars($sId) ?>"
                  data-search="<?= htmlspecialchars(strtolower($duty['shift_code'] . ' ' . $duty['activity_title'] . ' ' . $duty['location'] . ' ' . $duty['leader'] . ' ' . implode(' ', array_column($duty['assigned_volunteers'], 'name')))) ?>">
                 <div class="compact-main-info">
-                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
                         <span class="t-shift-badge"><?= htmlspecialchars($duty['shift_code']) ?></span>
-                        <button type="button" class="btn-inspect-eye" title="Xem chi tiết lực lượng & Báo vắng hàng loạt" onclick='openForceInspectorModal(<?= htmlspecialchars(json_encode($duty), ENT_QUOTES, "UTF-8") ?>)'>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                            <span>Lực Lượng</span>
-                        </button>
+                        <?php if ($hasAbsent): ?>
+                            <span style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-size: 0.68rem; font-weight: 700; padding: 1px 5px; border-radius: 4px;">Có vắng</span>
+                        <?php endif; ?>
                     </div>
                     <h4 class="t-act-title" style="margin: 6px 0 4px;"><?= htmlspecialchars($duty['activity_title']) ?></h4>
                     <span class="t-act-location"><?= htmlspecialchars($duty['location']) ?></span>
@@ -796,49 +757,22 @@ require __DIR__ . '/../templates/header.php';
                     </div>
                 </div>
 
-                <div class="compact-volunteers-info" style="flex: 2;">
-                    <div style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 6px;">Lực lượng phân công & Thao tác:</div>
-                    <div style="display: flex; flex-direction: column; gap: 6px;">
-                        <?php foreach ($duty['assigned_volunteers'] as $v): 
-                            $isAbsent = ($v['status'] === 'absent');
-                        ?>
-                            <div style="display: flex; align-items: center; justify-content: space-between; background: <?= $isAbsent ? '#fef2f2' : '#f8fafc' ?>; border: 1px solid <?= $isAbsent ? '#fca5a5' : '#e2e8f0' ?>; padding: 4px 8px; border-radius: 6px;">
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <span class="t-v-avatar" style="<?= $isAbsent ? 'background:#dc2626;' : 'background:#059669;' ?>">
-                                        <?= mb_substr($v['name'], 0, 1) ?>
-                                    </span>
-                                    <span style="font-size: 0.82rem; font-weight: 600; <?= $isAbsent ? 'text-decoration:line-through; color:#991b1b;' : 'color:#1e293b;' ?>">
-                                        <?= htmlspecialchars($v['name']) ?>
-                                    </span>
-                                    <?php if (!empty($v['registered_online'])): ?>
-                                        <span style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.67rem; font-weight: 700; padding: 1px 4px; border-radius: 3px;">Online</span>
-                                    <?php endif; ?>
-                                    <?php if ($isAbsent): ?>
-                                        <span style="font-size: 0.7rem; color: #dc2626; font-weight: 700;">(VẮNG)</span>
-                                    <?php elseif (!empty($v['replacement_for'])): ?>
-                                        <span style="font-size: 0.7rem; color: #0284c7;">(Thay thế)</span>
-                                    <?php endif; ?>
-                                </div>
-
-                                <div>
-                                    <?php if (!$isAbsent): ?>
-                                        <form method="POST" style="margin: 0; display: inline-block;" onsubmit="return confirm('Xác nhận báo vắng cho đồng chí <?= htmlspecialchars(addslashes($v['name'])) ?>?')">
-                                            <input type="hidden" name="action" value="report_absent">
-                                            <input type="hidden" name="shift_id" value="<?= htmlspecialchars($sId) ?>">
-                                            <input type="hidden" name="volunteer_id" value="<?= htmlspecialchars($v['id']) ?>">
-                                            <button type="submit" class="t-btn-action t-btn-warn" style="padding: 2px 7px; font-size: 0.72rem;">
-                                                Báo vắng
-                                            </button>
-                                        </form>
-                                    <?php else: ?>
-                                        <button type="button" class="t-btn-action t-btn-replace" style="padding: 3px 8px; font-size: 0.72rem;"
-                                                onclick="openReplaceModal('<?= htmlspecialchars($sId) ?>', '<?= htmlspecialchars($duty['shift_name']) ?>', '<?= htmlspecialchars($v['id']) ?>', '<?= htmlspecialchars(addslashes($v['name'])) ?>')">
-                                            Thay người
-                                        </button>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                <div class="compact-actions" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px;">
+                    <button type="button" class="btn-inspect-eye btn-inspect-eye-lg" title="Kiểm tra toàn bộ lực lượng & Báo vắng hàng loạt" onclick='openForceInspectorModal(<?= htmlspecialchars(json_encode($duty), ENT_QUOTES, "UTF-8") ?>)'>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <span>Kiểm Tra Lực Lượng (<?= count($duty['assigned_volunteers']) ?>)</span>
+                    </button>
+                    <div style="font-size: 0.76rem;">
+                        <?php if ($absentVolunteersCount > 0): ?>
+                            <span style="color: #dc2626; font-weight: 700; background: #fef2f2; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px; display: inline-block;">
+                                <?= $absentVolunteersCount ?> TNV báo vắng
+                            </span>
+                        <?php else: ?>
+                            <span style="color: #059669; font-weight: 600;">Quân số sẵn sàng</span>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -1076,14 +1010,17 @@ window.onclick = function(event) {
             <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <button type="button" class="btn-cancel" onclick="closeForceInspectorModal()">Đóng Cửa Sổ</button>
 
-                <div style="display: flex; gap: 8px;">
-                    <button type="button" class="btn-cmd btn-cmd-ghost" style="font-size: 0.83rem;" onclick="submitBulkAction('bulk_restore_duty')">
-                        Khôi Phục Có Mặt
-                    </button>
-                    <button type="button" class="btn-cmd btn-cmd-danger" style="background: #dc2626; color: #ffffff; font-size: 0.83rem; border: none; padding: 7px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;" onclick="submitBulkAction('bulk_report_absent')">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                        Xác Nhận Báo Vắng Hàng Loạt
-                    </button>
+                <div>
+                    <div id="insp_bulk_alert" style="display: none; color: #dc2626; font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; text-align: right;"></div>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="submit" class="btn-cmd btn-cmd-ghost" style="font-size: 0.83rem;" onclick="return submitBulkAction('bulk_restore_duty')">
+                            Khôi Phục Có Mặt
+                        </button>
+                        <button type="submit" class="btn-cmd btn-cmd-danger" style="background: #dc2626; color: #ffffff; font-size: 0.83rem; border: none; padding: 7px 14px; border-radius: 6px; font-weight: 700; cursor: pointer;" onclick="return submitBulkAction('bulk_report_absent')">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                            Xác Nhận Báo Vắng Hàng Loạt
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>
@@ -1105,7 +1042,12 @@ function openForceInspectorModal(dutyData) {
     const activeCount = (dutyData.assigned_volunteers || []).filter(v => v.status !== 'absent').length;
     document.getElementById('insp_capacity').textContent = activeCount + ' / ' + dutyData.needed_count + ' TNV';
 
-    // Reset input search & select all
+    // Reset alert, search & select all
+    const alertBox = document.getElementById('insp_bulk_alert');
+    if (alertBox) {
+        alertBox.style.display = 'none';
+        alertBox.textContent = '';
+    }
     document.getElementById('insp_search_input').value = '';
     document.getElementById('insp_select_all').checked = false;
 
@@ -1115,6 +1057,14 @@ function openForceInspectorModal(dutyData) {
 
 function closeForceInspectorModal() {
     document.getElementById('shift_force_inspector_modal').style.display = 'none';
+}
+
+function syncVolunteerRow(rowEl, checked) {
+    if (checked) {
+        rowEl.classList.add('row-selected');
+    } else {
+        rowEl.classList.remove('row-selected');
+    }
 }
 
 function renderInspectorVolunteers(volunteers) {
@@ -1146,7 +1096,7 @@ function renderInspectorVolunteers(volunteers) {
 
         row.innerHTML = `
             <div style="display: flex; align-items: center; gap: 10px;">
-                <input type="checkbox" name="volunteer_ids[]" value="${v.id}" class="chk-insp-volunteer" onchange="updateInspectorSelectedCount()">
+                <input type="checkbox" name="volunteer_ids[]" value="${v.id}" class="chk-insp-volunteer">
                 <span class="t-v-avatar" style="${isAbsent ? 'background:#dc2626;' : 'background:#059669;'} font-size: 0.8rem;">
                     ${(v.name || 'T').charAt(0)}
                 </span>
@@ -1167,6 +1117,27 @@ function renderInspectorVolunteers(volunteers) {
                 ${isAbsent ? '<span style="color: #dc2626; font-weight: 700;">Đang vắng</span>' : '<span style="color: #059669; font-weight: 600;">Sẵn sàng</span>'}
             </div>
         `;
+
+        // Cho phép click cả hàng để chọn/bỏ chọn tình nguyện viên
+        row.onclick = function(e) {
+            if (e.target.tagName !== 'INPUT') {
+                const chk = row.querySelector('.chk-insp-volunteer');
+                if (chk) {
+                    chk.checked = !chk.checked;
+                    syncVolunteerRow(row, chk.checked);
+                    updateInspectorSelectedCount();
+                }
+            }
+        };
+
+        const chk = row.querySelector('.chk-insp-volunteer');
+        if (chk) {
+            chk.onchange = function() {
+                syncVolunteerRow(row, chk.checked);
+                updateInspectorSelectedCount();
+            };
+        }
+
         container.appendChild(row);
     });
 
@@ -1183,6 +1154,10 @@ function filterInspectorVolunteers() {
 function toggleSelectAllInspector(checked) {
     document.querySelectorAll('.chk-insp-volunteer').forEach(chk => {
         chk.checked = checked;
+        const row = chk.closest('.insp-volunteer-row');
+        if (row) {
+            syncVolunteerRow(row, checked);
+        }
     });
     updateInspectorSelectedCount();
 }
@@ -1190,23 +1165,44 @@ function toggleSelectAllInspector(checked) {
 function updateInspectorSelectedCount() {
     const selected = document.querySelectorAll('.chk-insp-volunteer:checked').length;
     document.getElementById('insp_selected_count').textContent = selected;
+    const alertBox = document.getElementById('insp_bulk_alert');
+    if (alertBox && selected > 0) {
+        alertBox.style.display = 'none';
+    }
 }
 
 function submitBulkAction(actionName) {
     const selected = document.querySelectorAll('.chk-insp-volunteer:checked');
     if (selected.length === 0) {
-        alert('Vui lòng tích chọn ít nhất 1 tình nguyện viên để thực hiện thao tác.');
-        return;
+        const alertBox = document.getElementById('insp_bulk_alert');
+        if (alertBox) {
+            alertBox.style.display = 'block';
+            alertBox.textContent = 'Vui lòng tích chọn ít nhất 1 tình nguyện viên để thực hiện thao tác.';
+        } else {
+            alert('Vui lòng tích chọn ít nhất 1 tình nguyện viên để thực hiện thao tác.');
+        }
+        return false;
     }
 
-    const actionText = (actionName === 'bulk_report_absent') ? 'báo vắng' : 'khôi phục có mặt';
-    if (!confirm('Xác nhận ' + actionText + ' cho ' + selected.length + ' tình nguyện viên đã chọn?')) {
-        return;
+    const alertBox = document.getElementById('insp_bulk_alert');
+    if (alertBox) {
+        alertBox.style.display = 'none';
     }
 
     document.getElementById('insp_action').value = actionName;
-    document.getElementById('insp_bulk_form').submit();
+    return true;
 }
 </script>
+
+<?php if (!empty($_GET['inspect_shift']) && isset($dutySchedules[$_GET['inspect_shift']])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const targetDuty = <?= json_encode($dutySchedules[$_GET['inspect_shift']]) ?>;
+    if (targetDuty) {
+        openForceInspectorModal(targetDuty);
+    }
+});
+</script>
+<?php endif; ?>
 
 <?php require __DIR__ . '/../templates/footer.php'; ?>
