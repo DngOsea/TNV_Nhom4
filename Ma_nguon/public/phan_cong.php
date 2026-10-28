@@ -373,31 +373,56 @@ require __DIR__ . '/../templates/header.php';
 </div>
 
 <div class="page-content-wrapper">
-    <!-- KHUNG CHỈ BÁO VAI TRÒ BAN CHỈ HUY -->
-    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 14px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-        <div>
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
-                <span style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; background: #dc2626; color: #ffffff;">
-                    KHU VỰC ĐIỀU HÀNH BAN CHỈ HUY
-                </span>
-                <strong style="color: #065f46; font-size: 0.95rem;">
-                    <?= htmlspecialchars($currentUser['name'] ?? '') ?> (<?= htmlspecialchars($currentUser['role'] ?? 'Cán Bộ Chỉ Huy') ?>)
-                </strong>
+    <!-- THANH TÁC VỤ ĐIỀU HÀNH HỢP NHẤT (CLEAN COMMAND BAR) -->
+    <div class="coordinator-command-bar">
+        <div class="command-officer-info">
+            <span class="officer-badge">BAN CHỈ HUY</span>
+            <div>
+                <strong><?= htmlspecialchars($currentUser['name'] ?? '') ?></strong>
+                <span class="officer-role">— <?= htmlspecialchars($currentUser['role'] ?? 'Cán Bộ Chỉ Huy') ?></span>
             </div>
-            <p style="margin: 0; font-size: 0.84rem; color: #047857;">
-                Đồng chí đang tác nghiệp tại Bảng Điều Phối Lực Lượng. Mọi thao tác phân ca và thay người sẽ được đồng bộ trực tiếp tới lịch trực của các tình nguyện viên.
-            </p>
         </div>
-        <div>
-            <a href="/lich_truc.php" class="btn-action-pro" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; text-decoration: none; padding: 7px 14px; border-radius: 6px; font-size: 0.82rem; font-weight: 600;">
-                Xem Giao Diện Lịch Trực TNV &rarr;
+
+        <div class="command-actions-cluster">
+            <?php if (Auth::isCoordinator()): ?>
+                <form method="POST" style="margin: 0;">
+                    <input type="hidden" name="action" value="auto_assign">
+                    <button type="submit" class="btn-cmd btn-cmd-primary">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        Tự Động Phân Ca
+                    </button>
+                </form>
+
+                <form method="POST" style="margin: 0;">
+                    <input type="hidden" name="action" value="confirm_all">
+                    <button type="submit" class="btn-cmd btn-cmd-secondary">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Phê Duyệt Lịch Trực
+                    </button>
+                </form>
+
+                <form method="POST" style="margin: 0;">
+                    <input type="hidden" name="action" value="reset_schedule">
+                    <button type="submit" class="btn-cmd btn-cmd-ghost" onclick="return confirm('Bạn có chắc muốn thiết lập lại bảng phân công?')">
+                        Thiết Lập Lại
+                    </button>
+                </form>
+            <?php endif; ?>
+
+            <a href="/doi_soat_thuat_toan.php" class="btn-cmd btn-cmd-outline">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                Đối Soát Hiệu Suất
+            </a>
+
+            <a href="/lich_truc.php" class="btn-cmd btn-cmd-ghost" title="Xem dưới góc nhìn tình nguyện viên">
+                Xem Lịch TNV &rarr;
             </a>
         </div>
     </div>
 
-    <!-- THÔNG BÁO TƯƠNG TÁC -->
+    <!-- THÔNG BÁO TÁC VỤ -->
     <?php if ($flashMessage): ?>
-        <div class="alert-box-interactive alert-<?= htmlspecialchars($flashMessage['type']) ?>">
+        <div class="alert-box-interactive alert-<?= htmlspecialchars($flashMessage['type']) ?>" style="margin-top: 16px;">
             <div class="alert-content">
                 <strong><?= htmlspecialchars($flashMessage['title']) ?></strong>
                 <p><?= htmlspecialchars($flashMessage['content']) ?></p>
@@ -405,44 +430,6 @@ require __DIR__ . '/../templates/header.php';
             <button type="button" class="btn-close-alert" onclick="this.parentElement.remove()" aria-label="Đóng">&times;</button>
         </div>
     <?php endif; ?>
-
-    <!-- THANH CÔNG CỤ ĐIỀU HÀNH -->
-    <div class="dispatch-toolbar-card">
-        <div class="toolbar-info">
-            <span class="tool-tag"><?= Auth::isCoordinator() ? 'ĐIỀU HÀNH TÁC NGHIỆP' : 'THEO DÕI CA TRỰC' ?></span>
-            <h3>Bảng Điều Hành & Phân Bổ Nhân Sự</h3>
-            <p><?= Auth::isCoordinator() ? 'Công cụ phân bổ và điều phối lực lượng tình nguyện viên trên thực địa.' : 'Lịch trực toàn chiến dịch. Chỉ huy sẽ xử lý điều phối khi có thông báo vắng.' ?></p>
-        </div>
-
-        <div class="toolbar-actions-group">
-            <?php if (Auth::isCoordinator()): ?>
-                <form method="POST" style="margin: 0;">
-                    <input type="hidden" name="action" value="auto_assign">
-                    <button type="submit" class="btn-action-pro btn-smart-assign">
-                        Tự Động Phân Ca
-                    </button>
-                </form>
-
-                <form method="POST" style="margin: 0;">
-                    <input type="hidden" name="action" value="confirm_all">
-                    <button type="submit" class="btn-action-pro btn-confirm-all">
-                        Phê Duyệt Lịch Trực
-                    </button>
-                </form>
-
-                <form method="POST" style="margin: 0;">
-                    <input type="hidden" name="action" value="reset_schedule">
-                    <button type="submit" class="btn-action-pro btn-reset" onclick="return confirm('Bạn có chắc muốn thiết lập lại bảng phân công?')">
-                        Thiết Lập Lại
-                    </button>
-                </form>
-            <?php endif; ?>
-
-            <a href="/doi_soat_thuat_toan.php" class="btn-action-pro btn-benchmark">
-                Đối Soát Hiệu Suất
-            </a>
-        </div>
-    </div>
 
     <!-- KHUNG TỔNG QUAN QUÂN SỐ -->
     <div class="shift-stats-overview">

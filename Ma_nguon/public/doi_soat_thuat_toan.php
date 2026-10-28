@@ -68,35 +68,42 @@ $comparison = $benchmark['comparison'];
 require __DIR__ . '/../templates/header.php';
 ?>
 
-<div class="page-heading-pro">
-    <div class="heading-container">
-        <span class="sub-badge">BÁO CÁO PHÂN TÍCH & TỐI ƯU HÓA</span>
-        <h1>Đối Soát & Phân Tích Hiệu Suất Thuật Toán Phân Bổ</h1>
-        <p>Báo cáo đối soát định lượng giữa <strong>Phương thức phân bổ tuần tự (FCFS)</strong> và <strong>Phương thức tối ưu đa ràng buộc (Greedy with Priority)</strong> trên cùng tập dữ liệu thực nghiệm.</p>
+    <div class="page-heading-pro">
+        <div class="heading-container" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <span class="sub-badge">BAN CHỈ HUY • ĐỐI SOÁT ĐIỀU PHỐI</span>
+                <h1>Đối Soát & Phân Tích Hiệu Suất Thuật Toán Phân Bổ</h1>
+                <p>Đối chiếu định lượng giữa <strong>Phân bổ tuần tự (FCFS)</strong> và <strong>Tối ưu hóa đa ràng buộc (Smart Greedy)</strong>.</p>
+            </div>
+            <div>
+                <a href="/phan_cong.php" class="btn-action-pro" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.84rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                    &larr; Quay Lại Bảng Phân Công
+                </a>
+            </div>
+        </div>
     </div>
-</div>
 
 <div class="page-content-wrapper">
     <!-- KHUNG CHỌN MÔ HÌNH DỮ LIỆU -->
     <div class="scenario-selector-card">
         <div class="selector-header">
-            <h3>Chọn Mô Hình Dữ Liệu Thực Nghiệm:</h3>
+            <h3>Kịch Bản Thử Nghiệm Đối Soát</h3>
             <span class="dataset-meta">Đang xử lý: <strong><?= count($volunteers) ?> TNV</strong> | <strong><?= count($shifts) ?> Ca Trực</strong> | <strong><?= array_sum(array_column($shifts, 'needed_count')) ?> Chỉ Tiêu</strong></span>
         </div>
 
         <div class="scenario-tabs-grid">
             <a href="/doi_soat_thuat_toan.php?scenario=standard" class="scenario-tab <?= $scenario === 'standard' ? 'active' : '' ?>">
-                <span class="sc-badge">MÔ HÌNH 1</span>
+                <span class="sc-badge">KỊCH BẢN 1</span>
                 <strong>Dữ Liệu Tiêu Chuẩn</strong>
                 <small>30 TNV & 12 Ca trực — Đủ 5 nhóm chuyên môn</small>
             </a>
             <a href="/doi_soat_thuat_toan.php?scenario=shortage" class="scenario-tab <?= $scenario === 'shortage' ? 'active' : '' ?>">
-                <span class="sc-badge warning">MÔ HÌNH 2</span>
+                <span class="sc-badge warning">KỊCH BẢN 2</span>
                 <strong>Áp Lực Thiếu Hụt Chuyên Môn</strong>
                 <small>Kiểm thử phản ứng khi thiếu hụt nhân sự Y tế, Sư phạm</small>
             </a>
             <a href="/doi_soat_thuat_toan.php?scenario=conflict" class="scenario-tab <?= $scenario === 'conflict' ? 'active' : '' ?>">
-                <span class="sc-badge danger">MÔ HÌNH 3</span>
+                <span class="sc-badge danger">KỊCH BẢN 3</span>
                 <strong>Trùng Lịch Khung Giờ Cao Điểm</strong>
                 <small>Kiểm thử khả năng xử lý xung đột thời gian</small>
             </a>

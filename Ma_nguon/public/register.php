@@ -266,22 +266,23 @@ require __DIR__ . '/../templates/header.php';
             <?php endif; ?>
         <?php endif; ?>
 
-        <!-- FORM ĐĂNG KÝ (KHI ĐÃ ĐĂNG NHẬP) -->
-        <div class="registration-form-card">
-            <form class="pro-volunteer-form" method="post" action="/register.php">
-                <!-- KHỐI 1: CHỌN CHIẾN DỊCH & CA LÀM VIỆC -->
-                <div class="form-section-block">
-                    <div class="section-block-title">
-                        <span class="num-step">1</span>
-                        <div>
-                            <h3>Lựa Chọn Chiến Dịch & Ca Làm Việc</h3>
-                            <p>Chọn chương trình tình nguyện và thời gian bạn có thể tham gia trực tiếp.</p>
+        <!-- GIAO DIỆN ĐĂNG KÝ CHIẾN DỊCH CHUẨN THỰC TẾ (2 CỘT) -->
+        <div class="reg-page-split-grid">
+            <!-- CỘT CHÍNH: FORM ĐIỀN THÔNG TIN -->
+            <div class="reg-main-column">
+                <form class="pro-volunteer-form" method="post" action="/register.php">
+                    <!-- KHỐI 1: CHỌN CHIẾN DỊCH & CA LÀM VIỆC -->
+                    <div class="reg-form-card">
+                        <div class="reg-card-title">
+                            <span class="step-badge">1</span>
+                            <div>
+                                <h3>Chiến Dịch & Ca Trực Tham Gia</h3>
+                                <p>Lựa chọn chương trình tình nguyện và thời gian phù hợp với lịch biểu của bạn</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-row-2">
-                        <div class="form-field-pro">
-                            <label for="event_id">Chiến dịch tình nguyện tham gia <strong class="req">*</strong></label>
+                        <div class="auth-input-group" style="margin-bottom: 16px;">
+                            <label for="event_id">Chiến dịch tình nguyện tham gia <span class="text-req">*</span></label>
                             <select id="event_id" name="event_id" required>
                                 <option value="">— Vui lòng chọn chiến dịch tình nguyện —</option>
                                 <?php foreach ($categories as $catKey => $cat): ?>
@@ -302,8 +303,8 @@ require __DIR__ . '/../templates/header.php';
                             </select>
                         </div>
 
-                        <div class="form-field-pro">
-                            <label for="shift">Ca làm việc mong muốn <strong class="req">*</strong></label>
+                        <div class="auth-input-group">
+                            <label for="shift">Ca làm việc đăng ký <span class="text-req">*</span></label>
                             <select id="shift" name="shift" required>
                                 <option value="Ca Sáng (06:30 – 11:30)" <?= $shift === 'Ca Sáng (06:30 – 11:30)' ? 'selected' : '' ?>>Ca Sáng (06:30 – 11:30)</option>
                                 <option value="Ca Chiều (13:30 – 17:30)" <?= $shift === 'Ca Chiều (13:30 – 17:30)' ? 'selected' : '' ?>>Ca Chiều (13:30 – 17:30)</option>
@@ -313,137 +314,198 @@ require __DIR__ . '/../templates/header.php';
                             </select>
                         </div>
                     </div>
-                </div>
 
-                <!-- KHỐI 2: THÔNG TIN CÁ NHÂN TÌNH NGUYỆN VIÊN -->
-                <div class="form-section-block">
-                    <div class="section-block-title">
-                        <span class="num-step">2</span>
-                        <div>
-                            <h3>Thông Tin Cá Nhân Tình Nguyện Viên</h3>
-                            <p>Thông tin dùng để cấp thẻ nhiệm vụ, liên hệ điều phối và chứng nhận giờ công tác xã hội.</p>
-                        </div>
-                    </div>
-
-                    <div class="form-row-2">
-                        <div class="form-field-pro">
-                            <label for="name">Họ và tên tình nguyện viên <strong class="req">*</strong></label>
-                            <input type="text" id="name" name="name" maxlength="120" placeholder="Ví dụ: Nguyễn Văn An" value="<?= htmlspecialchars($name) ?>" required>
+                    <!-- KHỐI 2: THÔNG TIN TÌNH NGUYỆN VIÊN -->
+                    <div class="reg-form-card">
+                        <div class="reg-card-title">
+                            <span class="step-badge">2</span>
+                            <div>
+                                <h3>Thông Tin Cá Nhân Tình Nguyện Viên</h3>
+                                <p>Dùng để đối chiếu danh sách, cấp thẻ điều động và tích lũy giờ công tác xã hội</p>
+                            </div>
                         </div>
 
-                        <div class="form-field-pro">
-                            <label for="email">Địa chỉ Email liên hệ <strong class="req">*</strong></label>
-                            <input type="email" id="email" name="email" placeholder="Ví dụ: volunteer@hcmus.edu.vn" value="<?= htmlspecialchars($email) ?>" required>
-                        </div>
-                    </div>
+                        <div class="auth-grid-2">
+                            <div class="auth-input-group">
+                                <label for="name">Họ và tên tình nguyện viên <span class="text-req">*</span></label>
+                                <input type="text" id="name" name="name" maxlength="120" placeholder="Ví dụ: Nguyễn Văn An" value="<?= htmlspecialchars($name) ?>" required>
+                            </div>
 
-                    <div class="form-row-3">
-                        <div class="form-field-pro">
-                            <label for="phone">Số điện thoại liên hệ <strong class="req">*</strong></label>
-                            <input type="tel" id="phone" name="phone" placeholder="Ví dụ: 0912345678" value="<?= htmlspecialchars($phone) ?>" required>
-                        </div>
-
-                        <div class="form-field-pro">
-                            <label for="dob">Ngày tháng năm sinh</label>
-                            <input type="date" id="dob" name="dob" value="<?= htmlspecialchars($dob) ?>">
+                            <div class="auth-input-group">
+                                <label for="email">Địa chỉ Email <span class="text-req">*</span></label>
+                                <input type="email" id="email" name="email" placeholder="Ví dụ: volunteer@sinhvien.edu.vn" value="<?= htmlspecialchars($email) ?>" required>
+                            </div>
                         </div>
 
-                        <div class="form-field-pro">
-                            <label for="gender">Giới tính</label>
-                            <select id="gender" name="gender">
-                                <option value="Nam" <?= $gender === 'Nam' ? 'selected' : '' ?>>Nam</option>
-                                <option value="Nữ" <?= $gender === 'Nữ' ? 'selected' : '' ?>>Nữ</option>
-                                <option value="Khác" <?= $gender === 'Khác' ? 'selected' : '' ?>>Khác</option>
-                            </select>
-                        </div>
-                    </div>
+                        <div class="auth-grid-3" style="margin-top: 14px;">
+                            <div class="auth-input-group">
+                                <label for="phone">Số điện thoại liên hệ <span class="text-req">*</span></label>
+                                <input type="tel" id="phone" name="phone" placeholder="Ví dụ: 0912345678" value="<?= htmlspecialchars($phone) ?>" required>
+                            </div>
 
-                    <div class="form-row-1">
-                        <div class="form-field-pro">
+                            <div class="auth-input-group">
+                                <label for="dob">Ngày sinh</label>
+                                <input type="date" id="dob" name="dob" value="<?= htmlspecialchars($dob) ?>">
+                            </div>
+
+                            <div class="auth-input-group">
+                                <label for="gender">Giới tính</label>
+                                <select id="gender" name="gender">
+                                    <option value="Nam" <?= $gender === 'Nam' ? 'selected' : '' ?>>Nam</option>
+                                    <option value="Nữ" <?= $gender === 'Nữ' ? 'selected' : '' ?>>Nữ</option>
+                                    <option value="Khác" <?= $gender === 'Khác' ? 'selected' : '' ?>>Khác</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="auth-input-group" style="margin-top: 14px;">
                             <label for="unit">Trường Đại học / Đơn vị công tác</label>
-                            <input type="text" id="unit" name="unit" placeholder="Ví dụ: ĐH Bách Khoa TP.HCM, Khoa CNTT" value="<?= htmlspecialchars($unit) ?>">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- KHỐI 3: ĐIỂM MẠNH & KỸ NĂNG -->
-                <div class="form-section-block">
-                    <div class="section-block-title">
-                        <span class="num-step">3</span>
-                        <div>
-                            <h3>Điểm Mạnh & Kỹ Năng Nổi Bật</h3>
-                            <p>Chọn các kỹ năng bạn có để Ban Chỉ Huy sắp xếp vị trí phù hợp trong ca trực.</p>
+                            <input type="text" id="unit" name="unit" placeholder="Ví dụ: ĐH Bách Khoa Hà Nội — Khoa Điện Tử" value="<?= htmlspecialchars($unit) ?>">
                         </div>
                     </div>
 
-                    <div class="checkboxes-skills-grid">
-                        <?php
-                        $availableSkills = [
-                            'Sơ cấp cứu & Y tế cơ bản' => 'Sơ cấp cứu & Y tế cơ bản',
-                            'Thể lực tốt & Bưng bê hậu cần' => 'Thể lực tốt & Hậu cần khuân vác',
-                            'Truyền thông, viết bài & Chụp ảnh' => 'Truyền thông & Nhiếp ảnh',
-                            'Hoạt náo viên, MC & Quản trò' => 'Hoạt náo viên & Quản trò',
-                            'Kỹ năng sư phạm, dạy kèm trẻ nhỏ' => 'Kỹ năng sư phạm & Dạy học',
-                            'Lái xe máy an toàn, rành đường xá' => 'Lái xe an toàn & Rành đường xá',
-                            'Nấu ăn & Sơ chế thực phẩm bếp lớn' => 'Nấu ăn & Sơ chế thực phẩm',
-                            'Ngoại ngữ (Tiếng Anh/Pháp) giao tiếp' => 'Ngoại ngữ giao tiếp'
-                        ];
-                        ?>
-                        <?php foreach ($availableSkills as $val => $label): ?>
-                            <label class="skill-checkbox-card">
-                                <input type="checkbox" name="skills[]" value="<?= htmlspecialchars($val) ?>" <?= in_array($val, $skills, true) ? 'checked' : '' ?>>
-                                <span class="skill-checkbox-text"><?= htmlspecialchars($label) ?></span>
+                    <!-- KHỐI 3: KỸ NĂNG & NĂNG KHIẾU ĐÓNG GÓP -->
+                    <div class="reg-form-card">
+                        <div class="reg-card-title">
+                            <span class="step-badge">3</span>
+                            <div>
+                                <h3>Kỹ Năng & Sở Trường Đóng Góp</h3>
+                                <p>Tích chọn các kỹ năng bạn có để Ban Chỉ Huy phân bổ nhiệm vụ phù hợp nhất</p>
+                            </div>
+                        </div>
+
+                        <div class="clean-skills-pills-grid">
+                            <?php
+                            $availableSkills = [
+                                'Sơ cấp cứu & Y tế cơ bản' => 'Sơ cấp cứu & Y tế cơ bản',
+                                'Thể lực tốt & Bưng bê hậu cần' => 'Thể lực tốt & Hậu cần khuân vác',
+                                'Truyền thông, viết bài & Chụp ảnh' => 'Truyền thông & Nhiếp ảnh',
+                                'Hoạt náo viên, MC & Quản trò' => 'Hoạt náo viên & Quản trò',
+                                'Kỹ năng sư phạm, dạy kèm trẻ nhỏ' => 'Kỹ năng sư phạm & Dạy kèm',
+                                'Lái xe máy an toàn, rành đường xá' => 'Lái xe an toàn & Rành đường xá',
+                                'Nấu ăn & Sơ chế thực phẩm bếp lớn' => 'Nấu ăn & Bếp tập thể',
+                                'Ngoại ngữ (Tiếng Anh/Pháp) giao tiếp' => 'Ngoại ngữ giao tiếp'
+                            ];
+                            ?>
+                            <?php foreach ($availableSkills as $val => $label): ?>
+                                <label class="skill-pill-toggle">
+                                    <input type="checkbox" name="skills[]" value="<?= htmlspecialchars($val) ?>" <?= in_array($val, $skills, true) ? 'checked' : '' ?>>
+                                    <span class="pill-toggle-label"><?= htmlspecialchars($label) ?></span>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <div class="auth-input-group" style="margin-top: 18px;">
+                            <label for="expectations">Mong muốn / Ghi chú gửi Ban Chỉ Huy</label>
+                            <textarea id="expectations" name="expectations" rows="2" placeholder="Ví dụ: Mong muốn tham gia cùng nhóm bạn, có kinh nghiệm tiền trạm..."><?= htmlspecialchars($expectations) ?></textarea>
+                        </div>
+                    </div>
+
+                    <!-- KHỐI 4: LIÊN HỆ KHẨN CẤP & CAM KẾT -->
+                    <div class="reg-form-card">
+                        <div class="reg-card-title">
+                            <span class="step-badge">4</span>
+                            <div>
+                                <h3>Thông Tin Liên Hệ Khẩn Cấp & Cam Kết</h3>
+                                <p>Đảm bảo an toàn tuyệt đối cho tình nguyện viên trong suốt chiến dịch</p>
+                            </div>
+                        </div>
+
+                        <div class="auth-grid-2">
+                            <div class="auth-input-group">
+                                <label for="emergency_contact">Họ tên người thân báo tin khẩn</label>
+                                <input type="text" id="emergency_contact" name="emergency_contact" placeholder="Ví dụ: Mẹ - Nguyễn Thị Hoa" value="<?= htmlspecialchars($emergencyContact) ?>">
+                            </div>
+
+                            <div class="auth-input-group">
+                                <label for="emergency_phone">Số điện thoại người thân</label>
+                                <input type="tel" id="emergency_phone" name="emergency_phone" placeholder="Ví dụ: 0987654321" value="<?= htmlspecialchars($emergencyPhone) ?>">
+                            </div>
+                        </div>
+
+                        <div class="clean-commitment-box" style="margin-top: 16px;">
+                            <label class="commitment-label-row">
+                                <input type="checkbox" name="commitment" value="1" <?= $commitment ? 'checked' : '' ?> required>
+                                <span>
+                                    Tôi cam kết đã đọc kỹ nội quy, chấp hành nghiêm túc sự điều phối của Ban Chỉ Huy, luôn mang thẻ TNV và bảo hộ đầy đủ.
+                                </span>
                             </label>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
+                        </div>
 
-                <!-- KHỐI 4: MONG MUỐN KHI THAM GIA & LIÊN HỆ KHẨN CẤP -->
-                <div class="form-section-block">
-                    <div class="section-block-title">
-                        <span class="num-step">4</span>
+                        <div class="reg-actions-row">
+                            <button type="submit" class="btn-primary btn-submit-reg">
+                                Xác Nhận Đăng Ký & Nhận Thẻ Phân Công
+                            </button>
+                            <a href="/hoat_dong.php" class="btn-cancel">Quay lại</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- CỘT PHỤ (SIDEBAR): TỔNG HỢP & HƯỚNG DẪN THỰC ĐỊA -->
+            <aside class="reg-sidebar-column">
+                <!-- Thẻ tài khoản cá nhân -->
+                <div class="sidebar-info-card">
+                    <div class="user-card-mini">
+                        <div class="avatar-letter-box" style="background: <?= htmlspecialchars($currentUser['avatar_color'] ?? '#059669') ?>;">
+                            <?= htmlspecialchars($currentUser['avatar_letter'] ?? 'T') ?>
+                        </div>
                         <div>
-                            <h3>Mong Muốn Khi Tham Gia & Liên Hệ Khẩn Cấp</h3>
-                            <p>Chia sẻ nguyện vọng cá nhân và số điện thoại người thân khi cần hỗ trợ.</p>
+                            <h4><?= htmlspecialchars($currentUser['name'] ?? 'Tình Nguyện Viên') ?></h4>
+                            <span class="user-role-text"><?= htmlspecialchars($currentUser['role'] ?? 'Tình Nguyện Viên') ?></span>
                         </div>
                     </div>
 
-                    <div class="form-row-1">
-                        <div class="form-field-pro">
-                            <label for="expectations">Mong muốn khi tham gia hoạt động này</label>
-                            <textarea id="expectations" name="expectations" rows="3" placeholder="Ví dụ: Mong muốn giúp đỡ người dân khó khăn, tích lũy điểm rèn luyện, mở rộng giao lưu..."><?= htmlspecialchars($expectations) ?></textarea>
+                    <div class="user-mini-metrics">
+                        <div class="metric-stat">
+                            <strong><?= (int)($currentUser['volunteer_hours'] ?? 0) ?> giờ</strong>
+                            <small>Đã cống hiến</small>
                         </div>
-                    </div>
-
-                    <div class="form-row-2">
-                        <div class="form-field-pro">
-                            <label for="emergency_contact">Họ tên người liên hệ khẩn cấp (Người thân / Bạn bè)</label>
-                            <input type="text" id="emergency_contact" name="emergency_contact" placeholder="Ví dụ: Mẹ - Nguyễn Thị Hoa" value="<?= htmlspecialchars($emergencyContact) ?>">
+                        <div class="metric-stat">
+                            <strong><?= (int)($currentUser['events_joined'] ?? 0) ?></strong>
+                            <small>Chiến dịch</small>
                         </div>
-
-                        <div class="form-field-pro">
-                            <label for="emergency_phone">Số điện thoại liên hệ khẩn cấp</label>
-                            <input type="tel" id="emergency_phone" name="emergency_phone" placeholder="Ví dụ: 0987654321" value="<?= htmlspecialchars($emergencyPhone) ?>">
-                        </div>
-                    </div>
-
-                    <div class="commitment-box">
-                        <label class="commitment-checkbox">
-                            <input type="checkbox" name="commitment" value="1" <?= $commitment ? 'checked' : '' ?> required>
-                            <span>
-                                Tôi xin cam kết đã đọc kỹ quy chế, chấp hành nghiêm túc sự phân công ca trực của Ban Chỉ Huy, mang đầy đủ đồ bảo hộ an toàn và tuân thủ kỷ luật của Đội Tình Nguyện D2L.
-                            </span>
-                        </label>
                     </div>
                 </div>
 
-                <div class="form-actions-pro">
-                    <button type="submit" class="btn-primary nut-nop-form-lon">
-                        Gửi Đăng Ký & Nhận Thẻ Phân Công
-                    </button>
-                    <a href="/" class="btn-cancel">Quay lại trang chủ</a>
+                <!-- Thẻ hỗ trợ điều phối trực tiếp -->
+                <div class="sidebar-info-card">
+                    <h4 class="sidebar-title">Kênh Hỗ Trợ Điều Phối</h4>
+                    <ul class="support-contact-list">
+                        <li>
+                            <span class="support-icon">&#9742;</span>
+                            <div>
+                                <strong>Hotline Ban Chỉ Huy:</strong>
+                                <span>0912.456.789 (Trần Hoàng Nam)</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="support-icon">&#9993;</span>
+                            <div>
+                                <strong>Email tiếp nhận hồ sơ:</strong>
+                                <span>dieuphoi@d2l.org</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="support-icon">&#9873;</span>
+                            <div>
+                                <strong>Văn phòng điều hành:</strong>
+                                <span>Tầng 2, Nhà Văn Hóa Thanh Niên</span>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-            </form>
+
+                <!-- Lưu ý chuẩn bị trước giờ xuất quân -->
+                <div class="sidebar-info-card tips-card">
+                    <h4 class="sidebar-title">Lưu Ý Dành Cho TNV</h4>
+                    <ul class="reg-tips-list">
+                        <li>Có mặt tại điểm tập kết trước giờ ca trực 15 phút để điểm danh.</li>
+                        <li>Mang theo Thẻ Điều Động điện tử trên điện thoại hoặc bản in.</li>
+                        <li>Trang bị giày thể thao, quần dài và bình nước cá nhân.</li>
+                    </ul>
+                </div>
+            </aside>
         </div>
     <?php endif; ?>
 </div>

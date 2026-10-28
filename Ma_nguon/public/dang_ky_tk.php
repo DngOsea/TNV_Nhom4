@@ -74,84 +74,135 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 require __DIR__ . '/../templates/header.php';
 ?>
 
-<div class="khung_xac_thuc_pro">
-    <div class="the_tai_khoan_pro">
-        <div class="dau_the_tk_pro">
-            <h2>Đăng Ký Tài Khoản Mới</h2>
-            <p>Tạo tài khoản để đăng nhập, theo dõi lịch trực và tham gia các chiến dịch tình nguyện D2L</p>
+<div class="auth-split-wrapper">
+    <div class="auth-split-card">
+        <!-- CỘT TRÁI: GIỚI THIỆU QUYỀN LỢI THÀNH VIÊN ĐỘI TÌNH NGUYỆN -->
+        <div class="auth-info-side">
+            <div class="auth-info-header">
+                <div class="auth-brand-badge">D2L VOLUNTEER</div>
+                <h2>Gia Nhập Lực Lượng Tình Nguyện Viên</h2>
+                <p>Cùng hàng ngàn bạn trẻ cống hiến nhiệt huyết vì cộng đồng, bảo vệ môi trường và sẻ chia yêu thương.</p>
+            </div>
+
+            <div class="auth-benefits-list">
+                <div class="benefit-item">
+                    <span class="benefit-check" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </span>
+                    <div>
+                        <strong>Chứng Nhận Giờ Tình Nguyện</strong>
+                        <p>Được tích lũy giờ hoạt động xã hội và cấp Giấy chứng nhận chính thức để xét điểm rèn luyện.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <span class="benefit-check" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </span>
+                    <div>
+                        <strong>Tập Huấn Kỹ Năng Thực Địa</strong>
+                        <p>Được trang bị kiến thức sơ cấp cứu y tế, điều phối giao thông và kỹ năng xử lý sự cố hiện trường.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <span class="benefit-check" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </span>
+                    <div>
+                        <strong>Thẻ Điện Tử & Bảo Hộ Đầy Đủ</strong>
+                        <p>Nhận Thẻ Tình Nguyện Viên số hóa, áo đồng phục và đồ bảo hộ an toàn cho từng chiến dịch.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-quote-box">
+                <p>"Không ai có thể làm được tất cả, nhưng mỗi người đều có thể làm được một điều gì đó ý nghĩa."</p>
+                <span>Ban Chỉ Huy Đội Tình Nguyện D2L</span>
+            </div>
         </div>
 
-        <?php if (!empty($loi)): ?>
-            <div class="error-summary-pro" style="margin-bottom: 20px;">
-                <ul class="error-list" style="margin: 0; padding-left: 20px;">
-                    <?php foreach ($loi as $item): ?>
-                        <li><?= htmlspecialchars($item) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
-
-        <form method="post" action="/dang_ky_tk.php" class="form_xac_thuc_pro">
-            <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirectUrl) ?>">
-
-            <div class="form-field-pro">
-                <label for="ho_ten">Họ và tên tình nguyện viên <strong class="req">*</strong></label>
-                <input type="text" id="ho_ten" name="ho_ten" placeholder="Ví dụ: Lê Minh Trí" value="<?= htmlspecialchars(field($_POST, 'ho_ten')) ?>" required autofocus>
+        <!-- CỘT PHẢI: FORM ĐĂNG KÝ TÀI KHOẢN -->
+        <div class="auth-form-side">
+            <div class="auth-form-header">
+                <h2>Tạo Tài Khoản Mới</h2>
+                <p>Điền thông tin cơ bản để tham gia và theo dõi lịch trực</p>
             </div>
 
-            <div class="form-row-2">
-                <div class="form-field-pro">
-                    <label for="mssv">Mã số sinh viên (MSSV)</label>
-                    <input type="text" id="mssv" name="mssv" placeholder="Ví dụ: 21120000" value="<?= htmlspecialchars(field($_POST, 'mssv')) ?>">
+            <?php if (!empty($loi)): ?>
+                <div class="auth-error-alert" role="alert">
+                    <ul class="auth-error-list">
+                        <?php foreach ($loi as $item): ?>
+                            <li><?= htmlspecialchars($item) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
+            <form method="post" action="/dang_ky_tk.php" class="auth-form-body">
+                <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirectUrl) ?>">
+
+                <div class="auth-input-group">
+                    <label for="ho_ten">Họ và tên tình nguyện viên <span class="text-req">*</span></label>
+                    <input type="text" id="ho_ten" name="ho_ten" placeholder="Ví dụ: Lê Minh Trí" value="<?= htmlspecialchars(field($_POST, 'ho_ten')) ?>" required autofocus>
                 </div>
 
-                <div class="form-field-pro">
-                    <label for="email">Địa chỉ Email liên hệ <strong class="req">*</strong></label>
-                    <input type="email" id="email" name="email" placeholder="email@sinhvien.edu.vn" value="<?= htmlspecialchars(field($_POST, 'email')) ?>" required>
-                </div>
-            </div>
+                <div class="auth-grid-2">
+                    <div class="auth-input-group">
+                        <label for="email">Địa chỉ Email <span class="text-req">*</span></label>
+                        <input type="email" id="email" name="email" placeholder="email@sinhvien.edu.vn" value="<?= htmlspecialchars(field($_POST, 'email')) ?>" required>
+                    </div>
 
-            <div class="form-row-2">
-                <div class="form-field-pro">
-                    <label for="phone">Số điện thoại liên hệ</label>
-                    <input type="tel" id="phone" name="phone" placeholder="Ví dụ: 0912345678" value="<?= htmlspecialchars(field($_POST, 'phone')) ?>">
-                </div>
-
-                <div class="form-field-pro">
-                    <label for="unit">Trường / Đơn vị học tập</label>
-                    <input type="text" id="unit" name="unit" placeholder="Ví dụ: ĐH Khoa Học Tự Nhiên" value="<?= htmlspecialchars(field($_POST, 'unit')) ?>">
-                </div>
-            </div>
-
-            <div class="form-field-pro">
-                <label for="vi_tri">Sở trường / Vị trí mong muốn cống hiến</label>
-                <select id="vi_tri" name="vi_tri">
-                    <option value="Tình Nguyện Viên Nòng Cốt">Tình Nguyện Viên Nòng Cốt (Đa năng)</option>
-                    <option value="Phụ Trách Hậu Cần & Kỹ Thuật">Phụ Trách Hậu Cần & Kỹ Thuật</option>
-                    <option value="Tình Nguyện Viên Y Tế & Sơ Cấp Cứu">Đội Y Tế & Chăm Sóc Sức Khỏe</option>
-                    <option value="Tình Nguyện Viên Truyền Thông & Nhiếp Ảnh">Đội Truyền Thông & Nhiếp Ảnh</option>
-                    <option value="Tình Nguyện Viên Giảng Dạy & Hoạt Náo">Đội Hoạt Náo & Giảng Dạy</option>
-                </select>
-            </div>
-
-            <div class="form-row-2">
-                <div class="form-field-pro">
-                    <label for="mat_khau">Mật khẩu tài khoản <strong class="req">*</strong></label>
-                    <input type="password" id="mat_khau" name="mat_khau" placeholder="Tối thiểu 6 ký tự" required>
+                    <div class="auth-input-group">
+                        <label for="phone">Số điện thoại liên hệ</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Ví dụ: 0912345678" value="<?= htmlspecialchars(field($_POST, 'phone')) ?>">
+                    </div>
                 </div>
 
-                <div class="form-field-pro">
-                    <label for="xac_nhan_mk">Xác nhận lại mật khẩu <strong class="req">*</strong></label>
-                    <input type="password" id="xac_nhan_mk" name="xac_nhan_mk" placeholder="Nhập lại mật khẩu" required>
+                <div class="auth-grid-2">
+                    <div class="auth-input-group">
+                        <label for="unit">Trường / Đơn vị học tập</label>
+                        <input type="text" id="unit" name="unit" placeholder="Ví dụ: ĐH Bách Khoa Hà Nội" value="<?= htmlspecialchars(field($_POST, 'unit')) ?>">
+                    </div>
+
+                    <div class="auth-input-group">
+                        <label for="mssv">Mã số sinh viên (MSSV)</label>
+                        <input type="text" id="mssv" name="mssv" placeholder="Ví dụ: 21120000" value="<?= htmlspecialchars(field($_POST, 'mssv')) ?>">
+                    </div>
                 </div>
-            </div>
 
-            <button type="submit" class="btn-primary nut_toan_chieu_pro">Tạo Tài Khoản Ngay</button>
+                <div class="auth-input-group">
+                    <label for="vi_tri">Đội hình sở trường</label>
+                    <select id="vi_tri" name="vi_tri">
+                        <option value="Tình Nguyện Viên Nòng Cốt">Tình Nguyện Viên Nòng Cốt (Đa năng)</option>
+                        <option value="Phụ Trách Hậu Cần & Kỹ Thuật">Đội Hậu Cần & Kỹ Thuật</option>
+                        <option value="Tình Nguyện Viên Y Tế & Sơ Cấp Cứu">Đội Y Tế & Sơ Cấp Cứu</option>
+                        <option value="Tình Nguyện Viên Truyền Thông & Nhiếp Ảnh">Đội Truyền Thông & Nhiếp Ảnh</option>
+                        <option value="Tình Nguyện Viên Giảng Dạy & Hoạt Náo">Đội Hoạt Náo & Giảng Dạy</option>
+                    </select>
+                </div>
 
-            <p class="chuyen_huong_tk">
-                Đã có tài khoản? <a href="/dang_nhap.php?redirect=<?= urlencode($redirectUrl) ?>">Đăng nhập tại đây</a>
-            </p>
-        </form>
+                <div class="auth-grid-2">
+                    <div class="auth-input-group">
+                        <label for="mat_khau">Mật khẩu <span class="text-req">*</span></label>
+                        <input type="password" id="mat_khau" name="mat_khau" placeholder="Tối thiểu 6 ký tự" required>
+                    </div>
+
+                    <div class="auth-input-group">
+                        <label for="xac_nhan_mk">Xác nhận mật khẩu <span class="text-req">*</span></label>
+                        <input type="password" id="xac_nhan_mk" name="xac_nhan_mk" placeholder="Nhập lại mật khẩu" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth-submit">
+                    Hoàn Tất Đăng Ký Tài Khoản
+                </button>
+
+                <div class="auth-footer-link">
+                    Đã có tài khoản? <a href="/dang_nhap.php?redirect=<?= urlencode($redirectUrl) ?>">Đăng nhập ngay</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
