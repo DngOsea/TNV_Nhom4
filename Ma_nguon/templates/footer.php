@@ -63,10 +63,124 @@
             </div>
         </div>
 
-        <div class="modal-footer">
-            <button type="button" class="btn-cancel btn-modal-close">Đóng lại</button>
-            <a id="modal_act_register_btn" href="/register.php" class="btn-primary modal-cta-btn">Đăng Ký Tham Gia Hoạt Động</a>
+        <div class="modal-footer modal-footer-enhanced">
+            <div class="modal-footer-status">
+                <span id="modal_act_quota_status" class="quota-pill-status">Đang mở đăng ký</span>
+            </div>
+            <div class="modal-footer-actions">
+                <button type="button" class="btn-cancel btn-modal-close">Đóng lại</button>
+                <button type="button" id="modal_act_register_btn" class="btn-primary modal-cta-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    Đăng Ký Tham Gia Hoạt Động
+                </button>
+            </div>
         </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL ĐĂNG KÝ HOẠT ĐỘNG TRỰC TUYẾN (POPUP TIỆN LỢI)
+     Thay thế hoàn toàn việc phải chuyển hướng sang trang riêng
+     ======================================================== -->
+<div id="activity_register_modal" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="reg_modal_title">
+    <div class="modal-backdrop"></div>
+    <div class="modal-window modal-window-reg">
+        <form method="POST" action="/hoat_dong.php" id="activity_register_form">
+            <input type="hidden" name="action" value="register_shifts">
+            <input type="hidden" name="activity_id" id="reg_modal_act_id" value="">
+
+            <div class="modal-header">
+                <div>
+                    <span id="reg_modal_cat_badge" class="modal-category-badge">ĐĂNG KÝ HOẠT ĐỘNG</span>
+                    <h3 id="reg_modal_title" class="modal-title">Đăng Ký Tham Gia Hoạt Động</h3>
+                    <p id="reg_modal_act_name" class="reg-modal-activity-name">Chiến dịch tình nguyện</p>
+                </div>
+                <button type="button" class="modal-close-btn" aria-label="Đóng cửa sổ">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Tóm tắt địa bàn và thời gian -->
+                <div class="reg-meta-compact-grid">
+                    <div class="reg-meta-box">
+                        <span class="reg-meta-label">Thời gian tổng thể:</span>
+                        <strong id="reg_modal_act_date">—</strong>
+                    </div>
+                    <div class="reg-meta-box">
+                        <span class="reg-meta-label">Địa bàn thực địa:</span>
+                        <strong id="reg_modal_act_location">—</strong>
+                    </div>
+                </div>
+
+                <!-- Thông tin tình nguyện viên đăng ký -->
+                <?php 
+                $footerUser = $_SESSION['user'] ?? null; 
+                if ($footerUser): 
+                ?>
+                    <div class="reg-user-verified-badge">
+                        <div class="v-icon-wrap">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="v-user-text">
+                            <div>Đăng ký với tài khoản: <strong><?= htmlspecialchars($footerUser['name'] ?? 'TNV') ?></strong> (<?= htmlspecialchars($footerUser['email'] ?? '') ?>)</div>
+                            <small>Giờ tình nguyện và kết quả sẽ tự động ghi nhận vào mục <strong>Hoạt Động Của Tôi</strong>.</small>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <div class="reg-guest-info-block">
+                        <div class="guest-info-head">
+                            <strong>Thông tin tình nguyện viên</strong>
+                            <span class="guest-pill">Đăng ký nhanh không cần tạo tài khoản</span>
+                        </div>
+                        <div class="guest-inputs-flex">
+                            <div class="guest-input-col">
+                                <label for="reg_guest_name">Họ và tên <span class="req">*</span></label>
+                                <input type="text" id="reg_guest_name" name="guest_name" placeholder="Ví dụ: Nguyễn Văn An" required>
+                            </div>
+                            <div class="guest-input-col">
+                                <label for="reg_guest_phone">Số điện thoại <span class="req">*</span></label>
+                                <input type="tel" id="reg_guest_phone" name="guest_phone" placeholder="Ví dụ: 0912.345.678" required>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Bảng chọn Thứ (Ngày) và Ca làm việc (2 cột trực quan theo đề bài) -->
+                <div class="reg-schedule-selection-box">
+                    <div class="reg-schedule-box-header">
+                        <h4>LỰA CHỌN THỨ (NGÀY) VÀ CA LÀM VIỆC</h4>
+                        <p>Tích chọn các ca mà bạn có thể tham gia (có thể chọn nhiều ngày và nhiều ca):</p>
+                    </div>
+
+                    <div id="reg_modal_shifts_container" class="reg-shifts-dynamic-container">
+                        <!-- JS sẽ đổ danh sách ca theo 2 cột: Thứ (Ngày) & Ca làm việc -->
+                    </div>
+                </div>
+
+                <!-- Ghi chú nguyện vọng / kỹ năng bổ sung -->
+                <div class="reg-notes-group">
+                    <label for="reg_volunteer_note">Ghi chú hoặc nguyện vọng phân công cụ thể (Tùy chọn):</label>
+                    <textarea id="reg_volunteer_note" name="volunteer_note" rows="2" placeholder="Ví dụ: Tôi có xe máy riêng, sẵn sàng hỗ trợ chở vật dụng hoặc hậu cần sơ cứu..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer modal-footer-enhanced">
+                <button type="button" class="btn-cancel btn-modal-close">Hủy bỏ</button>
+                <button type="submit" id="btn_confirm_reg" class="btn-primary modal-cta-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Xác Nhận Đăng Ký
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 

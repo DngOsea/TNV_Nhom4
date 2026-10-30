@@ -1,0 +1,1594 @@
+[
+    {
+        "id": "TNV-001",
+        "name": "Lê Nguyễn Phương Thảo",
+        "gender": "Nữ",
+        "dob": "2001-05-12",
+        "phone": "0988.555.771",
+        "email": "thao.le@d2l.org",
+        "organization": "Đại Học Y Hà Nội",
+        "blood_group": "O-",
+        "skills": [
+            "y_te"
+        ],
+        "custom_skills": [
+            "Bác sĩ nội trú đa khoa",
+            "Đo huyết áp & Chăm sóc người bệnh sau hiến máu",
+            "Sơ cứu gãy xương"
+        ],
+        "certified_skills": [
+            "y_te"
+        ],
+        "availability": [
+            "CA-03",
+            "CA-04",
+            "CA-10",
+            "201-D2-S1",
+            "204-D1-S1"
+        ],
+        "max_shifts": 3,
+        "volunteer_hours": 142,
+        "reliability_score": 10,
+        "health_note": "Thể lực tốt, có chứng chỉ Red Cross quốc tế, nhóm máu hiếm O-",
+        "role": "Trưởng Ban Y Tế & Sơ Cấp Cứu",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-002",
+        "name": "BS. Trần Tuấn Anh",
+        "gender": "Nam",
+        "dob": "1998-11-20",
+        "phone": "0988.555.772",
+        "email": "tuananh.tran@d2l.org",
+        "organization": "Bệnh Viện Hữu Nghị Việt Đức",
+        "blood_group": "B+",
+        "skills": [
+            "y_te",
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Bác sĩ ngoại chấn thương",
+            "Lái xe bán tải số sàn cứu hộ",
+            "Nẹp cố định cột sống cổ"
+        ],
+        "certified_skills": [
+            "y_te"
+        ],
+        "availability": [
+            "CA-03",
+            "CA-04",
+            "CA-10",
+            "203-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 178,
+        "reliability_score": 9.9,
+        "health_note": "Có bằng lái B2, xe bán tải Ford Ranger 4x4 hỗ trợ đoàn",
+        "role": "Đội Trưởng Phản Ứng Nhanh Cứu Hộ",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-003",
+        "name": "Đặng Mai Lan",
+        "gender": "Nữ",
+        "dob": "2003-08-14",
+        "phone": "0988.555.773",
+        "email": "lan.dang@d2l.org",
+        "organization": "Đại Học Y Dược — ĐHQG Hà Nội",
+        "blood_group": "A+",
+        "skills": [
+            "y_te"
+        ],
+        "custom_skills": [
+            "Điều dưỡng chăm sóc vết thương",
+            "Tiếp đón & Chăm sóc sau hiến máu"
+        ],
+        "certified_skills": [
+            "y_te"
+        ],
+        "availability": [
+            "CA-03",
+            "CA-10",
+            "201-D2-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 64,
+        "reliability_score": 9.5,
+        "health_note": "Khỏe mạnh, ân cần, kỹ năng lấy ven xuất sắc",
+        "role": "TNV Y Tế Chuyên Trách",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-004",
+        "name": "Hoàng Yến Nhi",
+        "gender": "Nữ",
+        "dob": "2004-03-22",
+        "phone": "0988.555.774",
+        "email": "nhi.hoang@d2l.org",
+        "organization": "Học Viện Báo Chí & Tuyên Truyền",
+        "blood_group": "O+",
+        "skills": [
+            "y_te",
+            "truyen_thong"
+        ],
+        "custom_skills": [
+            "Thiết kế đồ họa Canva chuyên nghiệp",
+            "Nhiếp ảnh máy cơ Canon R6",
+            "Dựng clip TikTok triệu view"
+        ],
+        "certified_skills": [
+            "y_te"
+        ],
+        "availability": [
+            "CA-04",
+            "CA-10",
+            "CA-11",
+            "101-D2-S2"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 58,
+        "reliability_score": 9.8,
+        "health_note": "Nhanh nhẹn, có máy ảnh cá nhân phục vụ tác nghiệp",
+        "role": "Phó Ban Truyền Thông",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-005",
+        "name": "Trịnh Quốc Bảo",
+        "gender": "Nam",
+        "dob": "2002-09-09",
+        "phone": "0977.111.005",
+        "email": "bao.trinh@d2l.org",
+        "organization": "Đại Học Sư Phạm Hà Nội",
+        "blood_group": "B+",
+        "skills": [
+            "su_pham"
+        ],
+        "custom_skills": [
+            "Gia sư Toán ôn thi vào 10",
+            "Dạy lập trình Scratch cho trẻ",
+            "Quản trò teambuilding"
+        ],
+        "certified_skills": [
+            "su_pham"
+        ],
+        "availability": [
+            "CA-07",
+            "CA-09",
+            "302-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 110,
+        "reliability_score": 10,
+        "health_note": "Giọng nói to rõ, kỹ năng sư phạm truyền cảm",
+        "role": "Trưởng Ban Giáo Dục Tình Nguyện",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-006",
+        "name": "Vũ Thị Minh Hằng",
+        "gender": "Nữ",
+        "dob": "2003-12-05",
+        "phone": "0977.111.006",
+        "email": "hang.vu@d2l.org",
+        "organization": "ĐH Khoa Học Xã Hội & Nhân Văn",
+        "blood_group": "O+",
+        "skills": [
+            "su_pham"
+        ],
+        "custom_skills": [
+            "Dạy trẻ chậm nói",
+            "Kể chuyện âm nhạc mầm non",
+            "Tâm lý học hành vi thiếu nhi"
+        ],
+        "certified_skills": [
+            "su_pham"
+        ],
+        "availability": [
+            "CA-07",
+            "CA-09",
+            "504-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 76,
+        "reliability_score": 9.7,
+        "health_note": "Kiên nhẫn, đặc biệt yêu thương trẻ mồ côi",
+        "role": "TNV Sư Phạm Nòng Cốt",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-007",
+        "name": "Nguyễn Khánh Linh",
+        "gender": "Nữ",
+        "dob": "2002-04-18",
+        "phone": "0977.111.007",
+        "email": "linh.nguyen@d2l.org",
+        "organization": "Đại Học Ngoại Thương",
+        "blood_group": "AB+",
+        "skills": [
+            "su_pham",
+            "truyen_thong"
+        ],
+        "custom_skills": [
+            "IELTS 8.0 phát âm chuẩn bản xứ",
+            "Phiên dịch viên tiếng Anh song song",
+            "MC sự kiện"
+        ],
+        "certified_skills": [
+            "su_pham"
+        ],
+        "availability": [
+            "CA-07",
+            "CA-09",
+            "CA-11",
+            "305-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 92,
+        "reliability_score": 9.9,
+        "health_note": "Ngoại hình sáng, hoạt ngôn, sức khỏe tốt",
+        "role": "Đại Sứ Ngoại Ngữ & Đối Ngoại",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-008",
+        "name": "Phan Thanh Tùng",
+        "gender": "Nam",
+        "dob": "2001-07-30",
+        "phone": "0977.111.008",
+        "email": "tung.phan@d2l.org",
+        "organization": "Đại Học Bách Khoa Hà Nội",
+        "blood_group": "A+",
+        "skills": [
+            "su_pham",
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Chế tạo robot STEM mô hình",
+            "Sửa chữa điện tử gia dụng",
+            "Khuân vác đồ nặng"
+        ],
+        "certified_skills": [],
+        "availability": [
+            "CA-07",
+            "CA-09",
+            "CA-01",
+            "310-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 84,
+        "reliability_score": 9.6,
+        "health_note": "Thể lực dồi dào, tháo vát đồ công nghệ",
+        "role": "TNV Kỹ Thuật & Giảng Dạy",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-009",
+        "name": "Trần Hoàng Nam",
+        "gender": "Nam",
+        "dob": "1999-10-15",
+        "phone": "0912.456.789",
+        "email": "nam.tran@d2l.org",
+        "organization": "Hội LHTN Việt Nam TP. Hà Nội",
+        "blood_group": "O+",
+        "skills": [
+            "dieu_phoi",
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Chỉ huy điều hành chiến dịch quy mô 500 người",
+            "Lái xe 16 chỗ bằng D",
+            "Ứng phó sự cố thiên tai"
+        ],
+        "certified_skills": [
+            "dieu_phoi",
+            "hau_can"
+        ],
+        "availability": [
+            "CA-01",
+            "CA-05",
+            "CA-06",
+            "102-D1-S1"
+        ],
+        "max_shifts": 3,
+        "volunteer_hours": 185,
+        "reliability_score": 10,
+        "health_note": "Chỉ số sức khỏe hoàn hảo, dày dạn kinh nghiệm thực địa rừng núi",
+        "role": "Chỉ Huy Trưởng Toàn Đội",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-010",
+        "name": "Phạm Minh Quân",
+        "gender": "Nam",
+        "dob": "2000-02-28",
+        "phone": "0908.123.456",
+        "email": "quan.pham@d2l.org",
+        "organization": "Đại Học Giao Thông Vận Tải",
+        "blood_group": "B+",
+        "skills": [
+            "hau_can",
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Quản lý kho vật tư thiện nguyện",
+            "Nấu ăn bếp 500 suất",
+            "Bơi lội cứu sinh"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "CA-01",
+            "CA-02",
+            "CA-05",
+            "401-D1-S1"
+        ],
+        "max_shifts": 3,
+        "volunteer_hours": 160,
+        "reliability_score": 10,
+        "health_note": "Bền bỉ, thức đêm tốt, từng tham gia cứu trợ bão lũ",
+        "role": "Trưởng Ban Hậu Cần & Kho Vận",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-011",
+        "name": "Võ Thị Kim Oanh",
+        "gender": "Nữ",
+        "dob": "2004-06-19",
+        "phone": "0988.555.775",
+        "email": "oanh.vo@d2l.org",
+        "organization": "Cao Đẳng Y Tế Bạch Mai",
+        "blood_group": "O+",
+        "skills": [
+            "y_te"
+        ],
+        "custom_skills": [
+            "Tiếp nhận hiến máu bàn 1",
+            "Đo huyết áp cơ học",
+            "Xử lý choáng ngất"
+        ],
+        "certified_skills": [
+            "y_te"
+        ],
+        "availability": [
+            "CA-03",
+            "CA-04",
+            "201-D2-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 45,
+        "reliability_score": 9.4,
+        "health_note": "Ân cần, nhanh nhẹn",
+        "role": "TNV Y Tế",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-012",
+        "name": "Nguyễn Thành Long",
+        "gender": "Nam",
+        "dob": "2003-01-10",
+        "phone": "0912.334.455",
+        "email": "long.nguyen@d2l.org",
+        "organization": "ĐH Xây Dựng Hà Nội",
+        "blood_group": "A+",
+        "skills": [
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Khuân vác vật liệu",
+            "Pha trà đường tập thể",
+            "Dựng lều bạt dã chiến"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "CA-01",
+            "CA-02",
+            "CA-08"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 62,
+        "reliability_score": 9.3,
+        "health_note": "Có tiền sử hen nhẹ, hạn chế tiếp xúc trực tiếp bụi mịn công trường",
+        "role": "TNV Hậu Cần",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-013",
+        "name": "Nguyễn Hà My",
+        "gender": "Nữ",
+        "dob": "2004-09-03",
+        "phone": "0933.789.012",
+        "email": "my.nguyen@d2l.org",
+        "organization": "ĐH Khoa Học Xã Hội & Nhân Văn",
+        "blood_group": "B+",
+        "skills": [
+            "truyen_thong"
+        ],
+        "custom_skills": [
+            "Viết bài truyền cảm hứng",
+            "Quản lý Fanpage 100k like",
+            "Chụp ảnh chân dung Sony A7"
+        ],
+        "certified_skills": [
+            "truyen_thong"
+        ],
+        "availability": [
+            "CA-11",
+            "CA-12",
+            "103-D1-S2"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 78,
+        "reliability_score": 9.9,
+        "health_note": "Sức khỏe tốt, năng động, viết lách sắc bén",
+        "role": "Trưởng Ban Truyền Thông & Báo Chí",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-014",
+        "name": "Lê Hữu Đạt",
+        "gender": "Nam",
+        "dob": "2002-11-14",
+        "phone": "0966.778.899",
+        "email": "dat.le@d2l.org",
+        "organization": "ĐH Thủy Lợi",
+        "blood_group": "O+",
+        "skills": [
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Còi hiệu điều tiết giao thông",
+            "Chốt chặn phân luồng cổng trường thi"
+        ],
+        "certified_skills": [
+            "dieu_phoi"
+        ],
+        "availability": [
+            "CA-05",
+            "CA-06",
+            "301-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 88,
+        "reliability_score": 9.8,
+        "health_note": "Thể lực rất tốt, chịu nắng mưa giỏi",
+        "role": "Đội Trưởng Giao Thông Xung Kích",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-015",
+        "name": "Trịnh Gia Huy",
+        "gender": "Nam",
+        "dob": "2001-08-25",
+        "phone": "0944.556.677",
+        "email": "huy.trinh@d2l.org",
+        "organization": "ĐH Kinh Tế Quốc Dân",
+        "blood_group": "A+",
+        "skills": [
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Lái xe ôm tình nguyện an toàn",
+            "Thông thạo ngõ ngách nội thành Hà Nội"
+        ],
+        "certified_skills": [
+            "dieu_phoi"
+        ],
+        "availability": [
+            "CA-05",
+            "CA-06",
+            "301-D1-S2"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 70,
+        "reliability_score": 9.5,
+        "health_note": "Có xe máy Wave Alpha cá nhân + 02 mũ bảo hiểm đạt chuẩn",
+        "role": "TNV Đội Xe Ôm Miễn Phí",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-016",
+        "name": "Đỗ Minh Đức",
+        "gender": "Nam",
+        "dob": "2000-04-05",
+        "phone": "0934.112.233",
+        "email": "duc.do@d2l.org",
+        "organization": "Học Viện Tài Chính",
+        "blood_group": "B+",
+        "skills": [
+            "hau_can",
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Quản lý tài chính & Kê khai chi phí sự kiện",
+            "In ấn giấy khen nhanh"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "CA-01",
+            "CA-08",
+            "404-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 95,
+        "reliability_score": 10,
+        "health_note": "Cẩn thận, tỉ mỉ với chứng từ hóa đơn",
+        "role": "Thủ Quỹ & Ban Kế Hoạch",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-017",
+        "name": "Bùi Thanh Hằng",
+        "gender": "Nữ",
+        "dob": "2004-07-29",
+        "phone": "0978.223.344",
+        "email": "hang.bui@d2l.org",
+        "organization": "ĐH Ngoại Ngữ — ĐHQG Hà Nội",
+        "blood_group": "O+",
+        "skills": [
+            "su_pham",
+            "y_te"
+        ],
+        "custom_skills": [
+            "Gia sư Tiếng Pháp cơ bản",
+            "Đo sinh hiệu huyết áp"
+        ],
+        "certified_skills": [],
+        "availability": [
+            "CA-07",
+            "CA-04",
+            "201-D2-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 38,
+        "reliability_score": 9.2,
+        "health_note": "Nhẹ nhàng, chu đáo",
+        "role": "TNV Sư Phạm",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-018",
+        "name": "Phạm Quỳnh Anh",
+        "gender": "Nữ",
+        "dob": "2005-10-12",
+        "phone": "0965.334.455",
+        "email": "quynhanh.pham@d2l.org",
+        "organization": "ĐH Thương Mại",
+        "blood_group": "A+",
+        "skills": [
+            "truyen_thong",
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Phát nước suối & Khích lệ tinh thần",
+            "Lễ tân đón tiếp khách VIP"
+        ],
+        "certified_skills": [
+            "truyen_thong"
+        ],
+        "availability": [
+            "CA-06",
+            "CA-11",
+            "301-D2-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 42,
+        "reliability_score": 9.4,
+        "health_note": "Tươi tắn, thân thiện",
+        "role": "TNV Lễ Tân & Tiếp Sức",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-019",
+        "name": "Trần Minh Quân",
+        "gender": "Nam",
+        "dob": "2003-03-17",
+        "phone": "0919.887.766",
+        "email": "quan.tm@d2l.org",
+        "organization": "ĐH Công Nghệ — ĐHQG Hà Nội",
+        "blood_group": "O-",
+        "skills": [
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Tuần tra đêm an ninh",
+            "Nhóm máu hiếm O-",
+            "Ứng dụng Google Maps chia tuyến"
+        ],
+        "certified_skills": [
+            "dieu_phoi"
+        ],
+        "availability": [
+            "CA-05",
+            "402-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 54,
+        "reliability_score": 9.6,
+        "health_note": "Nhóm máu hiếm O- sẵn sàng hiến cấp cứu, thể lực bền",
+        "role": "TNV Đội Tuần Tra Đêm",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-020",
+        "name": "Nguyễn Thị Thảo",
+        "gender": "Nữ",
+        "dob": "2005-02-14",
+        "phone": "0981.445.566",
+        "email": "thao.nguyen@d2l.org",
+        "organization": "Học Viện Ngân Hàng",
+        "blood_group": "B+",
+        "skills": [
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Phân chia túi quà tặng",
+            "Đếm kiểm kê hàng hóa",
+            "Gói quà đẹp"
+        ],
+        "certified_skills": [],
+        "availability": [
+            "CA-02",
+            "CA-08",
+            "404-D1-S2"
+        ],
+        "max_shifts": 1,
+        "volunteer_hours": 18,
+        "reliability_score": 8.9,
+        "health_note": "TNV mới, nhiệt tình, ham học hỏi",
+        "role": "TNV Phổ Thông",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-021",
+        "name": "Vũ Đình Trọng",
+        "gender": "Nam",
+        "dob": "1997-09-08",
+        "phone": "0944.321.987",
+        "email": "trong.vu@d2l.org",
+        "organization": "ĐH Hàng Hải Việt Nam",
+        "blood_group": "O+",
+        "skills": [
+            "hau_can",
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Vận hành ca nô & Xuồng cứu hộ",
+            "Bơi biển đường dài 3km",
+            "Thắt nút dây cứu sinh"
+        ],
+        "certified_skills": [
+            "hau_can",
+            "dieu_phoi"
+        ],
+        "availability": [
+            "CA-01",
+            "104-D1-S1",
+            "403-D1-S1"
+        ],
+        "max_shifts": 3,
+        "volunteer_hours": 135,
+        "reliability_score": 9.9,
+        "health_note": "Chứng chỉ cứu hộ bờ biển loại giỏi, không say sóng",
+        "role": "Đội Trưởng Cứu Nạn Dưới Nước",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-022",
+        "name": "Nguyễn Thanh Tùng",
+        "gender": "Nam",
+        "dob": "2000-06-11",
+        "phone": "0978.112.233",
+        "email": "tung.sg@d2l.org",
+        "organization": "ĐH Bách Khoa TP.HCM",
+        "blood_group": "A+",
+        "skills": [
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Vớt rác kênh mương ô nhiễm",
+            "Sử dụng cào răng sắt & Lưới gom",
+            "Nấu cơm chảo đại"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "CA-01",
+            "105-D1-S1",
+            "405-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 115,
+        "reliability_score": 9.8,
+        "health_note": "Đã tiêm phòng uốn ván 3 mũi, dị ứng nhẹ hải sản",
+        "role": "Đội Trưởng Môi Trường Khu Vực Miền Nam",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-023",
+        "name": "Trương Gia Bảo",
+        "gender": "Nam",
+        "dob": "2001-12-03",
+        "phone": "0938.445.566",
+        "email": "bao.truong@d2l.org",
+        "organization": "ĐH Sư Phạm Kỹ Thuật TP.HCM",
+        "blood_group": "B+",
+        "skills": [
+            "hau_can",
+            "su_pham"
+        ],
+        "custom_skills": [
+            "Cắt tóc tông đơ thành thạo",
+            "Trồng rừng ngập mặn lội bùn",
+            "Sửa chữa mộc"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "106-D1-S1",
+            "506-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 86,
+        "reliability_score": 9.7,
+        "health_note": "Khỏe mạnh, chịu khó, có đồ nghề cắt tóc cá nhân",
+        "role": "TNV Nòng Cốt Phía Nam",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-024",
+        "name": "Hoàng Ngọc Ánh",
+        "gender": "Nữ",
+        "dob": "2003-08-20",
+        "phone": "0987.654.321",
+        "email": "anh.hoang@d2l.org",
+        "organization": "ĐH Lâm Nghiệp Việt Nam",
+        "blood_group": "O+",
+        "skills": [
+            "hau_can",
+            "truyen_thong"
+        ],
+        "custom_skills": [
+            "Trekking đường rừng 15km\/ngày",
+            "Nhận diện loài động thực vật rừng",
+            "Sơ cứu rắn cắn"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "107-D1-S1",
+            "102-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 94,
+        "reliability_score": 9.9,
+        "health_note": "Kỹ năng sinh tồn rừng già xuất sắc",
+        "role": "TNV Hướng Dẫn Dã Ngoại Rừng",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-025",
+        "name": "Nguyễn Đình Phúc",
+        "gender": "Nam",
+        "dob": "1999-05-04",
+        "phone": "0905.778.899",
+        "email": "phuc.nguyen@d2l.org",
+        "organization": "ĐH Bách Khoa — ĐH Đà Nẵng",
+        "blood_group": "O+",
+        "skills": [
+            "dieu_phoi",
+            "y_te"
+        ],
+        "custom_skills": [
+            "Điều phối sự kiện Hành Trình Đỏ miền Trung",
+            "Lắp ráp căn chỉnh khung xe lăn",
+            "Sơ cấp cứu say nắng"
+        ],
+        "certified_skills": [
+            "dieu_phoi"
+        ],
+        "availability": [
+            "205-D1-S1",
+            "509-D1-S1"
+        ],
+        "max_shifts": 3,
+        "volunteer_hours": 140,
+        "reliability_score": 10,
+        "health_note": "Thể lực tốt, kinh nghiệm tổ chức điều phối khu vực miền Trung",
+        "role": "Đại Diện Chi Nhánh Đà Nẵng & Miền Trung",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-026",
+        "name": "Võ Văn Hậu",
+        "gender": "Nam",
+        "dob": "2002-02-18",
+        "phone": "0918.234.567",
+        "email": "hau.vo@d2l.org",
+        "organization": "Đại Học Cần Thơ",
+        "blood_group": "A+",
+        "skills": [
+            "hau_can",
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Chèo vỏ lãi ghe xuồng sông rạch",
+            "Khuân sọt trái cây 40kg",
+            "Nấu lẩu mắm miền Tây"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "409-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 74,
+        "reliability_score": 9.6,
+        "health_note": "Bơi lội sông nước từ nhỏ, không say sóng ghe",
+        "role": "TNV Nòng Cốt Vùng Đồng Bằng Sông Cửu Long",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-027",
+        "name": "Tạ Quang Khải",
+        "gender": "Nam",
+        "dob": "2003-10-30",
+        "phone": "0972.889.900",
+        "email": "khai.ta@d2l.org",
+        "organization": "ĐH Kiến Trúc Hà Nội",
+        "blood_group": "B+",
+        "skills": [
+            "truyen_thong",
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Vẽ tranh bích họa cổ động",
+            "Sơn vẽ phòng học mầm non",
+            "Phối cảnh 3D không gian sự kiện"
+        ],
+        "certified_skills": [
+            "truyen_thong"
+        ],
+        "availability": [
+            "CA-11",
+            "303-D1-S1",
+            "502-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 68,
+        "reliability_score": 9.5,
+        "health_note": "Khéo tay, cẩn thận, mang theo bộ cọ vẽ cá nhân",
+        "role": "TNV Mỹ Thuật & Thiết Kế Thi Công",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-028",
+        "name": "Dương Thúy Quỳnh",
+        "gender": "Nữ",
+        "dob": "2004-11-23",
+        "phone": "0983.445.678",
+        "email": "quynh.duong@d2l.org",
+        "organization": "Đại Học Hà Nội",
+        "blood_group": "O+",
+        "skills": [
+            "su_pham"
+        ],
+        "custom_skills": [
+            "Ngôn ngữ ký hiệu cho người điếc",
+            "Dịch văn bản sang chữ nổi Braille",
+            "Gia sư học sinh chậm phát triển"
+        ],
+        "certified_skills": [
+            "su_pham"
+        ],
+        "availability": [
+            "306-D1-S1",
+            "503-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 88,
+        "reliability_score": 9.8,
+        "health_note": "Được đào tạo chính quy về giáo dục đặc biệt",
+        "role": "Chuyên Gia Hỗ Trợ Trẻ Khuyết Tật",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-029",
+        "name": "Lâm Quốc Dũng",
+        "gender": "Nam",
+        "dob": "1998-04-14",
+        "phone": "0903.667.890",
+        "email": "dung.lam@d2l.org",
+        "organization": "Cựu Sinh Viên Bách Khoa — Kỹ Sư Cơ Khí",
+        "blood_group": "AB-",
+        "skills": [
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Hàn xì cơ khí, Sửa xe máy lưu động",
+            "Vận hành máy phát điện dã chiến",
+            "Nhóm máu cực hiếm AB-"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "CA-01",
+            "403-D1-S1",
+            "505-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 124,
+        "reliability_score": 9.9,
+        "health_note": "Nhóm máu cực hiếm AB-, thể lực phi thường",
+        "role": "TNV Kỹ Thuật Độc Lập",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-030",
+        "name": "Chu Phương Linh",
+        "gender": "Nữ",
+        "dob": "2005-08-08",
+        "phone": "0989.123.789",
+        "email": "linh.chu@d2l.org",
+        "organization": "Đại Học Văn Hóa Hà Nội",
+        "blood_group": "A+",
+        "skills": [
+            "truyen_thong"
+        ],
+        "custom_skills": [
+            "Chơi đàn Guitar Acoustic",
+            "Hát quan họ & Nhạc truyền thống",
+            "Dẫn chương trình giao lưu cụ già"
+        ],
+        "certified_skills": [],
+        "availability": [
+            "CA-12",
+            "507-D1-S1"
+        ],
+        "max_shifts": 1,
+        "volunteer_hours": 24,
+        "reliability_score": 9,
+        "health_note": "Giọng hát ấm áp, mang lại niềm vui cho viện dưỡng lão",
+        "role": "TNV Văn Nghệ Xung Kích",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-031",
+        "name": "Mai Văn Hiếu",
+        "gender": "Nam",
+        "dob": "2003-05-15",
+        "phone": "0915.678.901",
+        "email": "hieu.mai@d2l.org",
+        "organization": "Học Viện Kỹ Thuật Mật Mã",
+        "blood_group": "O+",
+        "skills": [
+            "hau_can",
+            "su_pham"
+        ],
+        "custom_skills": [
+            "Sửa chữa phần cứng máy tính",
+            "Lắp đặt mạng LAN dã chiến",
+            "Khuân vác case PC"
+        ],
+        "certified_skills": [],
+        "availability": [
+            "309-D1-S1",
+            "302-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 52,
+        "reliability_score": 9.3,
+        "health_note": "Thông thạo tin học, tác phong nhanh nhẹn",
+        "role": "TNV Kỹ Thuật Phòng Máy",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-032",
+        "name": "Ngô Thị Kim Tuyến",
+        "gender": "Nữ",
+        "dob": "2004-12-01",
+        "phone": "0979.456.123",
+        "email": "tuyen.ngo@d2l.org",
+        "organization": "Đại Học Y Thái Bình",
+        "blood_group": "B+",
+        "skills": [
+            "y_te"
+        ],
+        "custom_skills": [
+            "Lấy máu tĩnh mạch không đau",
+            "Kiểm tra đường huyết mao mạch",
+            "Tư vấn dinh dưỡng"
+        ],
+        "certified_skills": [
+            "y_te"
+        ],
+        "availability": [
+            "204-D1-S1",
+            "201-D2-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 60,
+        "reliability_score": 9.6,
+        "health_note": "Kỹ năng lâm sàng vững vàng",
+        "role": "TNV Y Tế Tuyến Tỉnh",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-033",
+        "name": "Đinh Công Tráng",
+        "gender": "Nam",
+        "dob": "2002-07-07",
+        "phone": "0968.789.012",
+        "email": "trang.dinh@d2l.org",
+        "organization": "ĐH Thể Dục Thể Thao Bắc Ninh",
+        "blood_group": "O+",
+        "skills": [
+            "hau_can",
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Võ Taekwondo đai đen 2 đẳng",
+            "Huấn luyện viên bơi lội",
+            "Bê vác bao cát chống lũ"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "CA-01",
+            "403-D1-S1",
+            "508-D1-S1"
+        ],
+        "max_shifts": 3,
+        "volunteer_hours": 105,
+        "reliability_score": 10,
+        "health_note": "Sức mạnh thể chất đứng đầu đội, từng đạt HCV võ thuật",
+        "role": "TNV An Ninh & Hậu Cần Nặng",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-034",
+        "name": "Lý Kiều Trinh",
+        "gender": "Nữ",
+        "dob": "2003-09-27",
+        "phone": "0937.890.123",
+        "email": "trinh.ly@d2l.org",
+        "organization": "Đại Học Mỹ Thuật Công Nghiệp",
+        "blood_group": "A+",
+        "skills": [
+            "truyen_thong"
+        ],
+        "custom_skills": [
+            "Vẽ tranh biếm họa bảo vệ môi trường",
+            "Cắt dán thủ công lồng đèn",
+            "Chụp ảnh đường phố"
+        ],
+        "certified_skills": [
+            "truyen_thong"
+        ],
+        "availability": [
+            "103-D1-S2",
+            "502-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 46,
+        "reliability_score": 9.4,
+        "health_note": "Khéo léo, sáng tạo nghệ thuật",
+        "role": "TNV Sáng Tạo Nội Dung",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-035",
+        "name": "Bùi Văn Quyết",
+        "gender": "Nam",
+        "dob": "1996-03-19",
+        "phone": "0909.112.990",
+        "email": "quyet.bui@d2l.org",
+        "organization": "Hội Lái Xe Thiện Nguyện Việt Nam",
+        "blood_group": "O+",
+        "skills": [
+            "dieu_phoi",
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Bằng lái xe tải hạng C",
+            "Lái xe cứu trợ xuyên đêm không mệt mỏi",
+            "Cẩu bốc hàng"
+        ],
+        "certified_skills": [
+            "dieu_phoi"
+        ],
+        "availability": [
+            "102-D1-S1",
+            "406-D1-S1",
+            "408-D1-S1"
+        ],
+        "max_shifts": 3,
+        "volunteer_hours": 165,
+        "reliability_score": 10,
+        "health_note": "Tài xế tình nguyện kỳ cựu chuyên chở hàng lên Tây Bắc và vùng lũ",
+        "role": "Đội Trưởng Đội Xe Vận Tải Thiện Nguyện",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-036",
+        "name": "Phùng Thị Mỹ Duyên",
+        "gender": "Nữ",
+        "dob": "2005-04-30",
+        "phone": "0986.332.110",
+        "email": "duyen.phung@d2l.org",
+        "organization": "Đại Học Y Dược Cần Thơ",
+        "blood_group": "B+",
+        "skills": [
+            "y_te"
+        ],
+        "custom_skills": [
+            "Băng bó sơ cấp cứu trượt ngã",
+            "Phát thuốc hướng dẫn sử dụng",
+            "Đồng cảm thân thiện"
+        ],
+        "certified_skills": [],
+        "availability": [
+            "202-D1-S2",
+            "501-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 32,
+        "reliability_score": 9.1,
+        "health_note": "Nhiệt tình, luôn cười tươi tạo niềm tin cho người bệnh",
+        "role": "TNV Y Tế Cơ Sở",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-037",
+        "name": "Lê Bá Hưng",
+        "gender": "Nam",
+        "dob": "2001-10-09",
+        "phone": "0975.223.889",
+        "email": "hung.le@d2l.org",
+        "organization": "ĐH Nông Nghiệp — Học Viện Nông Nghiệp VN",
+        "blood_group": "A+",
+        "skills": [
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Kỹ thuật ươm cây giống lâm nghiệp",
+            "Ủ phân hữu cơ vi sinh",
+            "Nhận biết đất đồi trọc"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "101-D2-S1",
+            "102-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 82,
+        "reliability_score": 9.7,
+        "health_note": "Yêu cây cỏ, am hiểu kỹ thuật trồng cây giữ đất",
+        "role": "Chuyên Viên Lâm Nghiệp & Cây Trồng",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-038",
+        "name": "Nguyễn Minh Trang",
+        "gender": "Nữ",
+        "dob": "2003-06-25",
+        "phone": "0936.554.433",
+        "email": "trang.nm@d2l.org",
+        "organization": "Đại Học FPT",
+        "blood_group": "O+",
+        "skills": [
+            "truyen_thong"
+        ],
+        "custom_skills": [
+            "Bay Flycam DJI Mavic 3 quay tư liệu",
+            "Dựng phim tài liệu ngắn Premiere",
+            "Livestream sự kiện"
+        ],
+        "certified_skills": [
+            "truyen_thong"
+        ],
+        "availability": [
+            "CA-11",
+            "102-D1-S1",
+            "205-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 72,
+        "reliability_score": 9.8,
+        "health_note": "Sở hữu thiết bị Flycam và máy quay chuyên nghiệp",
+        "role": "TNV Kỹ Thuật Hình Ảnh Trên Không",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-039",
+        "name": "Đặng Tuấn Kiệt",
+        "gender": "Nam",
+        "dob": "2004-01-20",
+        "phone": "0917.889.001",
+        "email": "kiet.dang@d2l.org",
+        "organization": "ĐH Kinh Tế — ĐH Quốc Gia Hà Nội",
+        "blood_group": "B+",
+        "skills": [
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Phát thanh viên loa cầm tay",
+            "Điều tiết trật tự hàng quán",
+            "Thu dọn hiện trường"
+        ],
+        "certified_skills": [],
+        "availability": [
+            "CA-06",
+            "301-D2-S2",
+            "408-D1-S2"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 40,
+        "reliability_score": 9.3,
+        "health_note": "Tác phong chuẩn mực, giao tiếp dứt khoát",
+        "role": "TNV Điều Phối Hàng Ngũ",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-040",
+        "name": "Cao Thị Ngọc Mai",
+        "gender": "Nữ",
+        "dob": "2005-09-17",
+        "phone": "0982.776.554",
+        "email": "mai.cao@d2l.org",
+        "organization": "Đại Học Sư Phạm Nghệ Thuật TW",
+        "blood_group": "O+",
+        "skills": [
+            "su_pham"
+        ],
+        "custom_skills": [
+            "Dạy hát thiếu nhi múa dân gian",
+            "Gấp giấy Origami Nhật Bản",
+            "Trò chơi rèn trí nhớ"
+        ],
+        "certified_skills": [],
+        "availability": [
+            "CA-09",
+            "310-D1-S2",
+            "502-D1-S1"
+        ],
+        "max_shifts": 1,
+        "volunteer_hours": 20,
+        "reliability_score": 8.8,
+        "health_note": "Tân binh năng khiếu, hòa đồng với các em nhỏ",
+        "role": "TNV Giáo Dục Nghệ Thuật",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-041",
+        "name": "Đoàn Hữu Phước",
+        "gender": "Nam",
+        "dob": "1995-12-12",
+        "phone": "0904.998.877",
+        "email": "phuoc.doan@d2l.org",
+        "organization": "Chi Cục Kiểm Lâm Hà Giang",
+        "blood_group": "O-",
+        "skills": [
+            "hau_can",
+            "y_te"
+        ],
+        "custom_skills": [
+            "Dẫn đường trekking hiểm trở",
+            "Băng bó cầm máu vết rách sâu",
+            "Nhóm máu hiếm O-"
+        ],
+        "certified_skills": [
+            "hau_can",
+            "y_te"
+        ],
+        "availability": [
+            "110-D1-S1",
+            "406-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 160,
+        "reliability_score": 10,
+        "health_note": "Kiểm lâm viên dày dạn kinh nghiệm, sẵn sàng hiến máu khẩn cấp",
+        "role": "Chuyên Gia Dẫn Tuyến Núi Cao",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-042",
+        "name": "Trương Thị Ánh Tuyết",
+        "gender": "Nữ",
+        "dob": "2002-03-03",
+        "phone": "0969.887.766",
+        "email": "tuyet.truong@d2l.org",
+        "organization": "Đại Học Luật Hà Nội",
+        "blood_group": "A+",
+        "skills": [
+            "su_pham",
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Tư vấn pháp lý lưu động",
+            "Phổ biến quyền trẻ em & Chống bạo lực học đường",
+            "Tranh tụng bảo vệ yếu thế"
+        ],
+        "certified_skills": [
+            "su_pham"
+        ],
+        "availability": [
+            "304-D1-S1",
+            "508-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 66,
+        "reliability_score": 9.7,
+        "health_note": "Tư duy logic sắc sảo, tác phong chững chạc",
+        "role": "Cố Vấn Pháp Lý & Quyền Trẻ Em",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-043",
+        "name": "Phạm Gia Khiêm",
+        "gender": "Nam",
+        "dob": "2004-05-18",
+        "phone": "0948.332.211",
+        "email": "khiem.pham@d2l.org",
+        "organization": "Trường Cao Đẳng Nấu Ăn Hà Nội",
+        "blood_group": "B+",
+        "skills": [
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Đầu bếp chuyên nghiệp món chay & mặn",
+            "Thái rau siêu tốc",
+            "Cân đối khẩu phần dinh dưỡng bệnh nhân"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "401-D1-S1",
+            "202-D1-S1",
+            "405-D1-S1"
+        ],
+        "max_shifts": 3,
+        "volunteer_hours": 98,
+        "reliability_score": 9.8,
+        "health_note": "Bếp phó nhiệt huyết, nấu ăn ngon chuẩn vệ sinh an toàn thực phẩm",
+        "role": "Bếp Trưởng Bếp Ăn 0 Đồng",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-044",
+        "name": "Lê Thị Thu Trang",
+        "gender": "Nữ",
+        "dob": "2006-01-25",
+        "phone": "0985.667.788",
+        "email": "trang.le@d2l.org",
+        "organization": "Tân Sinh Viên ĐH Ngoại Thương (K63)",
+        "blood_group": "O+",
+        "skills": [
+            "truyen_thong"
+        ],
+        "custom_skills": [
+            "Nhiệt huyết tân sinh viên",
+            "Quay chụp CapCut theo trend",
+            "Kêu gọi bạn bè ủng hộ quần áo cũ"
+        ],
+        "certified_skills": [],
+        "availability": [
+            "CA-11",
+            "108-D1-S1",
+            "402-D1-S1"
+        ],
+        "max_shifts": 1,
+        "volunteer_hours": 6,
+        "reliability_score": 8.5,
+        "health_note": "Mới tham gia hoạt động đầu tiên, cần ghép cặp cùng TNV kỳ cựu",
+        "role": "TNV Tập Sự",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-045",
+        "name": "Vũ Tuấn Kiệt",
+        "gender": "Nam",
+        "dob": "2001-08-16",
+        "phone": "0916.554.321",
+        "email": "kiet.vu@d2l.org",
+        "organization": "ĐH Mỏ — Địa Chất",
+        "blood_group": "A+",
+        "skills": [
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Sử dụng xẻng cuốc thành thạo",
+            "Cẩu đá & Trộn bê tông",
+            "Khảo sát địa chất sạt lở"
+        ],
+        "certified_skills": [
+            "hau_can"
+        ],
+        "availability": [
+            "101-D1-S1",
+            "410-D1-S1",
+            "110-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 112,
+        "reliability_score": 9.9,
+        "health_note": "Sức vóc vạm vỡ, chịu khổ rất tốt",
+        "role": "TNV Khảo Sát Địa Bàn Thực Địa",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-046",
+        "name": "Hoàng Minh Châu",
+        "gender": "Nữ",
+        "dob": "2003-11-04",
+        "phone": "0973.998.112",
+        "email": "chau.hoang@d2l.org",
+        "organization": "Học Viện Ngoại Giao",
+        "blood_group": "O+",
+        "skills": [
+            "su_pham",
+            "truyen_thong"
+        ],
+        "custom_skills": [
+            "Tiếng Trung HSK 5",
+            "Dịch thuật tài liệu gây quỹ quốc tế",
+            "Giao lưu văn hóa thiếu nhi"
+        ],
+        "certified_skills": [
+            "su_pham"
+        ],
+        "availability": [
+            "305-D1-S1",
+            "103-D1-S2"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 56,
+        "reliability_score": 9.6,
+        "health_note": "Kỹ năng ngoại giao và gây quỹ tốt",
+        "role": "TNV Ban Gây Quỹ Quốc Tế",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-047",
+        "name": "Đỗ Gia Huy",
+        "gender": "Nam",
+        "dob": "2002-09-19",
+        "phone": "0932.776.655",
+        "email": "huy.do@d2l.org",
+        "organization": "Trường Sĩ Quan Lục Quân 1 (Dự bị động viên)",
+        "blood_group": "B+",
+        "skills": [
+            "dieu_phoi",
+            "hau_can"
+        ],
+        "custom_skills": [
+            "Điều lệnh đội ngũ chuẩn quân đội",
+            "Thiết lập trật tự nhanh",
+            "Cứu hộ khẩn cấp"
+        ],
+        "certified_skills": [
+            "dieu_phoi"
+        ],
+        "availability": [
+            "CA-05",
+            "301-D1-S1",
+            "408-D1-S1"
+        ],
+        "max_shifts": 3,
+        "volunteer_hours": 128,
+        "reliability_score": 10,
+        "health_note": "Kỷ luật thép, tác phong nhanh nhẹn, gương mẫu",
+        "role": "Đội Trưởng Giữ Gìn Kỷ Luật",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-048",
+        "name": "Bùi Bích Ngọc",
+        "gender": "Nữ",
+        "dob": "2004-02-10",
+        "phone": "0984.112.334",
+        "email": "ngoc.bui@d2l.org",
+        "organization": "Khoa Tâm Lý Học — ĐHQG Hà Nội",
+        "blood_group": "A+",
+        "skills": [
+            "y_te",
+            "su_pham"
+        ],
+        "custom_skills": [
+            "Trị liệu tâm lý khủng hoảng",
+            "Lắng nghe đồng cảm trẻ bị sang chấn",
+            "Tâm lý người cao tuổi"
+        ],
+        "certified_skills": [
+            "y_te"
+        ],
+        "availability": [
+            "501-D1-S2",
+            "503-D1-S1",
+            "504-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 70,
+        "reliability_score": 9.7,
+        "health_note": "Ân cần, thấu hiểu, có phương pháp trị liệu tâm lý bài bản",
+        "role": "Chuyên Viên Tư Vấn Tâm Lý Cộng Đồng",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-049",
+        "name": "Nguyễn Phúc Thịnh",
+        "gender": "Nam",
+        "dob": "2003-04-01",
+        "phone": "0911.223.344",
+        "email": "thinh.nguyen@d2l.org",
+        "organization": "Học Viện Công Nghệ Bưu Chính Viễn Thông",
+        "blood_group": "O+",
+        "skills": [
+            "truyen_thong",
+            "dieu_phoi"
+        ],
+        "custom_skills": [
+            "Quản trị hệ thống web D2L",
+            "Phân tích dữ liệu phân ca",
+            "Phần mềm điểm danh QR Code"
+        ],
+        "certified_skills": [
+            "truyen_thong"
+        ],
+        "availability": [
+            "CA-12",
+            "101-D1-S2",
+            "308-D1-S1"
+        ],
+        "max_shifts": 2,
+        "volunteer_hours": 84,
+        "reliability_score": 9.9,
+        "health_note": "Chuyên gia IT phát triển nền tảng phần mềm tình nguyện",
+        "role": "Kỹ Sư Phần Mềm Nền Tảng D2L",
+        "registered_at": "2026-10-30 03:10:18"
+    },
+    {
+        "id": "TNV-050",
+        "name": "Trần Thị Thu Hà",
+        "gender": "Nữ",
+        "dob": "2006-07-15",
+        "phone": "0962.334.455",
+        "email": "ha.tran@d2l.org",
+        "organization": "Tân Sinh Viên ĐH Sư Phạm Hà Nội 2",
+        "blood_group": "O+",
+        "skills": [
+            "su_pham"
+        ],
+        "custom_skills": [
+            "Tình nguyện viên mới toanh (0 giờ)",
+            "Nhiệt tình muốn cống hiến",
+            "Dạy trẻ em hát múa"
+        ],
+        "certified_skills": [],
+        "availability": [
+            "CA-07",
+            "302-D1-S1"
+        ],
+        "max_shifts": 1,
+        "volunteer_hours": 0,
+        "reliability_score": 7.5,
+        "health_note": "Trường hợp thử nghiệm: TNV mới chưa tích lũy giờ, sẵn sàng rèn luyện",
+        "role": "TNV Tân Binh Mới Gia Nhập",
+        "registered_at": "2026-10-30 03:10:18"
+    }
+]

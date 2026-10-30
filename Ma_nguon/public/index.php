@@ -44,7 +44,7 @@ require __DIR__ . '/../templates/header.php';
                 </p>
                 <div class="cum_nut_slide">
                     <a href="/hoat_dong.php" class="btn-primary nut_cta_lon">Xem Danh Sách Hoạt Động</a>
-                    <a href="/register.php" class="btn-detail nut_cta_trang">Đăng Ký Tham Gia</a>
+                    <a href="/dang_ky_ca.php" class="btn-detail nut_cta_trang">Đăng Ký Ca Làm Việc</a>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@ require __DIR__ . '/../templates/header.php';
                 </p>
                 <div class="cum_nut_slide">
                     <a href="/lich_truc.php" class="btn-primary nut_cta_lon">Xem Lịch Trực Thực Địa</a>
-                    <a href="/register.php" class="btn-detail nut_cta_trang">Đăng Ký Tham Gia Online</a>
+                    <a href="/dang_ky_ca.php" class="btn-detail nut_cta_trang">Đăng Ký Ca Đa Ngày</a>
                 </div>
             </div>
         </div>
@@ -166,9 +166,9 @@ require __DIR__ . '/../templates/header.php';
         <!-- Cột 2: Đăng ký trực tuyến & Thẻ điện tử -->
         <div class="pillar-card">
             <span class="pillar-number">02</span>
-            <h3>Đăng Ký & Thẻ Điện Tử</h3>
-            <p>Đăng ký trực tuyến nhanh chóng, hệ thống tự động cấp Thẻ Tình Nguyện Viên điện tử kèm mã định danh số phục vụ điểm danh trực tiếp.</p>
-            <a href="/register.php" class="pillar-link">Điền hồ sơ trực tuyến &rarr;</a>
+            <h3>Hồ Sơ & Thẻ Điện Tử</h3>
+            <p>Quản lý năng lực chuyên môn, bổ sung kỹ năng tự do và cấp Thẻ Tình Nguyện Viên điện tử kèm mã QR phục vụ điểm danh trực tiếp.</p>
+            <a href="/profile.php" class="pillar-link">Cập nhật hồ sơ & kỹ năng &rarr;</a>
         </div>
 
         <!-- Cột 3: Lịch Trực & Báo Vắng Trực Tuyến -->
