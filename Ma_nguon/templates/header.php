@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../src/Auth.php';
+require_once __DIR__ . '/../src/Database.php';
 $volunteerData = require __DIR__ . '/../data/volunteer_data.php';
 
 // Xử lý đăng xuất tài khoản
@@ -76,7 +77,7 @@ foreach ($activitiesList as $act) {
             'badge' => $meta['badge'],
             'badge_class' => $meta['badge_class'],
             'text' => $meta['prefix'] . ' Đang cần gấp <strong>' . $deficit . ' tình nguyện viên</strong> ' . $meta['focus'] . '.',
-            'link' => '/register.php?event_id=' . $actId,
+            'link' => '/hoat_dong.php?event_id=' . $actId,
             'cta' => $meta['cta'] . ' &rarr;'
         ];
     } else {
@@ -87,7 +88,7 @@ foreach ($activitiesList as $act) {
             'badge' => 'ĐANG MỞ ĐĂNG KÝ',
             'badge_class' => 'badge-open',
             'text' => 'Chiến dịch <strong>' . htmlspecialchars(trim($shortTitle)) . '</strong> còn tiếp nhận <strong>' . $deficit . ' chỉ tiêu</strong>.',
-            'link' => '/register.php?event_id=' . $actId,
+            'link' => '/hoat_dong.php?event_id=' . $actId,
             'cta' => 'Đăng ký tham gia &rarr;'
         ];
     }
@@ -103,7 +104,7 @@ $topAnnouncements[] = [
     'badge' => 'THÔNG BÁO',
     'badge_class' => 'badge-system',
     'text' => 'Hệ thống đang tiếp nhận đăng ký điều phối trực tuyến cho toàn bộ 8 chiến dịch trọng điểm 2026.',
-    'link' => '/register.php',
+    'link' => '/hoat_dong.php',
     'cta' => 'Xem chi tiết đăng ký &rarr;'
 ];
 ?>
@@ -119,8 +120,22 @@ $topAnnouncements[] = [
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/app.css">
 <link rel="stylesheet" href="/assets/css/ql_tinh_nguyen.css?v=<?= time() ?>">
+<link rel="stylesheet" href="/assets/css/pro_design_theme.css?v=<?= time() ?>">
 <script src="/assets/js/volunteer_portal.js?v=<?= time() ?>" defer></script>
 <script src="/assets/js/banner_chuyen_dong.js?v=<?= time() ?>" defer></script>
+<style>
+/* TỐI ƯU GIAO DIỆN NAVBAR KHÔNG BỊ TRÀN VIEWPORT */
+body { overflow-x: hidden !important; }
+.site-header-pro { width: 100% !important; overflow-x: clip !important; }
+.site-header-pro .header-container { padding: 6px 14px !important; gap: 8px !important; max-width: 100% !important; box-sizing: border-box !important; overflow-x: clip !important; }
+.site-header-pro .brand-link { flex-shrink: 0 !important; gap: 8px !important; }
+.site-header-pro .brand-title { font-size: 1.02rem !important; }
+.site-header-pro .main-nav-pro { margin: 0 4px !important; gap: 4px !important; justify-content: center !important; flex: 1 !important; min-width: 0 !important; flex-wrap: nowrap !important; }
+.site-header-pro .nav-item { padding: 6px 8px !important; font-size: 0.84rem !important; flex-shrink: 0 !important; white-space: nowrap !important; }
+.site-header-pro .header-user-zone { flex-shrink: 0 !important; margin-left: auto !important; }
+.site-header-pro .user-profile-badge { padding: 4px 10px !important; gap: 6px !important; }
+.site-header-pro .user-name { max-width: 130px !important; font-size: 0.84rem !important; }
+</style>
 </head>
 <body class="volunteer-theme-body">
 <a class="skip-link" href="#main">Đến nội dung chính</a>
@@ -188,34 +203,141 @@ $topAnnouncements[] = [
                 Trang Chủ
             </a>
             <a href="/hoat_dong.php" class="nav-item <?= $currentPath === '/hoat_dong.php' ? 'active' : '' ?>">
-                Hoạt Động
+                Danh Mục Hoạt Động
             </a>
 
             <?php if (Auth::isCoordinator()): ?>
-                <!-- MENU DÀNH RIÊNG CHO BAN CHỈ HUY / ĐIỀU PHỐI VIÊN -->
-                <a href="/lich_truc.php" class="nav-item <?= $currentPath === '/lich_truc.php' ? 'active' : '' ?>">
-                    Lịch Trực
-                </a>
-                <a href="/phan_cong.php" class="nav-item <?= $currentPath === '/phan_cong.php' ? 'active' : '' ?>" style="color: #dc2626; font-weight: 600;">
-                    Điều Phối Ca Trực
-                </a>
-                <a href="/quan_ly_tnv.php" class="nav-item <?= $currentPath === '/quan_ly_tnv.php' ? 'active' : '' ?>">
-                    Quản Lý TNV
-                </a>
-                <a href="/doi_soat_thuat_toan.php" class="nav-item <?= $currentPath === '/doi_soat_thuat_toan.php' ? 'active' : '' ?>">
-                    Đối Soát Phân Công
-                </a>
+                <!-- MENU DÀNH RIÊNG CHO BAN CHỈ HUY / ĐIỀU PHỐI VIÊN (HỖ TRỢ DROPDOWN HOVER NHANH) -->
+                <div class="nav-item-dropdown-wrap">
+                    <a href="/lich_truc.php" class="nav-item <?= $currentPath === '/lich_truc.php' ? 'active' : '' ?>">
+                        <span>Lịch Hoạt Động</span>
+                        <span class="nav-caret">&#9662;</span>
+                    </a>
+                    <div class="nav-sub-dropdown" role="menu">
+                        <a href="/lich_truc.php?tab=all_shifts" class="nav-sub-link">
+                            <span class="sub-icon">&#128197;</span>
+                            <div class="sub-text">
+                                <strong>Lịch Hoạt Động Toàn Đội</strong>
+                                <small>Theo dõi ca trực và quân số các chiến dịch</small>
+                            </div>
+                        </a>
+                        <a href="/lich_truc.php?tab=my_shifts" class="nav-sub-link">
+                            <span class="sub-icon">&#127919;</span>
+                            <div class="sub-text">
+                                <strong>Ca Trực Của Tôi</strong>
+                                <small>Các ca trực cá nhân phụ trách chỉ huy</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-item-dropdown-wrap">
+                    <a href="/phan_cong.php" class="nav-item nav-item-bch <?= in_array($currentPath, ['/phan_cong.php', '/phe_duyet_vang.php', '/admin_import.php', '/doi_soat_thuat_toan.php'], true) ? 'active' : '' ?>">
+                        <span>Điều Phối Hoạt Động</span>
+                        <span class="nav-bch-pill">BCH</span>
+                        <span class="nav-caret">&#9662;</span>
+                    </a>
+                    <div class="nav-sub-dropdown" role="menu">
+                        <a href="/phan_cong.php" class="nav-sub-link">
+                            <span class="sub-icon chip-ruby">&#9881;</span>
+                            <div class="sub-text">
+                                <strong>Bảng Phân Công Lực Lượng</strong>
+                                <small>Thuật toán Smart Greedy & điều động nhân sự</small>
+                            </div>
+                        </a>
+                        <a href="/phe_duyet_vang.php" class="nav-sub-link">
+                            <span class="sub-icon chip-amber">&#9203;</span>
+                            <div class="sub-text">
+                                <strong>Phê Duyệt Báo Vắng</strong>
+                                <small>Thẩm định đơn vắng & điều động thay thế</small>
+                            </div>
+                        </a>
+                        <a href="/admin_import.php" class="nav-sub-link">
+                            <span class="sub-icon chip-emerald">&#128194;</span>
+                            <div class="sub-text">
+                                <strong>Quản Trị 50 Dự Án & TNV</strong>
+                                <small>Lọc đa thuộc tính, chỉnh sửa và đồng bộ</small>
+                            </div>
+                        </a>
+                        <a href="/doi_soat_thuat_toan.php" class="nav-sub-link">
+                            <span class="sub-icon chip-sapphire">&#128202;</span>
+                            <div class="sub-text">
+                                <strong>Đối Soát Hiệu Suất</strong>
+                                <small>So sánh FCFS vs Smart Greedy</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             <?php else: ?>
-                <!-- MENU DÀNH CHO TÌNH NGUYỆN VIÊN & KHÁCH -->
-                <a href="/lich_truc.php" class="nav-item <?= $currentPath === '/lich_truc.php' ? 'active' : '' ?>">
-                    <?= Auth::isVolunteer() ? 'Ca Trực Của Tôi' : 'Lịch Trực' ?>
-                </a>
+                <!-- MENU DÀNH CHO TÌNH NGUYỆN VIÊN & KHÁCH (HỖ TRỢ DROPDOWN HOVER NHANH) -->
+                <div class="nav-item-dropdown-wrap">
+                    <a href="/lich_truc.php" class="nav-item <?= $currentPath === '/lich_truc.php' ? 'active' : '' ?>">
+                        <span><?= Auth::isVolunteer() ? 'Hoạt Động Của Tôi' : 'Lịch Hoạt Động' ?></span>
+                        <span class="nav-caret">&#9662;</span>
+                    </a>
+                    <div class="nav-sub-dropdown" role="menu">
+                        <a href="/lich_truc.php?tab=my_shifts" class="nav-sub-link">
+                            <span class="sub-icon">&#127919;</span>
+                            <div class="sub-text">
+                                <strong>Hoạt Động Của Tôi</strong>
+                                <small>Lịch trực cá nhân, báo vắng & điểm danh</small>
+                            </div>
+                        </a>
+                        <a href="/lich_truc.php?tab=all_shifts" class="nav-sub-link">
+                            <span class="sub-icon">&#128197;</span>
+                            <div class="sub-text">
+                                <strong>Lịch Toàn Đội</strong>
+                                <small>Tra cứu lịch trực công khai của toàn đơn vị</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             <?php endif; ?>
 
-            <!-- TRANG ĐIỀN HỒ SƠ CÁ NHÂN & ĐĂNG KÝ CHIẾN DỊCH ONLINE -->
-            <a href="/register.php" class="nav-item nav-highlight <?= $currentPath === '/register.php' ? 'active' : '' ?>">
-                Hồ Sơ & Tham Gia Hoạt Động
-            </a>
+            <!-- TRANG HỒ SƠ TÌNH NGUYỆN VIÊN & KỸ NĂNG (HỖ TRỢ DROPDOWN HOVER CHỌN NHANH) -->
+            <div class="nav-item-dropdown-wrap">
+                <a href="/profile.php" class="nav-item nav-highlight nav-dropdown-trigger <?= in_array($currentPath, ['/profile.php', '/register.php'], true) ? 'active' : '' ?>">
+                    <span>Hồ Sơ Của Tôi</span>
+                    <span class="nav-caret">&#9662;</span>
+                </a>
+                <div class="nav-sub-dropdown" role="menu">
+                    <a href="/profile.php?section=info" class="nav-sub-link">
+                        <span class="sub-icon">&#128100;</span>
+                        <div class="sub-text">
+                            <strong>Thông Tin Định Danh</strong>
+                            <small>Họ tên, SĐT, trường/đơn vị, liên hệ</small>
+                        </div>
+                    </a>
+                    <a href="/profile.php?section=skills" class="nav-sub-link">
+                        <span class="sub-icon">&#9874;</span>
+                        <div class="sub-text">
+                            <strong>Kỹ Năng & Năng Lực</strong>
+                            <small>Kỹ năng chuẩn & kỹ năng tự nhập</small>
+                        </div>
+                    </a>
+                    <a href="/profile.php?section=schedule" class="nav-sub-link">
+                        <span class="sub-icon">&#128197;</span>
+                        <div class="sub-text">
+                            <strong>Lịch Rảnh & Báo Bận</strong>
+                            <small>Ma trận 7 ngày & báo bận tương lai</small>
+                        </div>
+                    </a>
+                    <a href="/profile.php?section=card" class="nav-sub-link">
+                        <span class="sub-icon">&#127379;</span>
+                        <div class="sub-text">
+                            <strong>Thẻ TNV Điện Tử</strong>
+                            <small>Mã số định danh, QR code & in thẻ</small>
+                        </div>
+                    </a>
+                    <a href="/profile.php?section=emergency" class="nav-sub-link">
+                        <span class="sub-icon">&#9742;</span>
+                        <div class="sub-text">
+                            <strong>Liên Hệ Khẩn Cấp</strong>
+                            <small>Người thân & lời nhắn gửi Ban Chỉ Huy</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </nav>
 
         <!-- KHU VỰC HIỂN THỊ TÀI KHOẢN NGƯỜI DÙNG GÓC TRÊN BÊN PHẢI -->
@@ -269,21 +391,53 @@ $topAnnouncements[] = [
 
                         <div class="dropdown-links">
                             <?php if (Auth::isCoordinator()): ?>
-                                <a href="/phan_cong.php" class="dropdown-link-item" style="color: #dc2626; font-weight: 600;">
-                                    Bảng Điều Phối Lực Lượng
+                                <a href="/phan_cong.php" class="dropdown-link-item">
+                                    <span class="dropdown-icon-chip chip-ruby">&#9881;</span>
+                                    <span class="dropdown-link-label">Bảng Điều Phối Lực Lượng</span>
+                                </a>
+                                <a href="/phe_duyet_vang.php" class="dropdown-link-item" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: inline-flex; align-items: center; gap: 10px;">
+                                        <span class="dropdown-icon-chip chip-amber">&#9203;</span>
+                                        <span class="dropdown-link-label">Phê Duyệt Báo Vắng</span>
+                                    </div>
+                                    <?php 
+                                    $pendingAbsences = Database::getInstance()->getPendingAbsenceCount();
+                                    if ($pendingAbsences > 0): ?>
+                                        <span style="background: linear-gradient(135deg, #e11d48, #be123c); color: #ffffff; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 800; box-shadow: 0 2px 6px rgba(225,29,72,0.35);"><?= $pendingAbsences ?></span>
+                                    <?php endif; ?>
+                                </a>
+                                <a href="/admin_import.php" class="dropdown-link-item">
+                                    <span class="dropdown-icon-chip chip-emerald">&#128194;</span>
+                                    <span class="dropdown-link-label">Cơ Sở Dữ Liệu & 50 Ví Dụ</span>
+                                </a>
+                                <a href="/tao_su_kien.php" class="dropdown-link-item">
+                                    <span class="dropdown-icon-chip chip-cyan">&#10010;</span>
+                                    <span class="dropdown-link-label">Thiết Lập Hoạt Động Mới</span>
                                 </a>
                                 <a href="/doi_soat_thuat_toan.php" class="dropdown-link-item">
-                                    Báo Cáo Đối Soát Phân Công
+                                    <span class="dropdown-icon-chip chip-sapphire">&#128202;</span>
+                                    <span class="dropdown-link-label">Báo Cáo Đối Soát Hiệu Suất</span>
                                 </a>
                                 <a href="/lich_truc.php" class="dropdown-link-item">
-                                    Lịch Trực Chung Cả Đội
+                                    <span class="dropdown-icon-chip chip-violet">&#128197;</span>
+                                    <span class="dropdown-link-label">Lịch Hoạt Động Toàn Đội</span>
+                                </a>
+                                <a href="/profile.php" class="dropdown-link-item">
+                                    <span class="dropdown-icon-chip chip-slate">&#128100;</span>
+                                    <span class="dropdown-link-label">Hồ Sơ Ban Chỉ Huy</span>
                                 </a>
                             <?php else: ?>
-                                <a href="/lich_truc.php" class="dropdown-link-item">
-                                    Ca Trực Cá Nhân Của Tôi
+                                <a href="/profile.php" class="dropdown-link-item">
+                                    <span class="dropdown-icon-chip chip-emerald">&#128100;</span>
+                                    <span class="dropdown-link-label">Hồ Sơ & Kỹ Năng Của Tôi</span>
                                 </a>
-                                <a href="/register.php" class="dropdown-link-item">
-                                    Thẻ Tình Nguyện Viên Điện Tử
+                                <a href="/hoat_dong.php" class="dropdown-link-item">
+                                    <span class="dropdown-icon-chip chip-sapphire">&#128640;</span>
+                                    <span class="dropdown-link-label">Đăng Ký Tham Gia Hoạt Động</span>
+                                </a>
+                                <a href="/lich_truc.php?tab=my_shifts" class="dropdown-link-item">
+                                    <span class="dropdown-icon-chip chip-amber">&#128197;</span>
+                                    <span class="dropdown-link-label">Hoạt Động Của Tôi</span>
                                 </a>
                             <?php endif; ?>
                         </div>

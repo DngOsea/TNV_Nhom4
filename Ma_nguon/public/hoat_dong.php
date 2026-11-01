@@ -1,166 +1,163 @@
 <?php
-declare(strict_types=1);
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 require __DIR__ . '/../src/Input.php';
+require __DIR__ . '/../src/Auth.php';
 require __DIR__ . '/../src/EventFilter.php';
-require_once __DIR__ . '/../src/Auth.php';
 require_once __DIR__ . '/../src/ActivityManager.php';
+require_once __DIR__ . '/../src/Pagination.php';
 
 $volunteerData = require __DIR__ . '/../data/volunteer_data.php';
 $categories = $volunteerData['categories'];
-
-// XỬ LÝ CÁC TÁC VỤ CRUD HOẠT ĐỘNG
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = field($_POST, 'action');
-
-    // 1. THÊM MỚI HOẠT ĐỘNG
-    if ($action === 'create_activity') {
-        $shiftsRaw = field($_POST, 'shifts');
-        $shiftsArr = array_filter(array_map('trim', explode("\n", $shiftsRaw)));
-        if (empty($shiftsArr)) {
-            $shiftsArr = ['Ca Sáng (07:30 – 11:30)'];
-        }
-
-        $skillsRaw = field($_POST, 'skills_needed');
-        $skillsArr = array_filter(array_map('trim', explode(',', $skillsRaw)));
-        if (empty($skillsArr)) {
-            $skillsArr = ['Thể lực tốt', 'Làm việc nhóm'];
-        }
-
-        $catKey = field($_POST, 'category') ?: 'thuc_te_moi_truong';
-        $catName = $categories[$catKey]['name'] ?? 'Hoạt Động Tình Nguyện';
-
-        $payload = [
-            'title' => field($_POST, 'title'),
-            'category' => $catKey,
-            'category_name' => $catName,
-            'date_string' => field($_POST, 'date_string'),
-            'time_range' => field($_POST, 'time_range'),
-            'location' => field($_POST, 'location'),
-            'meeting_point' => field($_POST, 'meeting_point'),
-            'capacity' => (int)field($_POST, 'capacity'),
-            'registered' => 0,
-            'leader_name' => field($_POST, 'leader_name'),
-            'leader_phone' => field($_POST, 'leader_phone'),
-            'shifts' => $shiftsArr,
-            'skills_needed' => $skillsArr,
-            'summary' => field($_POST, 'summary'),
-            'status' => 'recruiting'
-        ];
-
-        ActivityManager::create($payload);
-        $_SESSION['flash_message'] = 'Đã thêm thành công chiến dịch tình nguyện mới vào hệ thống!';
-        header('Location: /hoat_dong.php');
-        exit;
-    }
-
-    // 2. CHỈNH SỬA HOẠT ĐỘNG
-    if ($action === 'update_activity') {
-        $id = (int)field($_POST, 'id');
-        $shiftsRaw = field($_POST, 'shifts');
-        $shiftsArr = array_filter(array_map('trim', explode("\n", $shiftsRaw)));
-        $skillsRaw = field($_POST, 'skills_needed');
-        $skillsArr = array_filter(array_map('trim', explode(',', $skillsRaw)));
-
-        $catKey = field($_POST, 'category') ?: 'thuc_te_moi_truong';
-        $catName = $categories[$catKey]['name'] ?? 'Hoạt Động Tình Nguyện';
-
-        $payload = [
-            'title' => field($_POST, 'title'),
-            'category' => $catKey,
-            'category_name' => $catName,
-            'date_string' => field($_POST, 'date_string'),
-            'time_range' => field($_POST, 'time_range'),
-            'location' => field($_POST, 'location'),
-            'meeting_point' => field($_POST, 'meeting_point'),
-            'capacity' => (int)field($_POST, 'capacity'),
-            'registered' => (int)field($_POST, 'registered'),
-            'leader_name' => field($_POST, 'leader_name'),
-            'leader_phone' => field($_POST, 'leader_phone'),
-            'shifts' => $shiftsArr,
-            'skills_needed' => $skillsArr,
-            'summary' => field($_POST, 'summary'),
-            'status' => field($_POST, 'status') ?: 'recruiting'
-        ];
-
-        ActivityManager::update($id, $payload);
-        $_SESSION['flash_message'] = 'Đã cập nhật thông tin chiến dịch #' . $id . ' thành công!';
-        header('Location: /hoat_dong.php');
-        exit;
-    }
-
-    // 3. XÓA HOẠT ĐỘNG
-    if ($action === 'delete_activity') {
-        $id = (int)field($_POST, 'id');
-        ActivityManager::delete($id);
-        $_SESSION['flash_message'] = 'Đã xóa chiến dịch #' . $id . ' khỏi hệ thống!';
-        header('Location: /hoat_dong.php');
-        exit;
-    }
-}
-
-// Đọc toàn bộ hoạt động từ kho lưu trữ ActivityManager
-$allActivities = ActivityManager::getAll();
+$allActivities = ActivityManager::getAllActivities();
 
 $selectedCat = field($_GET, 'cat');
 $selectedShift = field($_GET, 'shift');
+$selectedScale = field($_GET, 'scale');
+$selectedRegion = field($_GET, 'region');
+$selectedStatus = field($_GET, 'status');
 $q = field($_GET, 'q');
-$page = max(1, (int)(field($_GET, 'page') ?: 1));
-$perPage = max(3, min(24, (int)(field($_GET, 'per_page') ?: 6)));
 
-// Lọc dữ liệu theo từ khóa, nhóm chủ đề và ca làm việc
-$filtered = ActivityManager::filter($allActivities, $selectedCat, $selectedShift, $q);
+// Xử lý nộp form đăng ký ca trực tuyến ngay trên popup modal
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && field($_POST, 'action') === 'register_shifts') {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    $activityId = field($_POST, 'activity_id');
+    $selectedShifts = isset($_POST['selected_shifts']) && is_array($_POST['selected_shifts']) ? $_POST['selected_shifts'] : [];
+    $note = trim(field($_POST, 'volunteer_note'));
 
-// Phân trang
-$pagination = ActivityManager::paginate($filtered, $page, $perPage);
-$displayActivities = $pagination['items'];
+    $user = Auth::getUser();
+    if (!$user) {
+        $guestName = trim(field($_POST, 'guest_name'));
+        $guestPhone = trim(field($_POST, 'guest_phone'));
+        $guestEmail = trim(field($_POST, 'guest_email'));
+        if ($guestName !== '' || $guestPhone !== '') {
+            $user = [
+                'id' => 'GUEST-' . strtoupper(substr(md5(uniqid('', true)), 0, 6)),
+                'name' => $guestName ?: 'Tình Nguyện Viên Khách',
+                'phone' => $guestPhone,
+                'email' => $guestEmail,
+                'role' => 'volunteer'
+            ];
+            $_SESSION['guest_user'] = $user;
+        }
+    }
+
+    if (!$user) {
+        $_SESSION['flash_error'] = 'Vui lòng cung cấp Họ tên và Số điện thoại liên hệ để xác nhận đăng ký.';
+    } elseif (empty($selectedShifts)) {
+        $_SESSION['flash_error'] = 'Vui lòng tích chọn ít nhất một ca làm việc từ bảng lịch trước khi xác nhận.';
+    } else {
+        $regResult = ActivityManager::registerVolunteerShifts($user, $activityId, $selectedShifts, $note);
+        if ($regResult['success']) {
+            $_SESSION['flash_success'] = 'Đăng ký thành công ' . $regResult['count'] . ' đợt hoạt động trong chương trình "' . ($regResult['activity']['title'] ?? '') . '"! Thông tin ca làm việc đã được cập nhật vào mục Hoạt Động Của Tôi.';
+            header('Location: /hoat_dong.php?registered=1');
+            exit;
+        } else {
+            $_SESSION['flash_error'] = $regResult['message'] ?? 'Đăng ký không thành công. Vui lòng thử lại.';
+        }
+    }
+}
+
+// Lọc theo điều kiện đa thuộc tính
+$filtered = array_filter($allActivities, function($act) use ($selectedCat, $selectedShift, $selectedScale, $selectedRegion, $selectedStatus, $q) {
+    if ($selectedCat !== '' && $act['category'] !== $selectedCat) {
+        return false;
+    }
+    if ($q !== '' && stripos($act['title'], $q) === false && stripos($act['summary'], $q) === false && stripos($act['location'], $q) === false && stripos($act['leader_name'] ?? '', $q) === false) {
+        return false;
+    }
+    if ($selectedShift !== '') {
+        $hasShift = false;
+        foreach ($act['shifts'] as $s) {
+            if (stripos($s, $selectedShift) !== false) {
+                $hasShift = true;
+                break;
+            }
+        }
+        if (!$hasShift) return false;
+    }
+    if ($selectedScale !== '') {
+        $cap = (int)($act['capacity'] ?? 20);
+        if ($selectedScale === 'micro' && $cap >= 15) return false;
+        if ($selectedScale === 'medium' && ($cap < 15 || $cap > 35)) return false;
+        if ($selectedScale === 'macro' && $cap <= 35) return false;
+    }
+    if ($selectedRegion !== '') {
+        $loc = (string)($act['location'] ?? '');
+        if ($selectedRegion === 'hanoi' && !str_contains($loc, 'Hà Nội')) return false;
+        if ($selectedRegion === 'north' && !preg_match('/(Lào Cai|Yên Bái|Hà Giang|Sơn La|Hải Phòng|Ninh Bình|Bắc Ninh|Thái Bình)/i', $loc)) return false;
+        if ($selectedRegion === 'central' && !preg_match('/(Đà Nẵng|Quảng Bình|Hà Tĩnh|Quảng Ngãi|Quảng Nam|Ninh Thuận)/i', $loc)) return false;
+        if ($selectedRegion === 'south' && !preg_match('/(Hồ Chí Minh|TP\.HCM|Cần Thơ|Cần Giờ|Bến Tre)/i', $loc)) return false;
+    }
+    if ($selectedStatus !== '') {
+        $st = $act['status'] ?? 'recruiting';
+        $isFull = ($act['registered'] >= $act['capacity']);
+        $isUrgent = !empty($act['is_urgent']);
+        if ($selectedStatus === 'urgent' && !$isUrgent) return false;
+        if ($selectedStatus === 'recruiting' && ($isFull || $st === 'completed')) return false;
+        if ($selectedStatus === 'full' && !$isFull) return false;
+        if ($selectedStatus === 'completed' && $st !== 'completed') return false;
+    }
+    return true;
+});
+
+// Phân trang danh sách hoạt động (6 hoạt động mỗi trang)
+$page = max(1, (int)field($_GET, 'page', '1'));
+$paginationData = Pagination::paginate($filtered, $page, 6, true);
+$paginatedActivities = $paginationData['items'];
 
 require __DIR__ . '/../templates/header.php';
 ?>
 
 <div class="page-heading-pro">
-    <div class="heading-container">
-        <span class="sub-badge">DANH MỤC CHIẾN DỊCH</span>
-        <h1>Danh Sách Hoạt Động Tình Nguyện</h1>
-        <div class="neon-divider-glow"></div>
-        <p>Tổng hợp <?= count($allActivities) ?> hoạt động trọng điểm phân theo 5 nhóm chủ đề thực tế — Lựa chọn chương trình phù hợp để tham gia cống hiến.</p>
+    <div class="heading-container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <span class="sub-badge">DANH MỤC CHIẾN DỊCH</span>
+            <h1>Danh Sách Hoạt Động Tình Nguyện</h1>
+            <p>Tổng hợp <?= count($allActivities) ?> hoạt động trọng điểm phân theo 5 nhóm chủ đề thực tế — Lựa chọn chương trình phù hợp để tham gia cống hiến.</p>
+        </div>
+        <?php if (Auth::isCoordinator()): ?>
+            <a href="/tao_su_kien.php" class="btn-primary" style="padding: 12px 24px; font-weight: 700; background: #dc2626; border-radius: 8px;">
+                + Thiết Lập Sự Kiện Mới
+            </a>
+        <?php endif; ?>
     </div>
 </div>
 
 <div class="page-content-wrapper">
-    <!-- THANH TÁC VỤ QUẢN TRỊ VIÊN & ĐIỀU PHỐI (NẾU LÀ ĐIỀU PHỐI HOẶC TÙY CHỌN QUẢN LÝ) -->
-    <div class="activity-management-bar">
-        <div class="mgmt-bar-left">
-            <span class="neon-tag-indicator">HỆ THỐNG DỮ LIỆU THỰC ĐỊA</span>
-            <span class="mgmt-counter">Đang hiển thị: <strong><?= $pagination['start_index'] ?> - <?= $pagination['end_index'] ?></strong> / Tổng số <strong><?= $pagination['total'] ?></strong> hoạt động</span>
-        </div>
-        <div class="mgmt-bar-right">
-            <button type="button" class="btn-neon-action" onclick="openCreateActivityModal()">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Thêm Hoạt Động Mới
-            </button>
-            <a href="/quan_ly_tnv.php" class="btn-mgmt-link" title="Chuyển sang trang Quản lý Lực lượng Tình nguyện viên">
-                Quản Lý TNV &rarr;
+    <!-- THÔNG BÁO KẾT QUẢ ĐĂNG KÝ HOẠT ĐỘNG -->
+    <?php if (!empty($_SESSION['flash_success'])): ?>
+        <div class="alert-success-banner" style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 12px rgba(5,150,105,0.08);">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <span style="display: inline-flex; width: 32px; height: 32px; background: #059669; color: #ffffff; border-radius: 50%; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; flex-shrink: 0;">&#10003;</span>
+                <span style="color: #065f46; font-size: 0.96rem; font-weight: 600; line-height: 1.5;"><?= htmlspecialchars($_SESSION['flash_success']) ?></span>
+            </div>
+            <a href="/lich_truc.php?tab=my_shifts" class="btn-primary" style="padding: 10px 20px; font-size: 0.9rem; font-weight: 700; background: #059669; border-radius: 8px; text-decoration: none; white-space: nowrap;">
+                Xem Hoạt Động Của Tôi &rarr;
             </a>
         </div>
-    </div>
+        <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
 
-    <!-- KHUNG LỌC HOẠT ĐỘNG -->
-    <div class="advanced-filter-card">
-        <form method="get" class="filter-flex-form">
-            <div class="filter-item-input">
-                <label for="q">Từ khóa tìm kiếm</label>
-                <input type="text" id="q" name="q" placeholder="Nhập tên hoạt động, địa bàn, người phụ trách..." value="<?= htmlspecialchars($q) ?>">
+    <?php if (!empty($_SESSION['flash_error'])): ?>
+        <div class="alert-error-banner" style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 12px; padding: 14px 20px; margin-bottom: 24px; color: #be123c; font-weight: 500;">
+            <strong style="color: #9f1239;">Thông báo:</strong> <?= htmlspecialchars($_SESSION['flash_error']) ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+
+    <!-- KHUNG LỌC HOẠT ĐỘNG THU GỌN 1 DÒNG DUY NHẤT -->
+    <div class="advanced-filter-card" style="padding: 10px 14px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+        <form method="get" class="filter-single-row-form" style="display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; overflow-x: auto; margin: 0; padding-bottom: 2px;">
+            <!-- Ô tìm kiếm thu gọn -->
+            <div style="flex: 2; min-width: 170px;">
+                <input type="text" id="q" name="q" placeholder="🔍 Tìm tên, địa bàn..." value="<?= htmlspecialchars($q) ?>" style="width: 100%; height: 38px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; background: #f8fafc;">
             </div>
 
-            <div class="filter-item-select">
-                <label for="cat">Nhóm chủ đề</label>
-                <select id="cat" name="cat">
-                    <option value="">— Tất cả 5 nhóm chủ đề —</option>
+            <!-- Nhóm chủ đề -->
+            <div style="flex: 1.3; min-width: 135px;">
+                <select id="cat" name="cat" style="width: 100%; height: 38px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; background: #ffffff;">
+                    <option value="">— Chủ đề —</option>
                     <?php foreach ($categories as $catKey => $cat): ?>
                         <option value="<?= $catKey ?>" <?= $selectedCat === $catKey ? 'selected' : '' ?>>
                             <?= htmlspecialchars($cat['short_name'] ?? $cat['name']) ?>
@@ -169,27 +166,59 @@ require __DIR__ . '/../templates/header.php';
                 </select>
             </div>
 
-            <div class="filter-item-select">
-                <label for="shift">Ca làm việc</label>
-                <select id="shift" name="shift">
-                    <option value="">— Mọi ca làm việc —</option>
-                    <option value="Sáng" <?= $selectedShift === 'Sáng' ? 'selected' : '' ?>>Ca Sáng (06:30 – 11:30)</option>
-                    <option value="Chiều" <?= $selectedShift === 'Chiều' ? 'selected' : '' ?>>Ca Chiều (13:30 – 17:30)</option>
-                    <option value="Tối" <?= $selectedShift === 'Tối' ? 'selected' : '' ?>>Ca Tối (18:00 – 21:30)</option>
-                    <option value="Đêm" <?= $selectedShift === 'Đêm' ? 'selected' : '' ?>>Ca Đêm (21:00 – 00:30)</option>
-                    <option value="Cả ngày" <?= $selectedShift === 'Cả ngày' ? 'selected' : '' ?>>Cả ngày (Toàn thời gian)</option>
+            <!-- Ca làm việc -->
+            <div style="flex: 1.1; min-width: 110px;">
+                <select id="shift" name="shift" style="width: 100%; height: 38px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; background: #ffffff;">
+                    <option value="">— Ca trực —</option>
+                    <option value="Sáng" <?= $selectedShift === 'Sáng' ? 'selected' : '' ?>>Ca Sáng</option>
+                    <option value="Chiều" <?= $selectedShift === 'Chiều' ? 'selected' : '' ?>>Ca Chiều</option>
+                    <option value="Tối" <?= $selectedShift === 'Tối' ? 'selected' : '' ?>>Ca Tối</option>
+                    <option value="Đêm" <?= $selectedShift === 'Đêm' ? 'selected' : '' ?>>Ca Đêm</option>
+                    <option value="Cả ngày" <?= $selectedShift === 'Cả ngày' ? 'selected' : '' ?>>Cả ngày</option>
                 </select>
             </div>
 
-            <div class="filter-item-btn">
-                <button type="submit" class="btn-primary nut-loc-chinh">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    Tìm Kiếm
+            <!-- Quy mô -->
+            <div style="flex: 1.1; min-width: 110px;">
+                <select id="scale" name="scale" style="width: 100%; height: 38px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; background: #ffffff;">
+                    <option value="">— Quy mô —</option>
+                    <option value="micro" <?= $selectedScale === 'micro' ? 'selected' : '' ?>>Vi mô (&lt; 15)</option>
+                    <option value="medium" <?= $selectedScale === 'medium' ? 'selected' : '' ?>>Vừa (15 - 35)</option>
+                    <option value="macro" <?= $selectedScale === 'macro' ? 'selected' : '' ?>>Lớn (&gt; 35)</option>
+                </select>
+            </div>
+
+            <!-- Địa bàn -->
+            <div style="flex: 1.1; min-width: 110px;">
+                <select id="region" name="region" style="width: 100%; height: 38px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; background: #ffffff;">
+                    <option value="">— Địa bàn —</option>
+                    <option value="hanoi" <?= $selectedRegion === 'hanoi' ? 'selected' : '' ?>>Hà Nội</option>
+                    <option value="north" <?= $selectedRegion === 'north' ? 'selected' : '' ?>>Tây Bắc</option>
+                    <option value="central" <?= $selectedRegion === 'central' ? 'selected' : '' ?>>Miền Trung</option>
+                    <option value="south" <?= $selectedRegion === 'south' ? 'selected' : '' ?>>TP.HCM & Nam</option>
+                </select>
+            </div>
+
+            <!-- Trạng thái -->
+            <div style="flex: 1.1; min-width: 110px;">
+                <select id="status" name="status" style="width: 100%; height: 38px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box; background: #ffffff;">
+                    <option value="">— Trạng thái —</option>
+                    <option value="urgent" <?= $selectedStatus === 'urgent' ? 'selected' : '' ?>>Tuyển Gấp</option>
+                    <option value="recruiting" <?= $selectedStatus === 'recruiting' ? 'selected' : '' ?>>Đang Tuyển</option>
+                    <option value="full" <?= $selectedStatus === 'full' ? 'selected' : '' ?>>Đã Đủ</option>
+                    <option value="completed" <?= $selectedStatus === 'completed' ? 'selected' : '' ?>>Đã Xong</option>
+                </select>
+            </div>
+
+            <!-- Nút hành động -->
+            <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                <button type="submit" class="btn-primary" style="height: 38px; padding: 0 14px; font-size: 13px; font-weight: 700; border-radius: 6px; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span>Lọc</span>
                 </button>
-                <a href="/hoat_dong.php" class="btn-cancel">Đặt lại</a>
+                <a href="/hoat_dong.php" class="btn-cancel" style="height: 38px; line-height: 38px; padding: 0 12px; font-size: 13px; border-radius: 6px; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center;">
+                    Đặt lại
+                </a>
             </div>
         </form>
     </div>
@@ -201,12 +230,12 @@ require __DIR__ . '/../templates/header.php';
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <span>Tìm thấy <strong><?= count($filtered) ?></strong> hoạt động &bull; Trang <strong><?= $pagination['page'] ?></strong>/<strong><?= $pagination['total_pages'] ?></strong></span>
+            <span>Tìm thấy <strong><?= count($filtered) ?></strong> hoạt động tình nguyện</span>
         </div>
         <div class="category-quick-pills">
             <a href="/hoat_dong.php" class="cat-pill <?= $selectedCat === '' ? 'active' : '' ?>">Tất cả (<?= count($allActivities) ?>)</a>
             <?php foreach ($categories as $k => $c): ?>
-                <?php $cnt = count(array_filter($allActivities, fn($a) => ($a['category'] ?? '') === $k)); ?>
+                <?php $cnt = count(array_filter($allActivities, fn($a) => $a['category'] === $k)); ?>
                 <a href="/hoat_dong.php?cat=<?= $k ?>" class="cat-pill <?= $selectedCat === $k ? 'active' : '' ?>">
                     <?= htmlspecialchars($c['short_name']) ?> (<?= $cnt ?>)
                 </a>
@@ -215,7 +244,7 @@ require __DIR__ . '/../templates/header.php';
     </div>
 
     <!-- DANH SÁCH THẺ HOẠT ĐỘNG -->
-    <?php if (empty($displayActivities)): ?>
+    <?php if (empty($filtered)): ?>
         <div class="no-activity-found">
             <h3>Không tìm thấy hoạt động phù hợp</h3>
             <p>Vui lòng thử tìm kiếm lại với tiêu chí khác hoặc xem toàn bộ danh sách.</p>
@@ -223,7 +252,7 @@ require __DIR__ . '/../templates/header.php';
         </div>
     <?php else: ?>
         <div class="activities-grid">
-            <?php foreach ($displayActivities as $act): ?>
+            <?php foreach ($paginatedActivities as $act): ?>
                 <?php 
                     $catInfo = $categories[$act['category']] ?? [
                         'name' => $act['category'],
@@ -242,24 +271,11 @@ require __DIR__ . '/../templates/header.php';
                         <span class="act-cat-badge" style="background-color: <?= $catInfo['bg_color'] ?>; color: <?= $catInfo['color'] ?>; border: 1px solid <?= $catInfo['color'] ?>40;">
                             [<?= htmlspecialchars($catInfo['code'] ?? 'TNV') ?>] <?= htmlspecialchars($catInfo['short_name'] ?? $catInfo['name']) ?>
                         </span>
-                        
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <?php if ($isFull): ?>
-                                <span class="badge-status-full">Đã đủ quân số</span>
-                            <?php else: ?>
-                                <span class="badge-status-open">Còn <?= $remaining ?> suất</span>
-                            <?php endif; ?>
-
-                            <!-- Nút Thao Tác Nhanh (Sửa / Xóa) -->
-                            <div class="act-crud-actions">
-                                <button type="button" class="btn-crud-icon" title="Chỉnh sửa hoạt động" onclick='openEditActivityModal(<?= $jsonData ?>)'>
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                                </button>
-                                <button type="button" class="btn-crud-icon btn-crud-del" title="Xóa hoạt động" onclick="confirmDeleteActivity(<?= (int)$act['id'] ?>, '<?= htmlspecialchars(addslashes($act['title'])) ?>')">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                </button>
-                            </div>
-                        </div>
+                        <?php if ($isFull): ?>
+                            <span class="badge-status-full">Đã đủ quân số</span>
+                        <?php else: ?>
+                            <span class="badge-status-open">Còn <?= $remaining ?> suất</span>
+                        <?php endif; ?>
                     </div>
 
                     <h3 class="act-title">
@@ -283,7 +299,7 @@ require __DIR__ . '/../templates/header.php';
                         </div>
                         <div class="act-info-item">
                             <span class="info-label">Ca trực:</span>
-                            <span class="info-text"><?= htmlspecialchars(implode(', ', $act['shifts'] ?? [])) ?></span>
+                            <span class="info-text"><?= htmlspecialchars(implode(', ', $act['shifts'])) ?></span>
                         </div>
                         <div class="act-info-item">
                             <span class="info-label">Chỉ huy:</span>
@@ -293,7 +309,7 @@ require __DIR__ . '/../templates/header.php';
 
                     <div class="skills-preview-row">
                         <span class="skills-label">Ưu tiên:</span>
-                        <?php foreach (array_slice($act['skills_needed'] ?? [], 0, 3) as $sk): ?>
+                        <?php foreach (array_slice($act['skills_needed'], 0, 3) as $sk): ?>
                             <span class="pill-skill-sm"><?= htmlspecialchars($sk) ?></span>
                         <?php endforeach; ?>
                     </div>
@@ -313,321 +329,36 @@ require __DIR__ . '/../templates/header.php';
                             Chi Tiết
                         </button>
 
+                        <?php if (Auth::isCoordinator()): ?>
+                            <a href="/chinh_sua_du_an.php?id=<?= $act['id'] ?>&from=hoat_dong" class="btn-action-pro" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 12px; border-radius: 6px; background: #0284c7; color: #ffffff; text-decoration: none; font-size: 0.82rem; font-weight: 700; border: none; box-shadow: 0 1px 3px rgba(2,132,199,0.3);" title="Chỉnh sửa thông tin chiến dịch">
+                                &#9998; Sửa Dự Án
+                            </a>
+                        <?php endif; ?>
+
                         <?php if ($isFull): ?>
                             <button type="button" class="btn-act-join disabled" disabled title="Hoạt động này đã đủ số lượng TNV">
                                 Đã Đủ Quân Số
                             </button>
                         <?php else: ?>
-                            <a href="/register.php?event_id=<?= (int)$act['id'] ?>" class="btn-act-join">
-                                Đăng Ký Ca
-                            </a>
+                            <button type="button" class="btn-act-join btn-open-register-modal" data-activity='<?= $jsonData ?>'>
+                                Đăng Ký Tham Gia
+                            </button>
                         <?php endif; ?>
                     </div>
                 </article>
             <?php endforeach; ?>
         </div>
 
-        <!-- KHUNG PHÂN TRANG HIỆN ĐẠI (PAGINATION CONTROLS) -->
-        <?php if ($pagination['total_pages'] > 1): ?>
-            <div class="pagination-container">
-                <div class="pagination-info">
-                    Hiển thị <strong><?= $pagination['start_index'] ?> - <?= $pagination['end_index'] ?></strong> của <strong><?= $pagination['total'] ?></strong> hoạt động
-                </div>
-
-                <div class="pagination-nav">
-                    <!-- Nút Trang Trước -->
-                    <?php if ($pagination['has_prev']): ?>
-                        <a href="?<?= http_build_query(array_merge($_GET, ['page' => $pagination['prev_page']])) ?>" class="page-nav-btn" title="Trang trước">&larr; Trước</a>
-                    <?php else: ?>
-                        <span class="page-nav-btn disabled">&larr; Trước</span>
-                    <?php endif; ?>
-
-                    <!-- Các nút số trang -->
-                    <?php for ($p = 1; $p <= $pagination['total_pages']; $p++): ?>
-                        <?php if ($p === $pagination['page']): ?>
-                            <span class="page-number-btn active"><?= $p ?></span>
-                        <?php else: ?>
-                            <a href="?<?= http_build_query(array_merge($_GET, ['page' => $p])) ?>" class="page-number-btn"><?= $p ?></a>
-                        <?php endif; ?>
-                    <?php endfor; ?>
-
-                    <!-- Nút Trang Kế Tiếp -->
-                    <?php if ($pagination['has_next']): ?>
-                        <a href="?<?= http_build_query(array_merge($_GET, ['page' => $pagination['next_page']])) ?>" class="page-nav-btn" title="Trang sau">Sau &rarr;</a>
-                    <?php else: ?>
-                        <span class="page-nav-btn disabled">Sau &rarr;</span>
-                    <?php endif; ?>
-                </div>
-
-                <div class="pagination-per-page">
-                    <label for="per_page_select">Hiển thị:</label>
-                    <select id="per_page_select" onchange="changePerPage(this.value)">
-                        <option value="6" <?= $perPage === 6 ? 'selected' : '' ?>>6 / trang</option>
-                        <option value="12" <?= $perPage === 12 ? 'selected' : '' ?>>12 / trang</option>
-                        <option value="24" <?= $perPage === 24 ? 'selected' : '' ?>>24 / trang</option>
-                    </select>
-                </div>
-            </div>
-        <?php endif; ?>
+        <!-- THANH PHÂN TRANG HOẠT ĐỘNG -->
+        <?= Pagination::render(
+            $paginationData['page'], 
+            $paginationData['total_pages'], 
+            $paginationData['total'], 
+            $paginationData['per_page'], 
+            '/hoat_dong.php', 
+            ['cat' => $selectedCat, 'shift' => $selectedShift, 'scale' => $selectedScale, 'region' => $selectedRegion, 'status' => $selectedStatus, 'q' => $q]
+        ) ?>
     <?php endif; ?>
 </div>
-
-<!-- ========================================================
-     MODAL 1: THÊM MỚI HOẠT ĐỘNG TÌNH NGUYỆN
-     ======================================================== -->
-<div id="modal_create_activity" class="app-modal" role="dialog" aria-modal="true" style="display: none;">
-    <div class="modal-backdrop" onclick="closeCreateActivityModal()"></div>
-    <div class="modal-window" style="max-width: 680px;">
-        <div class="modal-header">
-            <div>
-                <span class="modal-category-badge cat-thuc_te_moi_truong">THÊM CHIẾN DỊCH</span>
-                <h3 class="modal-title">Tạo Hoạt Động Tình Nguyện Mới</h3>
-            </div>
-            <button type="button" class="modal-close-btn" onclick="closeCreateActivityModal()">&times;</button>
-        </div>
-
-        <form method="POST" action="/hoat_dong.php">
-            <input type="hidden" name="action" value="create_activity">
-            <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
-                <div class="auth-input-group">
-                    <label for="c_title">Tên chiến dịch / Hoạt động <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="c_title" name="title" required placeholder="Ví dụ: Chiến dịch Đông Ấm Y Tý 2026...">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="auth-input-group">
-                        <label for="c_cat">Nhóm chủ đề <span style="color:#dc2626;">*</span></label>
-                        <select id="c_cat" name="category" required>
-                            <?php foreach ($categories as $k => $c): ?>
-                                <option value="<?= $k ?>"><?= htmlspecialchars($c['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="auth-input-group">
-                        <label for="c_capacity">Chỉ tiêu quân số (TNV) <span style="color:#dc2626;">*</span></label>
-                        <input type="number" id="c_capacity" name="capacity" value="30" min="1" max="500" required>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="auth-input-group">
-                        <label for="c_date">Thời gian diễn ra</label>
-                        <input type="text" id="c_date" name="date_string" placeholder="Chủ Nhật hàng tuần...">
-                    </div>
-                    <div class="auth-input-group">
-                        <label for="c_time">Khung giờ</label>
-                        <input type="text" id="c_time" name="time_range" placeholder="07:30 – 11:30">
-                    </div>
-                </div>
-
-                <div class="auth-input-group">
-                    <label for="c_location">Địa bàn hoạt động <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="c_location" name="location" required placeholder="Địa chỉ cụ thể nơi diễn ra hoạt động...">
-                </div>
-
-                <div class="auth-input-group">
-                    <label for="c_meeting">Điểm tập kết đón xe</label>
-                    <input type="text" id="c_meeting" name="meeting_point" placeholder="Cổng Công viên Thống Nhất...">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="auth-input-group">
-                        <label for="c_leader">Chỉ huy phụ trách</label>
-                        <input type="text" id="c_leader" name="leader_name" value="Trần Hoàng Nam">
-                    </div>
-                    <div class="auth-input-group">
-                        <label for="c_phone">SĐT Chỉ huy</label>
-                        <input type="text" id="c_phone" name="leader_phone" value="0912.456.789">
-                    </div>
-                </div>
-
-                <div class="auth-input-group">
-                    <label for="c_shifts">Các ca làm việc (mỗi ca 1 dòng)</label>
-                    <textarea id="c_shifts" name="shifts" rows="2" placeholder="Ca Sáng (07:30 – 11:30)&#10;Ca Chiều (13:30 – 17:00)">Ca Sáng (07:30 – 11:30)</textarea>
-                </div>
-
-                <div class="auth-input-group">
-                    <label for="c_skills">Kỹ năng ưu tiên (ngăn cách bằng dấu phẩy)</label>
-                    <input type="text" id="c_skills" name="skills_needed" value="Thể lực tốt, Làm việc nhóm, Sơ cấp cứu">
-                </div>
-
-                <div class="auth-input-group">
-                    <label for="c_summary">Mô tả tóm tắt</label>
-                    <textarea id="c_summary" name="summary" rows="2" placeholder="Nội dung tóm tắt mục tiêu và ý nghĩa chiến dịch..."></textarea>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeCreateActivityModal()">Hủy</button>
-                <button type="submit" class="btn-primary">Tạo Hoạt Động Mới</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ========================================================
-     MODAL 2: CHỈNH SỬA HOẠT ĐỘNG TÌNH NGUYỆN
-     ======================================================== -->
-<div id="modal_edit_activity" class="app-modal" role="dialog" aria-modal="true" style="display: none;">
-    <div class="modal-backdrop" onclick="closeEditActivityModal()"></div>
-    <div class="modal-window" style="max-width: 680px;">
-        <div class="modal-header">
-            <div>
-                <span class="modal-category-badge cat-dieu_phoi">CHỈNH SỬA CHIẾN DỊCH</span>
-                <h3 class="modal-title" id="edit_modal_heading">Chỉnh Sửa Hoạt Động</h3>
-            </div>
-            <button type="button" class="modal-close-btn" onclick="closeEditActivityModal()">&times;</button>
-        </div>
-
-        <form method="POST" action="/hoat_dong.php">
-            <input type="hidden" name="action" value="update_activity">
-            <input type="hidden" name="id" id="edit_act_id">
-
-            <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
-                <div class="auth-input-group">
-                    <label for="edit_title">Tên chiến dịch / Hoạt động <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="edit_title" name="title" required>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="auth-input-group">
-                        <label for="edit_cat">Nhóm chủ đề</label>
-                        <select id="edit_cat" name="category" required>
-                            <?php foreach ($categories as $k => $c): ?>
-                                <option value="<?= $k ?>"><?= htmlspecialchars($c['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="auth-input-group">
-                        <label for="edit_capacity">Chỉ tiêu tiếp nhận</label>
-                        <input type="number" id="edit_capacity" name="capacity" min="1" max="500" required>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="auth-input-group">
-                        <label for="edit_registered">Số lượng đã đăng ký</label>
-                        <input type="number" id="edit_registered" name="registered" min="0">
-                    </div>
-                    <div class="auth-input-group">
-                        <label for="edit_status">Trạng thái tiếp nhận</label>
-                        <select id="edit_status" name="status">
-                            <option value="recruiting">Đang tuyển quân</option>
-                            <option value="full">Đã đủ quân số</option>
-                            <option value="completed">Đã hoàn thành</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="auth-input-group">
-                        <label for="edit_date">Thời gian</label>
-                        <input type="text" id="edit_date" name="date_string">
-                    </div>
-                    <div class="auth-input-group">
-                        <label for="edit_time">Khung giờ</label>
-                        <input type="text" id="edit_time" name="time_range">
-                    </div>
-                </div>
-
-                <div class="auth-input-group">
-                    <label for="edit_location">Địa bàn hoạt động</label>
-                    <input type="text" id="edit_location" name="location" required>
-                </div>
-
-                <div class="auth-input-group">
-                    <label for="edit_meeting">Điểm tập kết đón xe</label>
-                    <input type="text" id="edit_meeting" name="meeting_point">
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="auth-input-group">
-                        <label for="edit_leader">Chỉ huy phụ trách</label>
-                        <input type="text" id="edit_leader" name="leader_name">
-                    </div>
-                    <div class="auth-input-group">
-                        <label for="edit_phone">SĐT Chỉ huy</label>
-                        <input type="text" id="edit_phone" name="leader_phone">
-                    </div>
-                </div>
-
-                <div class="auth-input-group">
-                    <label for="edit_shifts">Các ca làm việc (mỗi ca 1 dòng)</label>
-                    <textarea id="edit_shifts" name="shifts" rows="2"></textarea>
-                </div>
-
-                <div class="auth-input-group">
-                    <label for="edit_skills">Kỹ năng ưu tiên (ngăn cách bằng dấu phẩy)</label>
-                    <input type="text" id="edit_skills" name="skills_needed">
-                </div>
-
-                <div class="auth-input-group">
-                    <label for="edit_summary">Mô tả tóm tắt</label>
-                    <textarea id="edit_summary" name="summary" rows="2"></textarea>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeEditActivityModal()">Hủy</button>
-                <button type="submit" class="btn-primary">Lưu Thay Đổi</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ========================================================
-     MODAL 3: XÁC NHẬN XÓA HOẠT ĐỘNG
-     ======================================================== -->
-<form id="form_delete_activity" method="POST" action="/hoat_dong.php" style="display: none;">
-    <input type="hidden" name="action" value="delete_activity">
-    <input type="hidden" name="id" id="delete_act_id">
-</form>
-
-<script>
-function changePerPage(val) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('per_page', val);
-    url.searchParams.set('page', 1);
-    window.location.href = url.toString();
-}
-
-function openCreateActivityModal() {
-    document.getElementById('modal_create_activity').style.display = 'flex';
-}
-function closeCreateActivityModal() {
-    document.getElementById('modal_create_activity').style.display = 'none';
-}
-
-function openEditActivityModal(data) {
-    document.getElementById('edit_act_id').value = data.id || '';
-    document.getElementById('edit_modal_heading').textContent = 'Chỉnh Sửa Chiến Dịch #' + data.id;
-    document.getElementById('edit_title').value = data.title || '';
-    document.getElementById('edit_cat').value = data.category || 'thuc_te_moi_truong';
-    document.getElementById('edit_capacity').value = data.capacity || 20;
-    document.getElementById('edit_registered').value = data.registered || 0;
-    document.getElementById('edit_status').value = data.status || 'recruiting';
-    document.getElementById('edit_date').value = data.date_string || '';
-    document.getElementById('edit_time').value = data.time_range || '';
-    document.getElementById('edit_location').value = data.location || '';
-    document.getElementById('edit_meeting').value = data.meeting_point || '';
-    document.getElementById('edit_leader').value = data.leader_name || '';
-    document.getElementById('edit_phone').value = data.leader_phone || '';
-    document.getElementById('edit_shifts').value = (data.shifts || []).join("\n");
-    document.getElementById('edit_skills').value = (data.skills_needed || []).join(", ");
-    document.getElementById('edit_summary').value = data.summary || '';
-
-    document.getElementById('modal_edit_activity').style.display = 'flex';
-}
-function closeEditActivityModal() {
-    document.getElementById('modal_edit_activity').style.display = 'none';
-}
-
-function confirmDeleteActivity(id, title) {
-    if (confirm('Xác nhận xóa hoạt động:\n"' + title + '"\nThao tác này sẽ loại bỏ hoạt động khỏi danh mục chiến dịch.')) {
-        document.getElementById('delete_act_id').value = id;
-        document.getElementById('form_delete_activity').submit();
-    }
-}
-</script>
 
 <?php require __DIR__ . '/../templates/footer.php'; ?>

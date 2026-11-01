@@ -70,7 +70,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // 3. MODAL CHI TIẾT HOẠT ĐỘNG
+    // 3. MODAL CHI TIẾT HOẠT ĐỘNG & MODAL ĐĂNG KÝ TRỰC TUYẾN
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     const activityModal = document.getElementById('activity_detail_modal');
     const modalTitle = document.getElementById('modal_act_title');
     const modalCategory = document.getElementById('modal_act_category');
@@ -84,7 +94,147 @@ document.addEventListener('DOMContentLoaded', function () {
     const modalSkills = document.getElementById('modal_act_skills');
     const modalBenefits = document.getElementById('modal_act_benefits');
     const modalRegisterBtn = document.getElementById('modal_act_register_btn');
+    const modalQuotaStatus = document.getElementById('modal_act_quota_status');
 
+    let currentViewingActivity = null;
+
+    // Các phần tử của Modal Đăng ký
+    const regModal = document.getElementById('activity_register_modal');
+    const regActId = document.getElementById('reg_modal_act_id');
+    const regActName = document.getElementById('reg_modal_act_name');
+    const regCatBadge = document.getElementById('reg_modal_cat_badge');
+    const regActDate = document.getElementById('reg_modal_act_date');
+    const regActLocation = document.getElementById('reg_modal_act_location');
+    const regShiftsContainer = document.getElementById('reg_modal_shifts_container');
+    const regForm = document.getElementById('activity_register_form');
+
+    // Mở modal đăng ký hoạt động
+    function openRegisterModal(data) {
+        if (!data || !regModal) return;
+
+        // Đóng các modal khác đang mở
+        document.querySelectorAll('.app-modal.open').forEach(m => m.classList.remove('open'));
+
+        if (regActId) regActId.value = data.id || '';
+        if (regActName) regActName.textContent = data.title || 'Chiến dịch tình nguyện';
+        if (regCatBadge) {
+            regCatBadge.textContent = data.category_name || 'ĐĂNG KÝ HOẠT ĐỘNG';
+        }
+        if (regActDate) {
+            regActDate.textContent = (data.date_string || '') + (data.time_range ? ' (' + data.time_range + ')' : '');
+        }
+        if (regActLocation) {
+            regActLocation.textContent = data.location || '';
+        }
+
+        // Đổ dữ liệu ca làm việc chia 2 cột: Thứ (Ngày) & Ca làm việc
+        if (regShiftsContainer) {
+            regShiftsContainer.innerHTML = '';
+            const scheduleDays = data.schedule_days && data.schedule_days.length > 0 
+                ? data.schedule_days 
+                : null;
+
+            if (scheduleDays) {
+                const table = document.createElement('table');
+                table.className = 'reg-schedule-2col-table';
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th class="th-day-col">Thứ (Ngày Diễn Ra)</th>
+                            <th class="th-shift-col">Ca Làm Việc & Khung Giờ (Tích chọn)</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                `;
+                const tbody = table.querySelector('tbody');
+
+                scheduleDays.forEach(day => {
+                    const tr = document.createElement('tr');
+
+                    // Cột 1: Thứ (Ngày)
+                    const tdDay = document.createElement('td');
+                    tdDay.className = 'td-day-info';
+                    tdDay.innerHTML = `
+                        <div class="day-primary-name">${escapeHtml(day.day_name || 'Ngày hoạt động')}</div>
+                        <div class="day-date-sub">${escapeHtml(day.date_string || '')}</div>
+                    `;
+
+                    // Cột 2: Danh sách ca làm việc
+                    const tdShifts = document.createElement('td');
+                    tdShifts.className = 'td-shifts-list';
+
+                    (day.shifts || []).forEach(shift => {
+                        const shiftId = shift.shift_id;
+                        const shiftQuota = parseInt(shift.quota, 10) || 10;
+                        const shiftReg = parseInt(shift.registered, 10) || 0;
+                        const remaining = Math.max(0, shiftQuota - shiftReg);
+                        const isShiftFull = remaining <= 0;
+
+                        const shiftLabel = document.createElement('label');
+                        shiftLabel.className = 'shift-check-card' + (isShiftFull ? ' shift-full' : '');
+
+                        shiftLabel.innerHTML = `
+                            <input type="checkbox" name="selected_shifts[]" value="${escapeHtml(shiftId)}" ${isShiftFull ? 'disabled' : ''}>
+                            <span class="custom-checkbox-marker" aria-hidden="true"></span>
+                            <div class="shift-details-text">
+                                <span class="shift-name-strong">${escapeHtml(shift.shift_name)}</span>
+                                <span class="shift-hours-badge">${escapeHtml(shift.time_range)}</span>
+                                ${shift.skill_req ? `<span class="shift-skill-pill">${escapeHtml(shift.skill_req)}</span>` : ''}
+                            </div>
+                            <span class="shift-quota-indicator ${isShiftFull ? 'quota-full' : 'quota-available'}">
+                                ${isShiftFull ? 'Hết chỗ' : 'Còn ' + remaining + ' suất'}
+                            </span>
+                        `;
+                        tdShifts.appendChild(shiftLabel);
+                    });
+
+                    tr.appendChild(tdDay);
+                    tr.appendChild(tdShifts);
+                    tbody.appendChild(tr);
+                });
+
+                regShiftsContainer.appendChild(table);
+            } else {
+                // Fallback nếu không có schedule_days cấu trúc
+                const fallbackList = document.createElement('div');
+                fallbackList.className = 'fallback-shifts-wrap';
+                (data.shifts || ['Ca Sáng (08:00 - 12:00)']).forEach((sh, idx) => {
+                    const fallbackId = 'SH_' + (data.id || '101') + '_' + idx;
+                    const fLabel = document.createElement('label');
+                    fLabel.className = 'shift-check-card';
+                    fLabel.innerHTML = `
+                        <input type="checkbox" name="selected_shifts[]" value="${escapeHtml(fallbackId)}">
+                        <span class="custom-checkbox-marker" aria-hidden="true"></span>
+                        <div class="shift-details-text">
+                            <span class="shift-name-strong">${escapeHtml(sh)}</span>
+                        </div>
+                    `;
+                    fallbackList.appendChild(fLabel);
+                });
+                regShiftsContainer.appendChild(fallbackList);
+            }
+        }
+
+        regModal.classList.add('open');
+        document.body.classList.add('modal-open');
+    }
+
+    // Gắn sự kiện cho các nút "Đăng Ký Tham Gia" trên từng thẻ hoạt động
+    document.querySelectorAll('.btn-open-register-modal').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const actDataStr = this.getAttribute('data-activity');
+            if (!actDataStr) return;
+            try {
+                const data = JSON.parse(actDataStr);
+                openRegisterModal(data);
+            } catch (err) {
+                console.error('Error parsing activity data:', err);
+            }
+        });
+    });
+
+    // Mở Modal Chi Tiết Hoạt Động
     document.querySelectorAll('.btn-view-activity-detail').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.preventDefault();
@@ -93,6 +243,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             try {
                 const data = JSON.parse(actDataStr);
+                currentViewingActivity = data;
+
                 if (modalTitle) modalTitle.textContent = data.title;
                 if (modalCategory) {
                     modalCategory.textContent = data.category_name;
@@ -140,19 +292,36 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 }
 
-                // Set register link
-                if (modalRegisterBtn) {
-                    modalRegisterBtn.href = '/register.php?event_id=' + data.id;
-                    if (data.status === 'full') {
-                        modalRegisterBtn.textContent = 'Đã đủ chỉ tiêu tuyển quân';
-                        modalRegisterBtn.classList.add('disabled');
-                        modalRegisterBtn.style.pointerEvents = 'none';
-                        modalRegisterBtn.style.opacity = '0.6';
+                // Cập nhật trạng thái và nút Đăng Ký trong Modal Chi Tiết
+                const isFull = (data.registered >= data.capacity) || (data.status === 'full');
+                if (modalQuotaStatus) {
+                    if (isFull) {
+                        modalQuotaStatus.textContent = 'Đã đủ quân số tuyển sinh';
+                        modalQuotaStatus.className = 'quota-pill-status quota-status-full';
                     } else {
-                        modalRegisterBtn.textContent = 'Đăng Ký Tham Gia Hoạt Động';
+                        const remaining = Math.max(0, data.capacity - data.registered);
+                        modalQuotaStatus.textContent = `Đang mở đăng ký (Còn ${remaining} suất)`;
+                        modalQuotaStatus.className = 'quota-pill-status quota-status-open';
+                    }
+                }
+
+                if (modalRegisterBtn) {
+                    if (isFull) {
+                        modalRegisterBtn.textContent = 'Đã Đủ Quân Số';
+                        modalRegisterBtn.classList.add('disabled');
+                        modalRegisterBtn.disabled = true;
+                    } else {
+                        modalRegisterBtn.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            Đăng Ký Tham Gia Hoạt Động
+                        `;
                         modalRegisterBtn.classList.remove('disabled');
-                        modalRegisterBtn.style.pointerEvents = '';
-                        modalRegisterBtn.style.opacity = '1';
+                        modalRegisterBtn.disabled = false;
                     }
                 }
 
@@ -164,7 +333,53 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // 4. MODAL XEM TRƯỚC BIỂU MẪU
+    // Nhấp vào nút "Đăng Ký Tham Gia Hoạt Động" trong Modal Chi Tiết:
+    // Chuyển mượt mà sang Modal Đăng Ký của hoạt động đó
+    if (modalRegisterBtn) {
+        modalRegisterBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (this.disabled || this.classList.contains('disabled')) {
+                showToast('Hoạt động này hiện đã tuyển đủ số lượng.');
+                return;
+            }
+            if (currentViewingActivity) {
+                activityModal.classList.remove('open');
+                openRegisterModal(currentViewingActivity);
+            }
+        });
+    }
+
+    // Kiểm tra tính hợp lệ của Form đăng ký trước khi gửi
+    if (regForm) {
+        regForm.addEventListener('submit', function (e) {
+            const checkedBoxes = regForm.querySelectorAll('input[name="selected_shifts[]"]:checked');
+            if (checkedBoxes.length === 0) {
+                e.preventDefault();
+                showToast('Vui lòng tích chọn ít nhất 1 ca làm việc từ bảng lịch trước khi xác nhận.');
+            }
+        });
+    }
+
+    // Tự động mở modal nếu có tham số URL ?open_reg=ID
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const openRegId = urlParams.get('open_reg') || urlParams.get('event_id');
+        if (openRegId) {
+            const allRegBtns = document.querySelectorAll('.btn-open-register-modal');
+            for (let btn of allRegBtns) {
+                const raw = btn.getAttribute('data-activity');
+                if (raw && (raw.includes('"id":' + openRegId + ',') || raw.includes('"id":"' + openRegId + '"'))) {
+                    btn.click();
+                    break;
+                }
+            }
+        }
+    } catch (e) {
+        // Silent
+    }
+
+    
+// 4. MODAL XEM TRƯỚC BIỂU MẪU
     const formModal = document.getElementById('form_preview_modal');
     const formModalCode = document.getElementById('form_modal_code');
     const formModalTitle = document.getElementById('form_modal_title');

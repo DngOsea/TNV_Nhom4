@@ -1,0 +1,1025 @@
+/* ==========================================================================
+   PRO DESIGN THEME SYSTEM - D2L VOLUNTEER PLATFORM
+   Thiết kế đồ họa cao cấp: màu sắc tương phản nổi bật, rực rỡ, hài hòa,
+   chiều sâu 3D sang trọng & hệ thống hiệu ứng transition mượt mà chuẩn mực.
+   ========================================================================== */
+
+:root {
+    /* 1. BẢNG MÀU TƯƠNG PHẢN ĐỒ HỌA RỰC RỠ (VIBRANT & HARMONIOUS PALETTE) */
+    --pro-emerald: #059669;
+    --pro-emerald-light: #10b981;
+    --pro-emerald-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    --pro-emerald-glow: 0 6px 20px -2px rgba(16, 185, 129, 0.4);
+
+    --pro-sapphire: #2563eb;
+    --pro-sapphire-light: #3b82f6;
+    --pro-sapphire-gradient: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+    --pro-sapphire-glow: 0 6px 20px -2px rgba(59, 130, 246, 0.4);
+
+    --pro-amber: #d97706;
+    --pro-amber-light: #f59e0b;
+    --pro-amber-gradient: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+    --pro-amber-glow: 0 6px 20px -2px rgba(245, 158, 11, 0.4);
+
+    --pro-ruby: #dc2626;
+    --pro-ruby-light: #f43f5e;
+    --pro-ruby-gradient: linear-gradient(135deg, #be123c 0%, #f43f5e 100%);
+    --pro-ruby-glow: 0 6px 20px -2px rgba(244, 63, 94, 0.4);
+
+    --pro-violet: #7c3aed;
+    --pro-violet-light: #8b5cf6;
+    --pro-violet-gradient: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
+    --pro-violet-glow: 0 6px 20px -2px rgba(139, 92, 246, 0.4);
+
+    --pro-cyan: #0891b2;
+    --pro-cyan-light: #06b6d4;
+    --pro-cyan-gradient: linear-gradient(135deg, #0e7490 0%, #06b6d4 100%);
+    --pro-cyan-glow: 0 6px 20px -2px rgba(6, 182, 212, 0.4);
+
+    /* 2. NỀN & BỀ MẶT TƯƠNG PHẢN CAO */
+    --pro-surface-bg: #f8fafc;
+    --pro-card-bg: #ffffff;
+    --pro-heading-dark: #0f172a;
+    --pro-text-dark: #1e293b;
+    --pro-text-subtle: #475569;
+    --pro-text-muted: #64748b;
+    --pro-border-card: #e2e8f0;
+    --pro-border-card-hover: #cbd5e1;
+
+    /* 3. HIỆU ỨNG CHUYỂN ĐỘNG & BÓNG ĐỔ (NATURAL SPRING TRANSITIONS) */
+    --pro-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --pro-ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --pro-trans-fast: all 0.18s var(--pro-ease-spring);
+    --pro-trans-normal: all 0.26s var(--pro-ease-spring);
+    --pro-trans-smooth: all 0.38s var(--pro-ease-spring);
+
+    --pro-shadow-card: 0 4px 16px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+    --pro-shadow-hover: 0 16px 32px -4px rgba(15, 23, 42, 0.12), 0 6px 14px -2px rgba(5, 150, 105, 0.12);
+}
+
+/* ==========================================================================
+   1. NỀN CANVAS & TỔNG THỂ TRANG WEB
+   ========================================================================== */
+body.volunteer-theme-body {
+    background-color: var(--pro-surface-bg) !important;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.035) 0px, transparent 45%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.035) 0px, transparent 45%),
+        radial-gradient(at 50% 50%, rgba(139, 92, 246, 0.02) 0px, transparent 50%) !important;
+    color: var(--pro-text-dark) !important;
+    overflow-x: hidden !important;
+}
+
+/* ==========================================================================
+   2. SITE HEADER & THANH ĐIỀU HƯỚNG CAO CẤP (FROSTED GLASS EFFECT)
+   ========================================================================== */
+.site-header-pro {
+    background: rgba(255, 255, 255, 0.94) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border-bottom: 1.5px solid rgba(226, 232, 240, 0.85) !important;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    transition: var(--pro-trans-normal) !important;
+}
+
+.brand-badge-box {
+    background: var(--pro-emerald-gradient) !important;
+    box-shadow: 0 3px 10px rgba(5, 150, 105, 0.35) !important;
+    transition: var(--pro-trans-normal) !important;
+}
+
+.brand-link:hover .brand-badge-box {
+    transform: scale(1.08) rotate(-3deg) !important;
+    box-shadow: 0 5px 16px rgba(5, 150, 105, 0.5) !important;
+}
+
+.brand-title {
+    color: var(--pro-heading-dark) !important;
+    letter-spacing: -0.3px !important;
+}
+
+/* Nav Items với hiệu ứng chuyển động mượt */
+.nav-item {
+    color: var(--pro-text-dark) !important;
+    border: 1px solid transparent !important;
+    transition: var(--pro-trans-normal) !important;
+    position: relative !important;
+}
+
+.nav-item:hover {
+    background: #f1f5f9 !important;
+    color: var(--pro-emerald) !important;
+    transform: translateY(-1.5px) !important;
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+    color: #047857 !important;
+    border: 1px solid #a7f3d0 !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2) !important;
+    font-weight: 700 !important;
+}
+
+.nav-item.nav-highlight {
+    background: var(--pro-emerald-gradient) !important;
+    color: #ffffff !important;
+    box-shadow: var(--pro-emerald-glow) !important;
+}
+
+.nav-item.nav-highlight:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.45) !important;
+    filter: brightness(1.05) !important;
+}
+
+/* Dropdown menu hiệu ứng bay mượt */
+.nav-sub-dropdown {
+    background: #ffffff !important;
+    border: 1.5px solid rgba(226, 232, 240, 0.95) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 20px 38px -4px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.06) !important;
+    animation: proDropdownFadeIn 0.22s var(--pro-ease-spring) !important;
+}
+
+@keyframes proDropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.nav-sub-link {
+    transition: var(--pro-trans-fast) !important;
+    border-radius: 10px !important;
+}
+
+.nav-sub-link:hover {
+    background: #f8fafc !important;
+    transform: translateX(4px) !important;
+}
+
+/* Color chips for dropdowns & submenus */
+.chip-ruby { background: #ffe4e6 !important; color: #e11d48 !important; }
+.chip-amber { background: #fef3c7 !important; color: #d97706 !important; }
+.chip-emerald { background: #d1fae5 !important; color: #059669 !important; }
+.chip-sapphire { background: #dbeafe !important; color: #2563eb !important; }
+.chip-violet { background: #ede9fe !important; color: #7c3aed !important; }
+.chip-cyan { background: #cffafe !important; color: #0891b2 !important; }
+.chip-slate { background: #f1f5f9 !important; color: #475569 !important; }
+
+.dropdown-icon-chip {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 13px !important;
+    flex-shrink: 0 !important;
+    transition: var(--pro-trans-fast) !important;
+}
+
+.sub-icon {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 15px !important;
+    flex-shrink: 0 !important;
+    transition: var(--pro-trans-fast) !important;
+}
+
+.nav-sub-link:hover .sub-icon {
+    transform: scale(1.15) !important;
+}
+
+.user-profile-dropdown {
+    min-width: 270px !important;
+    border-radius: 16px !important;
+    border: 1.5px solid rgba(226, 232, 240, 0.95) !important;
+    box-shadow: 0 20px 45px -8px rgba(15, 23, 42, 0.22), 0 6px 16px rgba(15, 23, 42, 0.08) !important;
+    padding: 10px !important;
+    background: #ffffff !important;
+    animation: proDropdownFadeIn 0.22s var(--pro-ease-spring) !important;
+}
+
+.dropdown-links {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+}
+
+.dropdown-link-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 9px 12px !important;
+    border-radius: 10px !important;
+    color: var(--pro-text-dark) !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    transition: var(--pro-trans-fast) !important;
+}
+
+.dropdown-link-item:hover {
+    background: #f8fafc !important;
+    transform: translateX(5px) !important;
+    color: var(--pro-heading-dark) !important;
+}
+
+.dropdown-link-item:hover .dropdown-icon-chip {
+    transform: scale(1.15) rotate(-4deg) !important;
+}
+
+.dropdown-link-label {
+    flex: 1 !important;
+    white-space: nowrap !important;
+}
+
+.nav-bch-pill {
+    background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%) !important;
+    color: #ffffff !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    padding: 1px 6px !important;
+    border-radius: 6px !important;
+    margin-left: 4px !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 6px rgba(225, 29, 72, 0.35) !important;
+    display: inline-block !important;
+}
+
+/* User Badge với viền rực rỡ */
+.user-profile-badge {
+    border: 1.5px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
+    transition: var(--pro-trans-normal) !important;
+}
+
+.user-profile-badge:hover {
+    border-color: var(--pro-emerald) !important;
+    transform: translateY(-1.5px) !important;
+    box-shadow: var(--pro-emerald-glow) !important;
+}
+
+.avatar-circle {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    transition: var(--pro-trans-normal) !important;
+}
+
+.user-profile-badge:hover .avatar-circle {
+    transform: scale(1.06) !important;
+}
+
+/* ==========================================================================
+   3. BANNER TIÊU ĐỀ TRANG (HIGH-CONTRAST MIDNIGHT HEROES)
+   ========================================================================== */
+.page-heading-pro,
+.pro-page-header {
+    background: linear-gradient(135deg, #09131f 0%, #0d2238 55%, #064e3b 100%) !important;
+    position: relative !important;
+    border-bottom: 3.5px solid !important;
+    border-image: linear-gradient(90deg, #10b981 0%, #3b82f6 33%, #8b5cf6 66%, #f59e0b 100%) 1 !important;
+    box-shadow: 0 10px 30px rgba(9, 19, 31, 0.25) !important;
+    color: #ffffff !important;
+}
+
+.page-heading-pro h1,
+.pro-page-header h1 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+    letter-spacing: -0.5px !important;
+}
+
+.page-heading-pro p,
+.pro-page-header p {
+    color: #cbd5e1 !important;
+}
+
+.sub-badge {
+    background: rgba(16, 185, 129, 0.22) !important;
+    border: 1px solid #10b981 !important;
+    color: #34d399 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+/* ==========================================================================
+   4. THẺ 5 NHÓM CHỦ ĐỀ TRỌNG ĐIỂM (HOME & DANH MỤC)
+   ========================================================================== */
+.category-card {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: var(--pro-shadow-card) !important;
+    transition: var(--pro-trans-normal) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--cat-accent, var(--pro-emerald));
+    transition: var(--pro-trans-normal);
+}
+
+.category-card:hover {
+    transform: translateY(-6px) !important;
+    border-color: var(--cat-accent, var(--pro-emerald)) !important;
+    box-shadow: 0 20px 36px -4px rgba(15, 23, 42, 0.12), 0 8px 18px -2px rgba(5, 150, 105, 0.15) !important;
+}
+
+.category-card:hover::before {
+    height: 7px;
+}
+
+.cat-action-link {
+    font-weight: 700 !important;
+    transition: var(--pro-trans-fast) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.cat-action-link:hover {
+    transform: translateX(5px) !important;
+}
+
+/* ==========================================================================
+   5. THẺ THỐNG KÊ SỐ LIỆU NHANH (METRIC CARDS NỔI BẬT ĐA MÀU SẮC)
+   ========================================================================== */
+.bang_thong_ke_nhanh {
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    box-shadow: var(--pro-shadow-card) !important;
+    margin: -30px auto 40px !important;
+    position: relative !important;
+    z-index: 20 !important;
+    max-width: 1240px !important;
+    overflow: hidden !important;
+}
+
+.the_so_lieu {
+    padding: 24px 20px !important;
+    transition: var(--pro-trans-normal) !important;
+    position: relative !important;
+    border-right: 1px solid #f1f5f9 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+.stat-icon-bubble {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    margin-bottom: 10px !important;
+    transition: var(--pro-trans-fast) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+}
+
+.the_so_lieu:hover .stat-icon-bubble {
+    transform: scale(1.18) rotate(-6deg) !important;
+}
+
+.bubble-emerald { background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important; color: #059669 !important; }
+.bubble-sapphire { background: linear-gradient(135deg, #dbeafe, #bfdbfe) !important; color: #2563eb !important; }
+.bubble-violet { background: linear-gradient(135deg, #ede9fe, #ddd6fe) !important; color: #7c3aed !important; }
+.bubble-amber { background: linear-gradient(135deg, #fef3c7, #fde68a) !important; color: #d97706 !important; }
+.bubble-ruby { background: linear-gradient(135deg, #ffe4e6, #fecdd3) !important; color: #e11d48 !important; }
+
+.stat-theme-emerald:hover { border-bottom: 3.5px solid #059669 !important; }
+.stat-theme-sapphire:hover { border-bottom: 3.5px solid #2563eb !important; }
+.stat-theme-violet:hover { border-bottom: 3.5px solid #7c3aed !important; }
+.stat-theme-amber:hover { border-bottom: 3.5px solid #d97706 !important; }
+.stat-theme-ruby:hover { border-bottom: 3.5px solid #e11d48 !important; }
+
+.the_so_lieu:hover {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    transform: translateY(-3px) !important;
+}
+
+.the_so_lieu strong {
+    font-size: 2.2rem !important;
+    font-weight: 800 !important;
+    color: var(--pro-heading-dark) !important;
+    letter-spacing: -1px !important;
+    line-height: 1.1 !important;
+}
+
+/* 3 Cột Trụ Điều Phối (Pillar Cards) */
+.pillar-card {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    padding: 28px 24px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: var(--pro-trans-normal) !important;
+    box-shadow: var(--pro-shadow-card) !important;
+}
+
+.pillar-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4.5px;
+    transition: var(--pro-trans-normal);
+}
+
+.pillar-card-sapphire::before { background: var(--pro-sapphire-gradient); }
+.pillar-card-emerald::before { background: var(--pro-emerald-gradient); }
+.pillar-card-amber::before { background: var(--pro-amber-gradient); }
+
+.pillar-card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: var(--pro-shadow-hover) !important;
+}
+
+.pillar-card-sapphire:hover { border-color: var(--pro-sapphire) !important; }
+.pillar-card-emerald:hover { border-color: var(--pro-emerald) !important; }
+.pillar-card-amber:hover { border-color: var(--pro-amber) !important; }
+
+/* 4 Thẻ chỉ số trong Ban Chỉ Huy & Phê Duyệt Vắng */
+.metric-card-interactive {
+    border-radius: 14px !important;
+    transition: var(--pro-trans-normal) !important;
+    box-shadow: var(--pro-shadow-card) !important;
+}
+
+.metric-card-interactive:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 16px 32px -4px rgba(15, 23, 42, 0.12) !important;
+}
+
+/* ==========================================================================
+   6. THẺ HOẠT ĐỘNG & BỘ LỌC ĐA THUỘC TÍNH (HOAT_DONG.PHP)
+   ========================================================================== */
+.activity-card-item {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: var(--pro-shadow-card) !important;
+    transition: var(--pro-trans-normal) !important;
+    overflow: hidden !important;
+}
+
+.activity-card-item:hover {
+    transform: translateY(-6px) !important;
+    border-color: var(--pro-emerald) !important;
+    box-shadow: var(--pro-shadow-hover) !important;
+}
+
+/* Form lọc 1 dòng mượt mà */
+.advanced-filter-card {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: var(--pro-shadow-card) !important;
+    transition: var(--pro-trans-normal) !important;
+}
+
+.advanced-filter-card:focus-within {
+    border-color: var(--pro-emerald) !important;
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.12) !important;
+}
+
+/* ==========================================================================
+   7. BẢNG DỮ LIỆU & CÁC DÒNG HOẠT ĐỘNG (LỊCH TRỰC, ĐIỀU PHỐI, BÁO VẮNG)
+   ========================================================================== */
+.duty-table-container {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    box-shadow: var(--pro-shadow-card) !important;
+    overflow: hidden !important;
+}
+
+.duty-table-modern thead tr {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.duty-table-modern thead th {
+    color: var(--pro-text-dark) !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Dòng dữ liệu tương tác cao */
+.duty-data-row,
+.my-activity-row,
+.all-duty-row {
+    transition: var(--pro-trans-fast) !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    border-left: 3px solid transparent !important;
+}
+
+.duty-data-row:hover,
+.my-activity-row:hover,
+.all-duty-row:hover {
+    background-color: #f8fafc !important;
+    border-left-color: var(--pro-emerald) !important;
+    box-shadow: inset 0 1px 0 rgba(0,0,0,0.03), inset 0 -1px 0 rgba(0,0,0,0.03) !important;
+}
+
+/* ==========================================================================
+   8. NÚT CHỨC NĂNG, NÚT CON MẮT & CÁC NÚT THAO TÁC RỰC RỠ
+   ========================================================================== */
+
+/* Nút Chính (Primary) */
+.btn-primary,
+.nut-loc-chinh,
+button.btn-primary,
+a.btn-primary {
+    background: var(--pro-emerald-gradient) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35) !important;
+    transition: var(--pro-trans-fast) !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.btn-primary:hover,
+.nut-loc-chinh:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--pro-emerald-glow) !important;
+    filter: brightness(1.05) !important;
+}
+
+.btn-primary:active,
+.nut-loc-chinh:active {
+    transform: translateY(0.5px) scale(0.98) !important;
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25) !important;
+}
+
+/* Nút Chi Tiết (Outline/Secondary) */
+.btn-detail {
+    background: #ffffff !important;
+    color: var(--pro-emerald) !important;
+    border: 1.5px solid var(--pro-emerald) !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.08) !important;
+    transition: var(--pro-trans-fast) !important;
+    cursor: pointer !important;
+}
+
+.btn-detail:hover {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.2) !important;
+}
+
+.btn-detail:active {
+    transform: translateY(0.5px) scale(0.98) !important;
+}
+
+/* Nút Con Mắt Xem Lực Lượng (btn-eye-roster) */
+.btn-eye-roster {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+    color: #047857 !important;
+    border: 1.5px solid #a7f3d0 !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.12) !important;
+    transition: var(--pro-trans-fast) !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.btn-eye-roster:hover {
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border-color: #059669 !important;
+    transform: translateY(-1.5px) scale(1.03) !important;
+    box-shadow: var(--pro-emerald-glow) !important;
+}
+
+.btn-eye-roster svg {
+    transition: var(--pro-trans-fast) !important;
+}
+
+.btn-eye-roster:hover svg {
+    transform: scale(1.2) !important;
+    stroke: #ffffff !important;
+}
+
+/* Nút Hủy Báo Vắng (cancel_absence) */
+button[name="action"][value="cancel_absence_request"],
+form:has(input[value="cancel_absence_request"]) button[type="submit"] {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+    color: #047857 !important;
+    border: 1.5px solid #10b981 !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.2) !important;
+    transition: var(--pro-trans-fast) !important;
+}
+
+button[name="action"][value="cancel_absence_request"]:hover,
+form:has(input[value="cancel_absence_request"]) button[type="submit"]:hover {
+    background: #059669 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: var(--pro-emerald-glow) !important;
+}
+
+/* Nút Báo Vắng / Xin Phép Vắng */
+.t-btn-warn {
+    background: #fff1f2 !important;
+    color: #e11d48 !important;
+    border: 1.5px solid #fecdd3 !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    transition: var(--pro-trans-fast) !important;
+}
+
+.t-btn-warn:hover {
+    background: #e11d48 !important;
+    color: #ffffff !important;
+    border-color: #be123c !important;
+    transform: translateY(-1.5px) !important;
+    box-shadow: var(--pro-ruby-glow) !important;
+}
+
+/* Nút Duyệt & Từ Chối trong Phê Duyệt Vắng */
+form[action="/phe_duyet_vang.php"] button[type="submit"]:has(path),
+form[action="/phe_duyet_vang.php"] button[type="submit"] {
+    transition: var(--pro-trans-fast) !important;
+}
+
+form[action="/phe_duyet_vang.php"] button[type="submit"]:hover {
+    transform: translateY(-1.5px) scale(1.03) !important;
+}
+
+/* ==========================================================================
+   9. HUY HIỆU & STATUS TAGS (VIBRANT BADGES)
+   ========================================================================== */
+.t-status-tag,
+.badge-status-open,
+.badge-urgent {
+    transition: var(--pro-trans-fast) !important;
+}
+
+.t-status-tag:hover,
+.badge-status-open:hover,
+.badge-urgent:hover {
+    transform: scale(1.04) !important;
+}
+
+/* Tuyển gấp rực lửa */
+.badge-urgent {
+    background: var(--pro-ruby-gradient) !important;
+    color: #ffffff !important;
+    box-shadow: 0 3px 10px rgba(225, 29, 72, 0.4) !important;
+    animation: proUrgentPulse 2s infinite !important;
+}
+
+@keyframes proUrgentPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(225, 29, 72, 0);
+    }
+}
+
+/* ==========================================================================
+   10. MODAL & POPUP DIALOGS (BLUR BACKDROP & SMOOTH ENTRANCE)
+   ========================================================================== */
+.modal-backdrop-pro,
+.modal-overlay,
+.modal-dialog-pro {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    background: rgba(15, 23, 42, 0.65) !important;
+    transition: opacity 0.25s ease !important;
+}
+
+.modal-content-pro,
+.modal-card,
+.roster-modal-content {
+    background: #ffffff !important;
+    border-radius: 18px !important;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35) !important;
+    animation: proModalPopIn 0.24s var(--pro-ease-spring) !important;
+}
+
+@keyframes proModalPopIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(14px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ==========================================================================
+   11. PHÂN TRANG (PAGINATION)
+   ========================================================================== */
+.app-pagination-wrapper {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 10px 16px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03) !important;
+}
+
+.app-pagination .page-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    padding: 0 8px !important;
+    border-radius: 6px !important;
+    border: 1px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    color: var(--pro-text-dark) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    transition: var(--pro-trans-fast) !important;
+}
+
+.app-pagination .page-link:hover:not(.disabled):not(.active) {
+    background: #f1f5f9 !important;
+    border-color: var(--pro-emerald) !important;
+    color: var(--pro-emerald) !important;
+    transform: translateY(-1px) !important;
+}
+
+.app-pagination .page-link.active {
+    background: var(--pro-emerald-gradient) !important;
+    color: #ffffff !important;
+    border-color: var(--pro-emerald) !important;
+    box-shadow: 0 3px 8px rgba(5, 150, 105, 0.35) !important;
+    transform: scale(1.06) !important;
+}
+
+/* ==========================================================================
+   12. FORM INPUTS & SELECTS (LUMINOUS FOCUS RINGS)
+   ========================================================================== */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+    transition: var(--pro-trans-fast) !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+    border-color: var(--pro-emerald) !important;
+    box-shadow: 0 0 0 3.5px rgba(16, 185, 129, 0.22), 0 2px 6px rgba(0,0,0,0.05) !important;
+    outline: none !important;
+}
+
+/* ==========================================================================
+   13. TAB PILLS (ENTERPRISE PILL TABS)
+   ========================================================================== */
+.tab-nav-pill,
+.admin-tab-btn,
+.tab-profile-pill {
+    transition: var(--pro-trans-fast) !important;
+}
+
+.tab-nav-pill:hover,
+.admin-tab-btn:hover,
+.tab-profile-pill:hover {
+    transform: translateY(-1.5px) !important;
+}
+
+.tab-nav-pill.active,
+.admin-tab-btn.active,
+.tab-profile-pill.active {
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25) !important;
+}
+
+/* ==========================================================================
+   14. CUSTOM SLEEK SCROLLBAR & OVERFLOW CONTROL
+   ========================================================================== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Ngăn ngừa tràn khung hình ngang */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden !important;
+}
+
+.table-responsive,
+.table-scroll-container,
+.duty-table-container {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================================================
+   15. MICRO-INTERACTIONS & GLOW ACCENTS (WORLD-CLASS POLISH)
+   ========================================================================== */
+.btn-primary, .btn-detail, .btn-eye-roster, .nav-item, .metric-card-interactive, .pillar-card, .category-card {
+    will-change: transform, box-shadow;
+}
+
+/* Shimmer shine effect khi hover nút primary */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 40%;
+    height: 200%;
+    background: linear-gradient(
+        60deg,
+        rgba(255, 255, 255, 0) 20%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0) 80%
+    );
+    transform: rotate(25deg);
+    transition: all 0.6s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.btn-primary:hover::after {
+    left: 120%;
+    opacity: 1;
+}
+
+/* Badge số lượng thông báo nhấp nháy êm dịu */
+.badge-count-pill {
+    animation: proBadgeGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes proBadgeGlow {
+    0%, 100% {
+        box-shadow: 0 2px 6px rgba(225, 29, 72, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.6);
+    }
+}
+
+/* ==========================================================================
+   16. BẢNG ĐỐI SOÁT THUẬT TOÁN & KPI CARDS (DOI_SOAT_THUAT_TOAN.PHP)
+   ========================================================================== */
+.scenario-tab {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    transition: var(--pro-trans-normal) !important;
+    box-shadow: var(--pro-shadow-card) !important;
+}
+
+.scenario-tab:hover {
+    transform: translateY(-4px) !important;
+    border-color: var(--pro-emerald) !important;
+    box-shadow: var(--pro-shadow-hover) !important;
+}
+
+.scenario-tab.active {
+    border-color: var(--pro-emerald) !important;
+    background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 100%) !important;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15) !important;
+}
+
+.algo-card {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: var(--pro-shadow-card) !important;
+    transition: var(--pro-trans-normal) !important;
+}
+
+.algo-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: var(--pro-shadow-hover) !important;
+}
+
+.algo-card.highlight {
+    border: 2px solid var(--pro-emerald) !important;
+    box-shadow: 0 8px 30px rgba(16, 185, 129, 0.14) !important;
+    position: relative !important;
+}
+
+.algo-card.highlight::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--pro-emerald-gradient);
+    border-radius: 16px 16px 0 0;
+}
+
+.vs-badge {
+    background: var(--pro-amber-gradient) !important;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35) !important;
+    color: #ffffff !important;
+    transition: var(--pro-trans-fast) !important;
+}
+
+.algo-card-vs:hover .vs-badge {
+    transform: scale(1.15) rotate(5deg) !important;
+}
+
+/* ==========================================================================
+   17. AUTHENTICATION PAGES (LOGIN & REGISTER CARDS)
+   ========================================================================== */
+.khung_xac_thuc_pro {
+    min-height: calc(100vh - 280px);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 40px 20px !important;
+}
+
+.the_tai_khoan_pro {
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.12), 0 6px 18px rgba(15, 23, 42, 0.04) !important;
+    max-width: 480px !important;
+    width: 100% !important;
+    padding: 36px 32px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transition: var(--pro-trans-normal) !important;
+}
+
+.the_tai_khoan_pro::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #10b981 0%, #3b82f6 50%, #8b5cf6 100%);
+}
+
+.the_tai_khoan_pro:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 24px 50px -10px rgba(15, 23, 42, 0.16) !important;
+}
