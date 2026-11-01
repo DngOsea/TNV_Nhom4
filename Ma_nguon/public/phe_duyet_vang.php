@@ -222,10 +222,10 @@ require_once __DIR__ . '/../templates/header.php';
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 28px;">
             <!-- Thẻ 1: Chờ Duyệt (Màu Cam Rực Rỡ) -->
             <a href="/phe_duyet_vang.php?status=pending" style="text-decoration: none; color: inherit;">
-                <div style="background: #ffffff; border-radius: 12px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'pending' ? '#d97706' : '#fde68a' ?>; box-shadow: 0 4px 12px rgba(217,119,6,0.08); transition: transform 0.15s ease;">
+                <div class="metric-card-interactive" style="background: #ffffff; border-radius: 14px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'pending' ? '#d97706' : '#fde68a' ?>; box-shadow: 0 4px 16px rgba(217,119,6,0.12);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span style="font-size: 13px; font-weight: 700; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">Chờ Ban Chỉ Huy Duyệt</span>
-                        <span style="background: #fef3c7; color: #b45309; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 16px;">&#9203;</span>
+                        <span style="background: #fef3c7; color: #b45309; width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 6px rgba(217,119,6,0.15);">&#9203;</span>
                     </div>
                     <div style="font-size: 32px; font-weight: 800; color: #b45309; line-height: 1;">
                         <?= $pendingCount ?>
@@ -238,10 +238,10 @@ require_once __DIR__ . '/../templates/header.php';
 
             <!-- Thẻ 2: Đã Phê Duyệt (Màu Xanh Lá) -->
             <a href="/phe_duyet_vang.php?status=approved" style="text-decoration: none; color: inherit;">
-                <div style="background: #ffffff; border-radius: 12px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'approved' ? '#059669' : '#a7f3d0' ?>; box-shadow: 0 4px 12px rgba(5,150,105,0.08);">
+                <div class="metric-card-interactive" style="background: #ffffff; border-radius: 14px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'approved' ? '#059669' : '#a7f3d0' ?>; box-shadow: 0 4px 16px rgba(5,150,105,0.12);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span style="font-size: 13px; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: 0.5px;">Đã Chấp Thuận Vắng</span>
-                        <span style="background: #ecfdf5; color: #047857; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 16px;">&#10003;</span>
+                        <span style="background: #ecfdf5; color: #047857; width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 6px rgba(5,150,105,0.15);">&#10003;</span>
                     </div>
                     <div style="font-size: 32px; font-weight: 800; color: #047857; line-height: 1;">
                         <?= $approvedCount ?>
@@ -254,10 +254,10 @@ require_once __DIR__ . '/../templates/header.php';
 
             <!-- Thẻ 3: Đã Từ Chối (Màu Đỏ Hồng) -->
             <a href="/phe_duyet_vang.php?status=rejected" style="text-decoration: none; color: inherit;">
-                <div style="background: #ffffff; border-radius: 12px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'rejected' ? '#dc2626' : '#fecaca' ?>; box-shadow: 0 4px 12px rgba(220,38,38,0.08);">
+                <div class="metric-card-interactive" style="background: #ffffff; border-radius: 14px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'rejected' ? '#dc2626' : '#fecaca' ?>; box-shadow: 0 4px 16px rgba(220,38,38,0.12);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span style="font-size: 13px; font-weight: 700; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.5px;">Đã Từ Chối Đơn</span>
-                        <span style="background: #fef2f2; color: #b91c1c; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 16px;">&#10005;</span>
+                        <span style="background: #fef2f2; color: #b91c1c; width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 6px rgba(220,38,38,0.15);">&#10005;</span>
                     </div>
                     <div style="font-size: 32px; font-weight: 800; color: #b91c1c; line-height: 1;">
                         <?= $rejectedCount ?>
@@ -270,10 +270,10 @@ require_once __DIR__ . '/../templates/header.php';
 
             <!-- Thẻ 4: Tổng Số Đơn -->
             <a href="/phe_duyet_vang.php?status=all" style="text-decoration: none; color: inherit;">
-                <div style="background: #ffffff; border-radius: 12px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'all' ? '#0284c7' : '#bae6fd' ?>; box-shadow: 0 4px 12px rgba(2,132,199,0.08);">
+                <div class="metric-card-interactive" style="background: #ffffff; border-radius: 14px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'all' ? '#0284c7' : '#bae6fd' ?>; box-shadow: 0 4px 16px rgba(2,132,199,0.12);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span style="font-size: 13px; font-weight: 700; color: #0369a1; text-transform: uppercase; letter-spacing: 0.5px;">Tổng Lượt Báo Vắng</span>
-                        <span style="background: #f0f9ff; color: #0284c7; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 16px;">&#9776;</span>
+                        <span style="background: #f0f9ff; color: #0284c7; width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 6px rgba(2,132,199,0.15);">&#9776;</span>
                     </div>
                     <div style="font-size: 32px; font-weight: 800; color: #0369a1; line-height: 1;">
                         <?= $totalRequests ?>

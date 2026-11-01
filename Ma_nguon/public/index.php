@@ -84,23 +84,28 @@ require __DIR__ . '/../templates/header.php';
      ======================================================== -->
 <section class="bang_thong_ke_nhanh">
     <div class="luoi_thong_ke">
-        <div class="the_so_lieu">
+        <div class="the_so_lieu stat-theme-emerald">
+            <div class="stat-icon-bubble bubble-emerald">🌱</div>
             <strong>05</strong>
             <span>Nhóm Chủ Đề Hoạt Động</span>
         </div>
-        <div class="the_so_lieu">
+        <div class="the_so_lieu stat-theme-sapphire">
+            <div class="stat-icon-bubble bubble-sapphire">🎯</div>
             <strong>08</strong>
             <span>Chiến Dịch Trọng Điểm</span>
         </div>
-        <div class="the_so_lieu">
+        <div class="the_so_lieu stat-theme-violet">
+            <div class="stat-icon-bubble bubble-violet">👥</div>
             <strong>1.250+</strong>
             <span>Lượt TNV Tham Gia</span>
         </div>
-        <div class="the_so_lieu">
+        <div class="the_so_lieu stat-theme-amber">
+            <div class="stat-icon-bubble bubble-amber">⏱</div>
             <strong>8.600+</strong>
             <span>Giờ Tình Nguyện Cống Hiến</span>
         </div>
-        <div class="the_so_lieu">
+        <div class="the_so_lieu stat-theme-ruby">
+            <div class="stat-icon-bubble bubble-ruby">❤️</div>
             <strong>15.000+</strong>
             <span>Người Dân Thụ Hưởng</span>
         </div>
@@ -156,24 +161,33 @@ require __DIR__ . '/../templates/header.php';
 
     <div class="pillars-three-grid">
         <!-- Cột 1: Phân công ca trực -->
-        <div class="pillar-card">
-            <span class="pillar-number">01</span>
+        <div class="pillar-card pillar-card-sapphire">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="pillar-number">01</span>
+                <span class="pillar-icon-chip chip-sapphire" style="width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px;">⚙</span>
+            </div>
             <h3>Phân Công Ca Trực</h3>
             <p>Theo dõi lịch trực theo ca (Sáng, Chiều, Tối), phân bổ nhân lực và quản lý chỉ tiêu quân số từng địa bàn theo thời gian thực.</p>
             <a href="/phan_cong.php" class="pillar-link">Truy cập bảng phân công &rarr;</a>
         </div>
 
         <!-- Cột 2: Đăng ký trực tuyến & Thẻ điện tử -->
-        <div class="pillar-card">
-            <span class="pillar-number">02</span>
+        <div class="pillar-card pillar-card-emerald">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="pillar-number">02</span>
+                <span class="pillar-icon-chip chip-emerald" style="width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px;">🪪</span>
+            </div>
             <h3>Hồ Sơ & Thẻ Điện Tử</h3>
             <p>Quản lý năng lực chuyên môn, bổ sung kỹ năng tự do và cấp Thẻ Tình Nguyện Viên điện tử kèm mã QR phục vụ điểm danh trực tiếp.</p>
             <a href="/profile.php" class="pillar-link">Cập nhật hồ sơ & kỹ năng &rarr;</a>
         </div>
 
         <!-- Cột 3: Lịch Trực & Báo Vắng Trực Tuyến -->
-        <div class="pillar-card">
-            <span class="pillar-number">03</span>
+        <div class="pillar-card pillar-card-amber">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="pillar-number">03</span>
+                <span class="pillar-icon-chip chip-amber" style="width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px;">📅</span>
+            </div>
             <h3>Lịch Trực & Báo Vắng</h3>
             <p>Tra cứu ca trực cá nhân, kiểm tra đồng đội cùng ca và chủ động gửi thông báo báo vắng trực tuyến để ban chỉ huy kịp thời điều động.</p>
             <a href="/lich_truc.php" class="pillar-link">Xem lịch trực ca ngay &rarr;</a>

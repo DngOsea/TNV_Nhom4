@@ -120,6 +120,7 @@ $topAnnouncements[] = [
 <link rel="stylesheet" href="/assets/css/tokens.css">
 <link rel="stylesheet" href="/assets/css/app.css">
 <link rel="stylesheet" href="/assets/css/ql_tinh_nguyen.css?v=<?= time() ?>">
+<link rel="stylesheet" href="/assets/css/pro_design_theme.css?v=<?= time() ?>">
 <script src="/assets/js/volunteer_portal.js?v=<?= time() ?>" defer></script>
 <script src="/assets/js/banner_chuyen_dong.js?v=<?= time() ?>" defer></script>
 <style>
@@ -231,34 +232,35 @@ body { overflow-x: hidden !important; }
                 </div>
 
                 <div class="nav-item-dropdown-wrap">
-                    <a href="/phan_cong.php" class="nav-item <?= $currentPath === '/phan_cong.php' ? 'active' : '' ?>" style="color: #dc2626; font-weight: 600;">
+                    <a href="/phan_cong.php" class="nav-item nav-item-bch <?= in_array($currentPath, ['/phan_cong.php', '/phe_duyet_vang.php', '/admin_import.php', '/doi_soat_thuat_toan.php'], true) ? 'active' : '' ?>">
                         <span>Điều Phối Hoạt Động</span>
+                        <span class="nav-bch-pill">BCH</span>
                         <span class="nav-caret">&#9662;</span>
                     </a>
                     <div class="nav-sub-dropdown" role="menu">
                         <a href="/phan_cong.php" class="nav-sub-link">
-                            <span class="sub-icon" style="color: #dc2626;">&#9881;</span>
+                            <span class="sub-icon chip-ruby">&#9881;</span>
                             <div class="sub-text">
                                 <strong>Bảng Phân Công Lực Lượng</strong>
                                 <small>Thuật toán Smart Greedy & điều động nhân sự</small>
                             </div>
                         </a>
                         <a href="/phe_duyet_vang.php" class="nav-sub-link">
-                            <span class="sub-icon" style="color: #d97706;">&#9203;</span>
+                            <span class="sub-icon chip-amber">&#9203;</span>
                             <div class="sub-text">
                                 <strong>Phê Duyệt Báo Vắng</strong>
                                 <small>Thẩm định đơn vắng & điều động thay thế</small>
                             </div>
                         </a>
                         <a href="/admin_import.php" class="nav-sub-link">
-                            <span class="sub-icon" style="color: #059669;">&#128194;</span>
+                            <span class="sub-icon chip-emerald">&#128194;</span>
                             <div class="sub-text">
                                 <strong>Quản Trị 50 Dự Án & TNV</strong>
                                 <small>Lọc đa thuộc tính, chỉnh sửa và đồng bộ</small>
                             </div>
                         </a>
                         <a href="/doi_soat_thuat_toan.php" class="nav-sub-link">
-                            <span class="sub-icon" style="color: #2563eb;">&#128202;</span>
+                            <span class="sub-icon chip-sapphire">&#128202;</span>
                             <div class="sub-text">
                                 <strong>Đối Soát Hiệu Suất</strong>
                                 <small>So sánh FCFS vs Smart Greedy</small>
@@ -389,41 +391,53 @@ body { overflow-x: hidden !important; }
 
                         <div class="dropdown-links">
                             <?php if (Auth::isCoordinator()): ?>
-                                <a href="/phan_cong.php" class="dropdown-link-item" style="color: #dc2626; font-weight: 600;">
-                                    Bảng Điều Phối Lực Lượng
+                                <a href="/phan_cong.php" class="dropdown-link-item">
+                                    <span class="dropdown-icon-chip chip-ruby">&#9881;</span>
+                                    <span class="dropdown-link-label">Bảng Điều Phối Lực Lượng</span>
                                 </a>
-                                <a href="/phe_duyet_vang.php" class="dropdown-link-item" style="color: #d97706; font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
-                                    <span>Phê Duyệt Báo Vắng</span>
+                                <a href="/phe_duyet_vang.php" class="dropdown-link-item" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: inline-flex; align-items: center; gap: 10px;">
+                                        <span class="dropdown-icon-chip chip-amber">&#9203;</span>
+                                        <span class="dropdown-link-label">Phê Duyệt Báo Vắng</span>
+                                    </div>
                                     <?php 
                                     $pendingAbsences = Database::getInstance()->getPendingAbsenceCount();
                                     if ($pendingAbsences > 0): ?>
-                                        <span style="background: #dc2626; color: #ffffff; padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 800;"><?= $pendingAbsences ?></span>
+                                        <span style="background: linear-gradient(135deg, #e11d48, #be123c); color: #ffffff; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 800; box-shadow: 0 2px 6px rgba(225,29,72,0.35);"><?= $pendingAbsences ?></span>
                                     <?php endif; ?>
                                 </a>
-                                <a href="/admin_import.php" class="dropdown-link-item" style="color: #059669; font-weight: 600;">
-                                    Cơ Sở Dữ Liệu & Import 50 Ví Dụ
+                                <a href="/admin_import.php" class="dropdown-link-item">
+                                    <span class="dropdown-icon-chip chip-emerald">&#128194;</span>
+                                    <span class="dropdown-link-label">Cơ Sở Dữ Liệu & 50 Ví Dụ</span>
                                 </a>
                                 <a href="/tao_su_kien.php" class="dropdown-link-item">
-                                    + Thiết Lập Hoạt Động Mới
+                                    <span class="dropdown-icon-chip chip-cyan">&#10010;</span>
+                                    <span class="dropdown-link-label">Thiết Lập Hoạt Động Mới</span>
                                 </a>
                                 <a href="/doi_soat_thuat_toan.php" class="dropdown-link-item">
-                                    Báo Cáo Đối Soát Hiệu Suất
+                                    <span class="dropdown-icon-chip chip-sapphire">&#128202;</span>
+                                    <span class="dropdown-link-label">Báo Cáo Đối Soát Hiệu Suất</span>
                                 </a>
                                 <a href="/lich_truc.php" class="dropdown-link-item">
-                                    Lịch Hoạt Động Toàn Đội
+                                    <span class="dropdown-icon-chip chip-violet">&#128197;</span>
+                                    <span class="dropdown-link-label">Lịch Hoạt Động Toàn Đội</span>
                                 </a>
                                 <a href="/profile.php" class="dropdown-link-item">
-                                    Hồ Sơ Ban Chỉ Huy
+                                    <span class="dropdown-icon-chip chip-slate">&#128100;</span>
+                                    <span class="dropdown-link-label">Hồ Sơ Ban Chỉ Huy</span>
                                 </a>
                             <?php else: ?>
-                                <a href="/profile.php" class="dropdown-link-item" style="color: #059669; font-weight: 600;">
-                                    Hồ Sơ & Kỹ Năng Của Tôi
+                                <a href="/profile.php" class="dropdown-link-item">
+                                    <span class="dropdown-icon-chip chip-emerald">&#128100;</span>
+                                    <span class="dropdown-link-label">Hồ Sơ & Kỹ Năng Của Tôi</span>
                                 </a>
                                 <a href="/hoat_dong.php" class="dropdown-link-item">
-                                    Đăng Ký Tham Gia Hoạt Động
+                                    <span class="dropdown-icon-chip chip-sapphire">&#128640;</span>
+                                    <span class="dropdown-link-label">Đăng Ký Tham Gia Hoạt Động</span>
                                 </a>
                                 <a href="/lich_truc.php?tab=my_shifts" class="dropdown-link-item">
-                                    Hoạt Động Của Tôi
+                                    <span class="dropdown-icon-chip chip-amber">&#128197;</span>
+                                    <span class="dropdown-link-label">Hoạt Động Của Tôi</span>
                                 </a>
                             <?php endif; ?>
                         </div>

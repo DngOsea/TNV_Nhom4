@@ -123,45 +123,45 @@ require_once __DIR__ . '/../templates/header.php';
 
         <!-- 4 CARDS TỔNG QUAN HỆ THỐNG -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 26px;">
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; border-top: 4px solid #059669;">
+            <div class="metric-card-interactive" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 20px; border-top: 4px solid #059669; box-shadow: 0 4px 16px rgba(5,150,105,0.08);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase;">Dự Án / Hoạt Động</span>
-                    <span style="background: #ecfdf5; color: #059669; padding: 2px 7px; border-radius: 6px; font-size: 11.5px; font-weight: 700;">5 Nhóm</span>
+                    <span style="background: #ecfdf5; color: #059669; padding: 3px 9px; border-radius: 12px; font-size: 11.5px; font-weight: 700; border: 1px solid #a7f3d0;">5 Nhóm</span>
                 </div>
-                <div style="font-size: 30px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
+                <div style="font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.5px;">
                     <?= $stats['projects_count'] ?> <span style="font-size: 14px; font-weight: 600; color: #64748b;">chiến dịch</span>
                 </div>
                 <div style="font-size: 12.5px; color: #475569;">10 dự án/nhóm (Môi trường, Y tế, GD, Cứu trợ, Chăm sóc)</div>
             </div>
 
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; border-top: 4px solid #2563eb;">
+            <div class="metric-card-interactive" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 20px; border-top: 4px solid #2563eb; box-shadow: 0 4px 16px rgba(37,99,235,0.08);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase;">Tình Nguyện Viên</span>
-                    <span style="background: #eff6ff; color: #2563eb; padding: 2px 7px; border-radius: 6px; font-size: 11.5px; font-weight: 700;">TNV-001 - 050</span>
+                    <span style="background: #eff6ff; color: #2563eb; padding: 3px 9px; border-radius: 12px; font-size: 11.5px; font-weight: 700; border: 1px solid #bfdbfe;">TNV-001 - 050</span>
                 </div>
-                <div style="font-size: 30px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
+                <div style="font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.5px;">
                     <?= $stats['volunteers_count'] ?> <span style="font-size: 14px; font-weight: 600; color: #64748b;">nhân sự</span>
                 </div>
                 <div style="font-size: 12.5px; color: #475569;">Kỹ năng tự nhập, nhóm máu, lịch rảnh & sức khỏe</div>
             </div>
 
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; border-top: 4px solid #d97706;">
+            <div class="metric-card-interactive" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 20px; border-top: 4px solid #d97706; box-shadow: 0 4px 16px rgba(217,119,6,0.08);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase;">Ca Trực & Lượt Gán</span>
-                    <span style="background: #fffbeb; color: #d97706; padding: 2px 7px; border-radius: 6px; font-size: 11.5px; font-weight: 700;">Đa ca/Đa ngày</span>
+                    <span style="background: #fffbeb; color: #d97706; padding: 3px 9px; border-radius: 12px; font-size: 11.5px; font-weight: 700; border: 1px solid #fde68a;">Đa ca/Đa ngày</span>
                 </div>
-                <div style="font-size: 30px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
+                <div style="font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.5px;">
                     <?= $stats['shifts_count'] ?> <span style="font-size: 14px; font-weight: 600; color: #64748b;">ca trực</span>
                 </div>
                 <div style="font-size: 12.5px; color: #475569;"><?= $stats['registrations_count'] ?> lượt phân công mẫu đã liên kết vào ca</div>
             </div>
 
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; border-top: 4px solid #7c3aed;">
+            <div class="metric-card-interactive" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 20px; border-top: 4px solid #7c3aed; box-shadow: 0 4px 16px rgba(124,58,237,0.08);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase;">Cơ Sở Dữ Liệu</span>
-                    <span style="background: #f5f3ff; color: #7c3aed; padding: 2px 7px; border-radius: 6px; font-size: 11.5px; font-weight: 700;"><?= $stats['driver'] ?></span>
+                    <span style="background: #f5f3ff; color: #7c3aed; padding: 3px 9px; border-radius: 12px; font-size: 11.5px; font-weight: 700; border: 1px solid #ddd6fe;"><?= $stats['driver'] ?></span>
                 </div>
-                <div style="font-size: 30px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
+                <div style="font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.5px;">
                     <?= $stats['file_size'] ?>
                 </div>
                 <div style="font-size: 12.5px; color: #475569;">volunteer_platform.sqlite</div>
