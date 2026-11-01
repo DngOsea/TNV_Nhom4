@@ -23,7 +23,7 @@ class Database
     {
         $this->sqlitePath = dirname(__DIR__) . '/data/volunteer_platform.sqlite';
         $this->config = $customConfig ?? [
-            'driver' => getenv('DB_DRIVER') ?: 'sqlite',
+            'driver' => getenv('DB_DRIVER') ?: 'auto',
             'sqlite_path' => $this->sqlitePath,
             'host' => getenv('DB_HOST') ?: '127.0.0.1',
             'port' => getenv('DB_PORT') ?: '3306',
@@ -46,28 +46,34 @@ class Database
 
     private function connect(): void
     {
-        $driver = strtolower($this->config['driver'] ?? 'sqlite');
+        $driver = strtolower($this->config['driver'] ?? 'auto');
 
-        // Thử kết nối MySQL nếu được cấu hình
-        if ($driver === 'mysql' && in_array('mysql', PDO::getAvailableDrivers(), true)) {
-            try {
-                $dsn = sprintf(
-                    'mysql:host=%s;port=%s;dbname=%s;charset=%s',
-                    $this->config['host'],
-                    $this->config['port'],
-                    $this->config['dbname'],
-                    $this->config['charset']
-                );
-                $this->pdo = new PDO($dsn, $this->config['username'], $this->config['password'], [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                ]);
-                $this->driver = 'mysql';
-                $this->autoInitIfEmpty();
-                return;
-            } catch (Throwable $e) {
-                error_log("Database: MySQL connection failed (" . $e->getMessage() . "), falling back to SQLite.");
+        // Thử kết nối MySQL nếu được cấu hình hoặc chế độ auto (thử cả port 3306 và 3307)
+        if (($driver === 'mysql' || $driver === 'auto') && in_array('mysql', PDO::getAvailableDrivers(), true)) {
+            $portsToTry = array_unique([(int)($this->config['port'] ?? 3306), 3307, 3306]);
+            foreach ($portsToTry as $p) {
+                try {
+                    $dsn = sprintf(
+                        'mysql:host=%s;port=%d;dbname=%s;charset=%s',
+                        $this->config['host'],
+                        $p,
+                        $this->config['dbname'],
+                        $this->config['charset']
+                    );
+                    $this->pdo = new PDO($dsn, $this->config['username'], $this->config['password'], [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                        PDO::ATTR_TIMEOUT => 2,
+                    ]);
+                    $this->driver = 'mysql';
+                    $this->config['port'] = $p;
+                    $this->autoInitIfEmpty();
+                    return;
+                } catch (Throwable $e) {
+                    // Thử port tiếp theo
+                }
             }
+            error_log("Database: MySQL connection skipped/failed, falling back to SQLite.");
         }
 
         // Mặc định kết nối SQLite
@@ -1210,5 +1216,291 @@ class Database
             'message' => 'Đã hủy báo vắng thành công. Trạng thái tham gia của bạn đã được khôi phục về ĐÃ XÁC NHẬN.',
             'cancelled_count' => $cancelledCount
         ];
+    }
+
+    /**
+     * Ánh xạ mã ca trực sang project_id tương ứng
+     */
+    public static function mapShiftToProjectId(string $shiftId): int
+    {
+        $map = [
+            'CA-01' => 101, 'CA-02' => 101,
+            'CA-03' => 201, 'CA-04' => 201,
+            'CA-05' => 401, 'CA-06' => 301,
+            'CA-07' => 501, 'CA-08' => 401,
+            'CA-09' => 301, 'CA-10' => 201,
+            'CA-11' => 104, 'CA-12' => 501
+        ];
+        if (isset($map[$shiftId])) {
+            return $map[$shiftId];
+        }
+        if (preg_match('/^(\d+)/', $shiftId, $m)) {
+            return (int)$m[1];
+        }
+        return 101;
+    }
+
+    /**
+     * Đảm bảo ca trực tồn tại trong bảng shifts trước khi chèn registration
+     */
+    public function ensureShiftExists(string $shiftId, array $shiftData = []): void
+    {
+        if (!$this->isAvailable()) return;
+        try {
+            $check = $this->pdo->prepare("SELECT id FROM shifts WHERE id = ?");
+            $check->execute([$shiftId]);
+            if (!$check->fetch()) {
+                $projId = self::mapShiftToProjectId($shiftId);
+                $stmt = $this->pdo->prepare("
+                    INSERT INTO shifts (id, project_id, day_code, day_name, shift_name, time_range, capacity, registered, skill_req, skill_group)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ");
+                $stmt->execute([
+                    $shiftId,
+                    $projId,
+                    $shiftData['day_code'] ?? 'day_1',
+                    $shiftData['day_name'] ?? 'Ngày trực thực địa',
+                    $shiftData['shift_name'] ?? ('Ca Trực ' . $shiftId),
+                    $shiftData['time_slot'] ?? ($shiftData['time_range'] ?? '08:00 - 12:00'),
+                    (int)($shiftData['needed_count'] ?? ($shiftData['capacity'] ?? 15)),
+                    0,
+                    implode(', ', $shiftData['required_skills'] ?? []),
+                    $shiftData['required_skills'][0] ?? 'hau_can'
+                ]);
+            }
+        } catch (Throwable $e) {
+            error_log("Database: ensureShiftExists error: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * ĐỒNG BỘ TOÀN BỘ BẢNG PHÂN CÔNG CA TRỰC VÀO CƠ SỞ DỮ LIỆU (MYSQL / SQLITE)
+     */
+    public function saveDutySchedule(array $dutySchedules): bool
+    {
+        if (!$this->isAvailable() || empty($dutySchedules)) {
+            return false;
+        }
+
+        try {
+            $shiftIds = array_keys($dutySchedules);
+            if (empty($shiftIds)) return true;
+
+            // Xóa các phân công cũ của các ca này
+            $inClause = implode(',', array_fill(0, count($shiftIds), '?'));
+            $deleteStmt = $this->pdo->prepare("DELETE FROM volunteer_registrations WHERE shift_id IN ($inClause)");
+            $deleteStmt->execute($shiftIds);
+
+            // Chèn danh sách phân công mới
+            $insertStmt = $this->pdo->prepare("
+                INSERT INTO volunteer_registrations (volunteer_id, project_id, shift_id, role_in_shift, status)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+
+            $updateShiftStmt = $this->pdo->prepare("
+                UPDATE shifts SET registered = ? WHERE id = ?
+            ");
+
+            foreach ($dutySchedules as $sId => $s) {
+                $this->ensureShiftExists((string)$sId, $s);
+                $projId = self::mapShiftToProjectId((string)$sId);
+                $assigned = $s['assigned_volunteers'] ?? [];
+                $activeCount = 0;
+
+                foreach ($assigned as $v) {
+                    $vId = $v['id'] ?? '';
+                    if (empty($vId)) continue;
+                    $status = $v['status'] ?? 'confirmed';
+                    $role = $v['role'] ?? 'TNV Thực Địa';
+                    if (!empty($v['replacement_for'])) {
+                        $role .= ' (Thay cho ' . $v['replacement_for'] . ')';
+                    }
+
+                    // Đảm bảo TNV tồn tại trong bảng volunteers
+                    $chkVol = $this->pdo->prepare("SELECT id FROM volunteers WHERE id = ?");
+                    $chkVol->execute([$vId]);
+                    if (!$chkVol->fetch()) {
+                        $insertVol = $this->pdo->prepare("
+                            INSERT INTO volunteers (id, name, email, phone, role)
+                            VALUES (?, ?, ?, ?, ?)
+                        ");
+                        $insertVol->execute([
+                            $vId,
+                            $v['name'] ?? 'Tình Nguyện Viên',
+                            $v['email'] ?? ($vId . '@d2l.org'),
+                            $v['phone'] ?? '0912.345.678',
+                            $role
+                        ]);
+                    }
+
+                    $insertStmt->execute([
+                        $vId,
+                        $projId,
+                        (string)$sId,
+                        $role,
+                        $status
+                    ]);
+
+                    if ($status !== 'absent') {
+                        $activeCount++;
+                    }
+                }
+
+                $updateShiftStmt->execute([$activeCount, (string)$sId]);
+            }
+
+            return true;
+        } catch (Throwable $e) {
+            error_log("Database: saveDutySchedule error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * NẠP BẢNG PHÂN CÔNG TỪ CƠ SỞ DỮ LIỆU ĐỂ ĐỒNG BỘ NỀN TẢNG
+     */
+    public function loadDutySchedule(): ?array
+    {
+        if (!$this->isAvailable()) {
+            return null;
+        }
+
+        try {
+            $stmt = $this->pdo->query("
+                SELECT vr.id as reg_id, vr.volunteer_id, vr.project_id, vr.shift_id, vr.role_in_shift, vr.status,
+                       v.name as volunteer_name, v.skills as volunteer_skills, v.phone as volunteer_phone, v.email as volunteer_email
+                FROM volunteer_registrations vr
+                LEFT JOIN volunteers v ON vr.volunteer_id = v.id
+                ORDER BY vr.shift_id, vr.id
+            ");
+            $rows = $stmt->fetchAll();
+            if (empty($rows)) {
+                return null;
+            }
+
+            $schedule = [];
+            foreach ($rows as $r) {
+                $sId = $r['shift_id'];
+                if (!isset($schedule[$sId])) {
+                    $schedule[$sId] = [];
+                }
+                $skills = json_decode((string)($r['volunteer_skills'] ?? '[]'), true) ?: [];
+                $schedule[$sId][] = [
+                    'id' => $r['volunteer_id'],
+                    'name' => $r['volunteer_name'] ?? $r['volunteer_id'],
+                    'skills' => $skills,
+                    'status' => $r['status'] ?? 'confirmed',
+                    'role' => $r['role_in_shift'] ?? 'TNV Thực Địa',
+                    'phone' => $r['volunteer_phone'] ?? '',
+                    'email' => $r['volunteer_email'] ?? '',
+                ];
+            }
+            return $schedule;
+        } catch (Throwable $e) {
+            error_log("Database: loadDutySchedule error: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * LƯU ĐƠN ĐĂNG KÝ CA TRỰC TUYẾN MỚI VÀO CƠ SỞ DỮ LIỆU
+     */
+    public function recordRegistration(array $regData): bool
+    {
+        if (!$this->isAvailable()) {
+            return false;
+        }
+
+        try {
+            $vId = $regData['user_id'] ?? ('TNV-ONLINE-' . rand(100, 999));
+            $vName = $regData['user_name'] ?? 'Tình Nguyện Viên';
+            $vEmail = $regData['user_email'] ?? '';
+            $vPhone = $regData['user_phone'] ?? '';
+            $projId = (int)($regData['activity_id'] ?? 101);
+            $shiftId = (string)($regData['shift_id'] ?? 'CA-01');
+            $role = 'TNV Đăng Ký Trực Tuyến';
+            $status = $regData['status'] ?? 'confirmed';
+
+            // Đảm bảo TNV tồn tại trong bảng volunteers
+            $chkVol = $this->pdo->prepare("SELECT id FROM volunteers WHERE id = ? OR email = ?");
+            $chkVol->execute([$vId, $vEmail]);
+            $existing = $chkVol->fetch();
+            if ($existing) {
+                $vId = $existing['id'];
+            } else {
+                $insVol = $this->pdo->prepare("
+                    INSERT INTO volunteers (id, name, email, phone, role)
+                    VALUES (?, ?, ?, ?, ?)
+                ");
+                $insVol->execute([$vId, $vName, $vEmail, $vPhone, $role]);
+            }
+
+            // Ghi vào volunteer_registrations
+            $insReg = $this->pdo->prepare("
+                INSERT INTO volunteer_registrations (volunteer_id, project_id, shift_id, role_in_shift, status)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $insReg->execute([$vId, $projId, $shiftId, $role, $status]);
+
+            // Cập nhật số lượng đăng ký của dự án
+            $this->pdo->prepare("UPDATE projects SET registered = registered + 1 WHERE id = ?")->execute([$projId]);
+
+            return true;
+        } catch (Throwable $e) {
+            error_log("Database: recordRegistration error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * CẬP NHẬT HOẶC LƯU HỒ SƠ TÌNH NGUYỆN VIÊN (PROFILE) VÀO CSDL
+     */
+    public function saveVolunteerProfile(array $user): bool
+    {
+        if (!$this->isAvailable()) {
+            return false;
+        }
+
+        try {
+            $vId = $user['id'] ?? $user['pass_id'] ?? '';
+            if (empty($vId)) return false;
+
+            $name = $user['name'] ?? 'Tình Nguyện Viên';
+            $email = $user['email'] ?? '';
+            $phone = $user['phone'] ?? '';
+            $org = $user['unit'] ?? ($user['organization'] ?? '');
+            $gender = $user['gender'] ?? 'Nam';
+            $dob = $user['dob'] ?? '';
+            $skillsJson = json_encode($user['skills'] ?? [], JSON_UNESCAPED_UNICODE);
+            $customSkillsJson = json_encode($user['custom_skills'] ?? [], JSON_UNESCAPED_UNICODE);
+            $certSkillsJson = json_encode($user['certified_skills'] ?? [], JSON_UNESCAPED_UNICODE);
+
+            $chk = $this->pdo->prepare("SELECT id FROM volunteers WHERE id = ?");
+            $chk->execute([$vId]);
+            if ($chk->fetch()) {
+                $stmt = $this->pdo->prepare("
+                    UPDATE volunteers SET
+                        name = ?, email = ?, phone = ?, organization = ?, gender = ?, dob = ?,
+                        skills = ?, custom_skills = ?, certified_skills = ?
+                    WHERE id = ?
+                ");
+                return $stmt->execute([
+                    $name, $email, $phone, $org, $gender, $dob,
+                    $skillsJson, $customSkillsJson, $certSkillsJson, $vId
+                ]);
+            } else {
+                $stmt = $this->pdo->prepare("
+                    INSERT INTO volunteers (id, name, email, phone, organization, gender, dob, skills, custom_skills, certified_skills)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ");
+                return $stmt->execute([
+                    $vId, $name, $email, $phone, $org, $gender, $dob,
+                    $skillsJson, $customSkillsJson, $certSkillsJson
+                ]);
+            }
+        } catch (Throwable $e) {
+            error_log("Database: saveVolunteerProfile error: " . $e->getMessage());
+            return false;
+        }
     }
 }

@@ -10,6 +10,7 @@ require __DIR__ . '/../src/Auth.php';
 require __DIR__ . '/../src/AssignmentEngine.php';
 require_once __DIR__ . '/../src/SkillManager.php';
 require_once __DIR__ . '/../src/Pagination.php';
+require_once __DIR__ . '/../src/Database.php';
 
 // BẮT BUỘC QUYỀN ĐIỀU PHỐI VIÊN (BAN CHỈ HUY)
 // Tình nguyện viên và khách sẽ được chuyển hướng về trang Lịch Trực Thành Viên
@@ -76,6 +77,15 @@ if (!isset($_SESSION['btl_duty_schedule']) || !is_array($_SESSION['btl_duty_sche
 }
 
 $dutySchedules = &$_SESSION['btl_duty_schedule'];
+$db = Database::getInstance();
+$dbLoadedSchedule = $db->loadDutySchedule();
+if (!empty($dbLoadedSchedule)) {
+    foreach ($dbLoadedSchedule as $sId => $assignedList) {
+        if (isset($dutySchedules[$sId])) {
+            $dutySchedules[$sId]['assigned_volunteers'] = $assignedList;
+        }
+    }
+}
 $flashMessage = $_SESSION['flash_msg'] ?? null;
 unset($_SESSION['flash_msg']);
 
@@ -122,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => 'Đã Hoàn Tất Phân Bổ Tự Động',
             'content' => 'Hệ thống đã tự động sắp xếp nhân sự cho toàn bộ các ca trực theo năng lực chuyên môn và thời gian.',
         ];
+        $db->saveDutySchedule($dutySchedules);
         header('Location: /phan_cong.php');
         exit;
     }
@@ -147,6 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => 'Phê Duyệt Lịch Trực Thành Công',
             'content' => 'Lịch phân công nhân sự đã được phê duyệt và lưu trữ trên hệ thống điều hành.',
         ];
+        $db->saveDutySchedule($dutySchedules);
         header('Location: /phan_cong.php');
         exit;
     }
@@ -208,6 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             unset($v);
         }
+        $db->saveDutySchedule($dutySchedules);
         header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
         exit;
     }
@@ -310,6 +323,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => 'Điều Phối Nhân Sự Thành Công',
             'content' => 'Đã phân công đồng chí ' . htmlspecialchars($newVolunteer['name']) . ' tiếp nhận nhiệm vụ thay cho ' . htmlspecialchars($absentName) . ' tại ca ' . $shiftId . '.',
         ];
+        $db->saveDutySchedule($dutySchedules);
         header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
         exit;
     }
@@ -327,6 +341,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $_SESSION['btl_duty_schedule'] = initDefaultSchedule($rawShifts, $allVolunteers);
+        $db->saveDutySchedule($_SESSION['btl_duty_schedule']);
         $_SESSION['flash_msg'] = [
             'type' => 'info',
             'title' => 'Đã Thiết Lập Lại Bảng Phân Công',
@@ -440,6 +455,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'title' => 'Bổ Sung Nhân Sự Thành Công',
             'content' => 'Đã thêm đồng chí ' . htmlspecialchars($newVolunteer['name']) . ' vào ca ' . htmlspecialchars($shiftId) . ' với vai trò: ' . htmlspecialchars($role) . '.',
         ];
+        $db->saveDutySchedule($dutySchedules);
         header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
         exit;
     }
@@ -473,6 +489,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             unset($v);
         }
+        $db->saveDutySchedule($dutySchedules);
         header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
         exit;
     }
@@ -508,6 +525,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'content' => 'Đã rút tên đồng chí ' . htmlspecialchars($removedName) . ' khỏi ca ' . htmlspecialchars($shiftId) . '.',
             ];
         }
+        $db->saveDutySchedule($dutySchedules);
         header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
         exit;
     }
@@ -566,9 +584,9 @@ require __DIR__ . '/../templates/header.php';
 
 <div class="page-heading-pro">
     <div class="heading-container">
-        <span class="sub-badge">ĐIỀU PHỐI LỰC LƯỢNG THỰC ĐỊA</span>
-        <h1>Bảng Phân Công & Điều Phối Tình Nguyện Viên</h1>
-        <p>Hệ thống giám sát điều phối nhân sự, tự động phân bổ ca trực theo chuyên môn và hỗ trợ xử lý thay thế nhân sự kịp thời.</p>
+        <span class="sub-badge">ĐIỀU PHỐI NHÂN SỰ</span>
+        <h1>Phân Công Ca Trực</h1>
+        <p>Xếp lịch trực, điều phối nhân sự theo chuyên môn và xử lý thay thế ca trực.</p>
     </div>
 </div>
 
@@ -578,19 +596,19 @@ require __DIR__ . '/../templates/header.php';
         <div>
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
                 <span style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; background: #dc2626; color: #ffffff;">
-                    KHU VỰC ĐIỀU HÀNH BAN CHỈ HUY
+                    BAN CHỈ HUY
                 </span>
                 <strong style="color: #065f46; font-size: 0.95rem;">
                     <?= htmlspecialchars($currentUser['name'] ?? '') ?> (<?= htmlspecialchars($currentUser['role'] ?? 'Cán Bộ Chỉ Huy') ?>)
                 </strong>
             </div>
             <p style="margin: 0; font-size: 0.84rem; color: #047857;">
-                Đồng chí đang tác nghiệp tại Bảng Điều Phối Lực Lượng. Bấm vào biểu tượng mắt để xem chi tiết và thêm, sửa, xóa, thay thế nhân sự ca trực.
+                Xem chi tiết, thêm, xóa hoặc điều động người thay thế cho từng ca trực.
             </p>
         </div>
         <div>
             <a href="/lich_truc.php" class="btn-action-pro" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; text-decoration: none; padding: 7px 14px; border-radius: 6px; font-size: 0.82rem; font-weight: 600;">
-                Xem Giao Diện Lịch Trực TNV &rarr;
+                Xem Lịch Trực &rarr;
             </a>
         </div>
     </div>
@@ -612,14 +630,14 @@ require __DIR__ . '/../templates/header.php';
             <div style="display: flex; align-items: center; gap: 12px;">
                 <span style="font-size: 24px;">🔔</span>
                 <div>
-                    <strong style="color: #b45309; font-size: 0.95rem;">Đơn Báo Vắng Chờ Ban Chỉ Huy Duyệt:</strong>
+                    <strong style="color: #b45309; font-size: 0.95rem;">Đơn Báo Vắng Chờ Duyệt:</strong>
                     <span style="color: #92400e; font-size: 0.88rem; margin-left: 4px;">
-                        Có <strong><?= $pendingAbsenceCount ?></strong> tình nguyện viên đã gửi đơn xin vắng mặt hợp lệ (&ge; 48 giờ) cần thẩm định và điều động nhân sự thay thế.
+                        Có <strong><?= $pendingAbsenceCount ?></strong> đơn báo vắng cần xử lý và điều động nhân sự thay thế.
                     </span>
                 </div>
             </div>
             <a href="/phe_duyet_vang.php?status=pending" style="background: #d97706; color: #ffffff; text-decoration: none; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(217,119,6,0.3);">
-                Phê Duyệt & Điều Động Ngay &rarr;
+                Duyệt & Điều Động &rarr;
             </a>
         </div>
     <?php endif; ?>
@@ -627,9 +645,9 @@ require __DIR__ . '/../templates/header.php';
     <!-- THANH TÁC VỤ ĐIỀU PHỐI NHÂN SỰ -->
     <div class="coordinator-action-toolbar" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px;">
         <div>
-            <h3 style="margin: 0 0 4px; font-size: 1.1rem; color: #1e293b;">Bảng Điều Hành Nhân Sự Trực Tuyến</h3>
+            <h3 style="margin: 0 0 4px; font-size: 1.1rem; color: #1e293b;">Điều Hành Phân Ca</h3>
             <span style="font-size: 0.84rem; color: #64748b;">
-                Hệ thống hỗ trợ tự động gán nhân sự thông minh theo thuật toán Greedy kết hợp kiểm tra 5 phép thử ràng buộc
+                Tự động phân bổ ca theo chuyên môn và lịch rảnh.
             </span>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
@@ -642,7 +660,7 @@ require __DIR__ . '/../templates/header.php';
             <?php if (Auth::isCoordinator()): ?>
                 <form method="POST" style="margin: 0;">
                     <input type="hidden" name="action" value="auto_assign">
-                    <button type="submit" class="btn-action-pro btn-auto" onclick="return confirm('Chạy thuật toán Smart Greedy để tự động phân bổ quân số?')">
+                    <button type="submit" class="btn-action-pro btn-auto" onclick="return confirm('Bạn có chắc muốn hệ thống tự động phân bổ quân số tối ưu cho các ca trực?')">
                         Tự Động Phân Ca
                     </button>
                 </form>
@@ -650,20 +668,20 @@ require __DIR__ . '/../templates/header.php';
                 <form method="POST" style="margin: 0;">
                     <input type="hidden" name="action" value="confirm_all">
                     <button type="submit" class="btn-action-pro btn-confirm">
-                        Phê Duyệt Lịch Trực
+                        Duyệt Lịch Trực
                     </button>
                 </form>
 
                 <form method="POST" style="margin: 0;">
                     <input type="hidden" name="action" value="reset_schedule">
                     <button type="submit" class="btn-action-pro btn-reset" onclick="return confirm('Bạn có chắc muốn thiết lập lại bảng phân công?')">
-                        Thiết Lập Lại
+                        Đặt Lại
                     </button>
                 </form>
             <?php endif; ?>
 
             <a href="/doi_soat_thuat_toan.php" class="btn-action-pro btn-benchmark">
-                Đối Soát Hiệu Suất
+                Hiệu Quả Phân Ca
             </a>
         </div>
     </div>
@@ -1012,8 +1030,8 @@ require __DIR__ . '/../templates/header.php';
     <div class="modal-content-card modal-roster-dialog">
         <div class="modal-header">
             <div>
-                <span class="modal-category-badge" style="background:#e0f2fe; color:#0369a1;">ĐIỀU HÀNH QUÂN SỐ CA TRỰC</span>
-                <h3 id="roster_modal_shift_title" style="margin: 4px 0 0; font-size: 1.28rem; color:#0f172a;">Quản Lý Lực Lượng Ca</h3>
+                <span class="modal-category-badge" style="background:#e0f2fe; color:#0369a1;">NHÂN SỰ CA TRỰC</span>
+                <h3 id="roster_modal_shift_title" style="margin: 4px 0 0; font-size: 1.28rem; color:#0f172a;">Danh Sách Phân Công</h3>
             </div>
             <button type="button" class="btn-modal-close" onclick="closeShiftRosterModal()">&times;</button>
         </div>
@@ -1026,19 +1044,19 @@ require __DIR__ . '/../templates/header.php';
                     <strong id="roster_modal_shift_code" class="roster-meta-val" style="color:#0284c7;">—</strong>
                 </div>
                 <div class="roster-meta-item">
-                    <span class="roster-meta-label">Hoạt Động / Chiến Dịch:</span>
+                    <span class="roster-meta-label">Hoạt Động:</span>
                     <strong id="roster_modal_act_title" class="roster-meta-val">—</strong>
                 </div>
                 <div class="roster-meta-item">
-                    <span class="roster-meta-label">Địa Bàn Thực Địa:</span>
+                    <span class="roster-meta-label">Địa Điểm:</span>
                     <span id="roster_modal_location" class="roster-meta-val">—</span>
                 </div>
                 <div class="roster-meta-item">
-                    <span class="roster-meta-label">Chỉ Huy Ca Trực:</span>
+                    <span class="roster-meta-label">Phụ Trách:</span>
                     <strong id="roster_modal_leader" class="roster-meta-val">—</strong>
                 </div>
                 <div class="roster-meta-item">
-                    <span class="roster-meta-label">Quân Số Tiếp Nhận:</span>
+                    <span class="roster-meta-label">Quân Số:</span>
                     <span id="roster_modal_capacity_text" class="roster-meta-val">—</span>
                 </div>
             </div>
@@ -1059,7 +1077,7 @@ require __DIR__ . '/../templates/header.php';
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        + Thêm TNV Vào Ca
+                        + Thêm Người
                     </button>
 
                     <button type="button" class="btn-roster-action btn-export-csv" onclick="exportRosterToCSV()" title="Tải danh sách điểm danh dạng bảng CSV">
@@ -1068,7 +1086,7 @@ require __DIR__ . '/../templates/header.php';
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        Xuất Danh Sách Điểm Danh
+                        Xuất Danh Sách
                     </button>
                 </div>
             </div>
@@ -1080,7 +1098,7 @@ require __DIR__ . '/../templates/header.php';
                     <input type="hidden" name="shift_id" id="add_form_shift_id" value="">
 
                     <div style="font-weight: 700; color: #065f46; font-size: 0.92rem; margin-bottom: 10px;">
-                        Bổ Sung Tình Nguyện Viên Vào Ca Này (Thẩm định không trùng lịch & đáp ứng kỹ năng):
+                        Bổ sung tình nguyện viên vào ca:
                     </div>
 
                     <div class="add-vol-grid">
@@ -1194,8 +1212,8 @@ require __DIR__ . '/../templates/header.php';
     <div class="modal-content-card" style="max-width: 780px; width: 95%;">
         <div class="modal-header">
             <div>
-                <h3 style="margin: 0; font-size: 1.25rem;">Điều Phối & Thay Thế Nhân Sự Ca Trực</h3>
-                <span style="font-size: 0.84rem; color: #64748b;">Hỗ trợ lọc theo nhóm chuyên môn, kỹ năng có sẵn & kỹ năng do tình nguyện viên tự nhập</span>
+                <h3 style="margin: 0; font-size: 1.25rem;">Thay Thế Nhân Sự Ca Trực</h3>
+                <span style="font-size: 0.84rem; color: #64748b;">Tìm kiếm tình nguyện viên thay thế theo chuyên môn và lịch rảnh</span>
             </div>
             <button type="button" class="btn-modal-close" onclick="closeReplaceModal()">&times;</button>
         </div>
@@ -1215,7 +1233,7 @@ require __DIR__ . '/../templates/header.php';
                 <div class="coordinator-skill-filter-card" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 16px; margin-bottom: 18px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <span style="font-weight: 700; color: #1e293b; font-size: 0.92rem;">
-                            Bộ Lọc Kỹ Năng Thông Minh (Gom Nhóm & Nhận Diện Tự Động)
+                            Lọc Theo Kỹ Năng
                         </span>
                         <span id="candidate_count_badge" style="font-size: 0.8rem; background: #059669; color: #ffffff; padding: 2px 8px; border-radius: 12px; font-weight: 600;">
                             30 Ứng viên
@@ -1224,7 +1242,7 @@ require __DIR__ . '/../templates/header.php';
 
                     <div style="grid-template-columns: 1fr 1fr; gap: 10px; display: grid;">
                         <div>
-                            <label for="candidateGroupFilter" style="display: block; font-size: 0.8rem; color: #475569; font-weight: 600; margin-bottom: 4px;">Lọc theo Nhóm Kỹ Năng:</label>
+                            <label for="candidateGroupFilter" style="display: block; font-size: 0.8rem; color: #475569; font-weight: 600; margin-bottom: 4px;">Nhóm Kỹ Năng:</label>
                             <select id="candidateGroupFilter" class="select-pro" style="width: 100%; padding: 7px 10px; font-size: 0.88rem;">
                                 <option value="all">-- Tất Cả Nhóm Kỹ Năng --</option>
                                 <option value="y_te">[Y Tế] Sơ cấp cứu & Hỗ trợ y tế</option>
@@ -1237,7 +1255,7 @@ require __DIR__ . '/../templates/header.php';
                         </div>
 
                         <div>
-                            <label for="candidateKeywordSearch" style="display: block; font-size: 0.8rem; color: #475569; font-weight: 600; margin-bottom: 4px;">Tìm từ khóa kỹ năng (kể cả kỹ năng tự do):</label>
+                            <label for="candidateKeywordSearch" style="display: block; font-size: 0.8rem; color: #475569; font-weight: 600; margin-bottom: 4px;">Tìm kiếm theo kỹ năng:</label>
                             <input type="text" id="candidateKeywordSearch" placeholder="Ví dụ: sơ cứu, bán tải, canva, nấu ăn, dạy học..." style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem;">
                         </div>
                     </div>
@@ -1245,7 +1263,7 @@ require __DIR__ . '/../templates/header.php';
                     <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
                         <label style="font-size: 0.82rem; color: #334155; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
                             <input type="checkbox" id="candidateCertifiedFilter" style="cursor: pointer;">
-                            <strong>Chỉ hiển thị tình nguyện viên có kỹ năng đã chứng nhận (Verified)</strong>
+                            <strong>Chỉ hiển thị người có kỹ năng đã chứng nhận</strong>
                         </label>
                         <button type="button" onclick="resetCandidateFilter()" style="background: none; border: none; color: #2563eb; font-size: 0.82rem; cursor: pointer; text-decoration: underline;">
                             Đặt lại bộ lọc
@@ -1256,7 +1274,7 @@ require __DIR__ . '/../templates/header.php';
                 <!-- DANH SÁCH THẺ ỨNG VIÊN DỰ BỊ VỚI KỸ NĂNG CỐ ĐỊNH & KỸ NĂNG TỰ NHẬP -->
                 <div style="margin-bottom: 14px;">
                     <label style="font-size: 0.88rem; font-weight: 700; color: #1e293b; display: block; margin-bottom: 8px;">
-                        Lựa Chọn Nhân Sự Phù Hợp Từ Lực Lượng (Nhấn Để Chọn Nhanh):
+                        Danh Sách Ứng Viên:
                     </label>
 
                     <div id="candidate_cards_container" style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #fafafa;">
@@ -1335,13 +1353,13 @@ require __DIR__ . '/../templates/header.php';
                 </div>
 
                 <div class="modal-test-cases-box" style="margin-top: 14px;">
-                    <small><strong>Gợi ý phép thử chuyên môn:</strong></small>
+                    <small><strong>Gợi ý chọn nhanh nhân sự:</strong></small>
                     <div class="quick-test-buttons" style="margin-top: 6px;">
                         <button type="button" class="btn-quick-fill" onclick="selectQuickTest('TNV-001')">
-                            Đ/c Lê Nguyễn Phương Thảo (Chuyên môn Y tế)
+                            Lê Nguyễn Phương Thảo (Y tế)
                         </button>
                         <button type="button" class="btn-quick-fill danger" onclick="selectQuickTest('TNV-013')">
-                            Đ/c Phạm Minh Quân (Hậu cần - Không có chuyên môn Y tế)
+                            Phạm Minh Quân (Hậu cần)
                         </button>
                     </div>
                 </div>
@@ -1350,7 +1368,7 @@ require __DIR__ . '/../templates/header.php';
             <div class="modal-footer" style="padding: 14px 24px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px;">
                 <button type="button" class="btn-cancel" onclick="closeReplaceModal()">Hủy Bỏ</button>
                 <button type="submit" class="btn-submit-replace" style="padding: 10px 24px; font-weight: 700;">
-                    Xác Nhận Điều Phối
+                    Xác Nhận Thay Thế
                 </button>
             </div>
         </form>
@@ -1577,7 +1595,7 @@ function exportRosterToCSV() {
     var list = shift.assigned_volunteers || [];
 
     var csv = "\uFEFF"; // UTF-8 BOM
-    csv += "DANH SÁCH ĐIỂM DANH LỰC LƯỢNG TÌNH NGUYỆN VIÊN\n";
+    csv += "DANH SÁCH ĐIỂM DANH CA TRỰC\n";
     csv += "Mã Ca Trực: " + shift.shift_code + " - " + shift.shift_name + "\n";
     csv += "Hoạt Động: " + shift.activity_title + "\n";
     csv += "Địa Bàn: " + shift.location + " - Chỉ Huy Ca: " + shift.leader + "\n";

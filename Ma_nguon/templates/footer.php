@@ -8,7 +8,10 @@
     <div class="modal-window">
         <div class="modal-header">
             <div>
-                <span id="modal_act_category" class="modal-category-badge">Chủ đề</span>
+                <div class="modal-header-badges" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                    <span id="modal_act_category" class="modal-category-badge" style="margin-bottom: 0;">Chủ đề</span>
+                    <span id="modal_act_quota_status" class="quota-pill-status quota-status-open" style="font-size: 0.74rem; padding: 3px 10px; margin-bottom: 0;">Đang mở đăng ký</span>
+                </div>
                 <h3 id="modal_act_title" class="modal-title">Tiêu đề hoạt động tình nguyện</h3>
             </div>
             <button type="button" class="modal-close-btn" aria-label="Đóng cửa sổ">&times;</button>
@@ -63,12 +66,15 @@
             </div>
         </div>
 
-        <div class="modal-footer modal-footer-enhanced">
-            <div class="modal-footer-status">
-                <span id="modal_act_quota_status" class="quota-pill-status">Đang mở đăng ký</span>
-            </div>
+        <div class="modal-footer modal-footer-enhanced" style="justify-content: flex-end;">
             <div class="modal-footer-actions">
-                <button type="button" class="btn-cancel btn-modal-close">Đóng lại</button>
+                <button type="button" class="btn-cancel btn-modal-close">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Đóng lại
+                </button>
                 <button type="button" id="modal_act_register_btn" class="btn-primary modal-cta-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -172,8 +178,12 @@
             </div>
 
             <div class="modal-footer modal-footer-enhanced">
-                <button type="button" class="btn-cancel btn-modal-close">Hủy bỏ</button>
-                <button type="submit" id="btn_confirm_reg" class="btn-primary modal-cta-btn">
+                <div class="modal-footer-status">
+                    <span class="quota-pill-status quota-status-open">&#10003; Đăng ký trực tiếp</span>
+                </div>
+                <div class="modal-footer-actions">
+                    <button type="button" class="btn-cancel btn-modal-close">Hủy bỏ</button>
+                    <button type="submit" id="btn_confirm_reg" class="btn-primary modal-cta-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
@@ -209,7 +219,7 @@
                     <strong>HỆ THỐNG ĐIỀU PHỐI TÌNH NGUYỆN D2L</strong>
                 </div>
                 <p class="footer-about">
-                    Hệ thống quản lý, điều phối và phân công lực lượng tình nguyện viên nòng cốt. Kết nối các chiến dịch tình nguyện thiết thực với sinh viên và thanh niên trên toàn quốc.
+                    Nền tảng quản lý và điều phối hoạt động tình nguyện, phân công ca trực và hỗ trợ thanh niên tham gia công tác xã hội.
                 </p>
             </div>
 
@@ -229,11 +239,11 @@
             <div class="footer-col">
                 <h4>Nghiệp Vụ & Điều Phối</h4>
                 <ul class="footer-links-list">
-                    <li><a href="/phan_cong.php">Bảng phân công ca trực hôm nay</a></li>
-                    <li><a href="/lich_truc.php">Lịch trực & ca làm việc</a></li>
-                    <li><a href="/register.php">Đăng ký tham gia và nhận thẻ nhiệm vụ</a></li>
-                    <li><a href="/dang_nhap.php">Cổng đăng nhập hệ thống</a></li>
-                    <li><a href="/dang_ky_tk.php">Đăng ký tài khoản thành viên mới</a></li>
+                    <li><a href="/phan_cong.php">Phân công ca trực</a></li>
+                    <li><a href="/lich_truc.php">Lịch trực cá nhân</a></li>
+                    <li><a href="/register.php">Đăng ký ca trực</a></li>
+                    <li><a href="/dang_nhap.php">Đăng nhập hệ thống</a></li>
+                    <li><a href="/dang_ky_tk.php">Đăng ký tài khoản</a></li>
                 </ul>
             </div>
 

@@ -1720,16 +1720,16 @@ a:hover {
 .advanced-filter-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 28px;
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
 }
 
 .filter-flex-form {
     display: grid;
-    grid-template-columns: 2fr 1.4fr 1.2fr auto;
-    gap: 16px;
+    grid-template-columns: 2fr 1.3fr 1.1fr auto;
+    gap: 14px;
     align-items: flex-end;
 }
 
@@ -1737,24 +1737,24 @@ a:hover {
 .filter-item-select {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .filter-item-input label,
 .filter-item-select label {
-    font-size: 0.84rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #334155;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.1px;
 }
 
 .filter-item-input input,
 .filter-item-select select {
-    height: 46px;
-    padding: 10px 14px;
+    height: 40px;
+    padding: 8px 12px;
     border: 1.5px solid #cbd5e1;
-    border-radius: 10px;
-    font-size: 0.9rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
     color: #0f172a;
     background: #f8fafc;
     transition: all 0.2s ease;
@@ -1772,16 +1772,16 @@ a:hover {
 
 .filter-item-btn {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
 }
 
 .filter-item-btn .nut-loc-chinh {
-    height: 46px;
-    padding: 0 22px;
-    font-size: 0.92rem;
+    height: 40px;
+    padding: 0 18px;
+    font-size: 0.88rem;
     font-weight: 700;
-    border-radius: 10px;
+    border-radius: 8px;
     background: linear-gradient(135deg, #059669 0%, #047857 100%);
     color: #ffffff;
     border: none;
@@ -1790,24 +1790,24 @@ a:hover {
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-    box-shadow: 0 3px 8px rgba(5, 150, 105, 0.25);
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.2);
     transition: all 0.2s ease;
 }
 
 .filter-item-btn .nut-loc-chinh:hover {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     transform: translateY(-1px);
-    box-shadow: 0 5px 14px rgba(5, 150, 105, 0.35);
+    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
 }
 
 .filter-item-btn .btn-cancel {
-    height: 46px;
-    padding: 0 16px;
-    font-size: 0.9rem;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 0.86rem;
     font-weight: 600;
-    border-radius: 10px;
+    border-radius: 8px;
     background: #ffffff;
-    color: #64748b;
+    color: #475569;
     border: 1.5px solid #cbd5e1;
     text-decoration: none;
     display: inline-flex;
@@ -1917,35 +1917,35 @@ a:hover {
 /* 7.3. LƯỚI THẺ HOẠT ĐỘNG (CARDS GRID) */
 .activities-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 28px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+    margin-bottom: 28px;
 }
 
 .activity-card-item {
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
     display: flex;
     flex-direction: column;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
 }
 
 .activity-card-item:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     border-color: #10b981;
-    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.1), 0 4px 12px rgba(16, 185, 129, 0.08);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08), 0 2px 8px rgba(16, 185, 129, 0.06);
 }
 
 .act-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .act-cat-badge {
@@ -2008,11 +2008,11 @@ a:hover {
 }
 
 .act-title {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     font-weight: 750;
-    line-height: 1.45;
-    margin: 0 0 12px;
-    min-height: 52px;
+    line-height: 1.38;
+    margin: 0 0 6px;
+    min-height: auto;
 }
 
 .act-title a {
@@ -2026,49 +2026,58 @@ a:hover {
 }
 
 .act-summary-snippet {
-    font-size: 0.88rem;
-    color: #475569;
-    margin: 0 0 18px;
-    line-height: 1.6;
+    font-size: 0.83rem;
+    color: #64748b;
+    margin: 0 0 10px;
+    line-height: 1.48;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 44px;
+    min-height: auto;
 }
 
-/* Khung chi tiết địa bàn / ca trực / chỉ huy */
+/* Khung chi tiết địa bàn / ca trực / chỉ huy: 2 cột gọn gàng */
 .act-info-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 10px;
+    margin-bottom: 12px;
     background: #f8fafc;
-    border: 1px solid #eef2f6;
-    padding: 16px;
-    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    padding: 10px 12px;
+    border-radius: 8px;
+}
+
+@media (max-width: 480px) {
+    .act-info-list {
+        grid-template-columns: 1fr;
+    }
 }
 
 .act-info-item {
     display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 0.84rem;
-    line-height: 1.45;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 0.8rem;
+    line-height: 1.4;
 }
 
 .act-info-item .info-label {
-    width: 74px;
+    width: auto;
+    min-width: 54px;
     flex-shrink: 0;
     font-weight: 600;
     color: #64748b;
+    font-size: 0.77rem;
     white-space: nowrap;
 }
 
 .act-info-item .info-text {
     flex: 1;
     color: #1e293b;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.8rem;
     word-break: break-word;
 }
 
@@ -2077,13 +2086,13 @@ a:hover {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 18px;
-    min-height: 30px;
+    gap: 6px;
+    margin-bottom: 12px;
+    min-height: auto;
 }
 
 .skills-label {
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     font-weight: 700;
     color: #64748b;
     margin-right: 2px;
@@ -2094,9 +2103,9 @@ a:hover {
     background: #f1f5f9;
     color: #334155;
     border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 3px 9px;
-    font-size: 0.76rem;
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-size: 0.73rem;
     font-weight: 600;
     transition: all 0.2s ease;
 }
@@ -2109,16 +2118,16 @@ a:hover {
 
 /* Tiến độ tuyển quân */
 .recruitment-progress-box {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .progress-labels {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.82rem;
+    font-size: 0.79rem;
     color: #64748b;
-    margin-bottom: 7px;
+    margin-bottom: 4px;
 }
 
 .progress-labels strong {
@@ -2128,7 +2137,7 @@ a:hover {
 
 .progress-bar-track {
     width: 100%;
-    height: 8px;
+    height: 6px;
     background: #e2e8f0;
     border-radius: 9999px;
     overflow: hidden;
@@ -2148,9 +2157,9 @@ a:hover {
 /* Cụm nút bấm tương tác cuối thẻ */
 .act-card-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     margin-top: auto;
-    padding-top: 18px;
+    padding-top: 14px;
     border-top: 1px solid #f1f5f9;
 }
 
@@ -2159,10 +2168,10 @@ a:hover {
     background: #ffffff;
     border: 1.5px solid #cbd5e1;
     color: #334155;
-    padding: 11px 16px;
-    border-radius: 10px;
+    padding: 8px 14px;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
@@ -2175,20 +2184,20 @@ a:hover {
     background: #f8fafc;
     border-color: #059669;
     color: #059669;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .btn-act-join {
-    flex: 1.4;
+    flex: 1.3;
     background: linear-gradient(135deg, #059669 0%, #047857 100%);
     color: #ffffff !important;
-    padding: 11px 18px;
-    border-radius: 10px;
+    padding: 8px 16px;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     text-align: center;
     text-decoration: none;
-    box-shadow: 0 3px 10px rgba(5, 150, 105, 0.25);
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.2);
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
@@ -2570,51 +2579,53 @@ a:hover {
 .page-heading-pro {
     background: linear-gradient(135deg, #064e3b 0%, #047857 55%, #059669 100%);
     color: #ffffff;
-    padding: 38px 24px;
+    padding: 22px 24px;
     text-align: center;
-    margin: 16px 0 30px;
-    border-radius: 18px;
-    box-shadow: 0 4px 16px rgba(6, 78, 59, 0.15);
+    margin: 12px auto 20px;
+    max-width: 1248px;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(6, 78, 59, 0.12);
 }
 
 .heading-container {
-    max-width: 860px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
 .sub-badge {
     display: inline-block;
-    background: rgba(255, 255, 255, 0.18);
-    color: #fde047;
-    font-size: 0.74rem;
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    font-size: 0.72rem;
     font-weight: 800;
-    padding: 4px 14px;
+    letter-spacing: 0.6px;
+    padding: 3px 12px;
     border-radius: 9999px;
-    letter-spacing: 1.2px;
-    margin-bottom: 12px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
     backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .page-heading-pro h1 {
-    font-size: 2.1rem;
+    font-size: 1.6rem;
     font-weight: 800;
-    margin: 0 0 10px;
+    margin: 0 0 6px;
     line-height: 1.25;
     color: #ffffff;
 }
 
 .page-heading-pro p {
-    font-size: 1rem;
+    font-size: 0.92rem;
     color: #d1fae5;
     margin: 0;
-    line-height: 1.55;
+    line-height: 1.45;
 }
 
 .page-content-wrapper {
     max-width: 1248px;
     margin: 0 auto;
-    padding: 0 4px;
+    padding: 0 16px;
 }
 
 .registration-form-card {
@@ -3318,13 +3329,21 @@ body.modal-open {
     border-radius: var(--radius-lg);
     width: 100%;
     max-width: 680px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-lg);
+    max-height: 88vh;
+    overflow: hidden !important;
+    box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.3);
     z-index: 2010;
     display: flex;
     flex-direction: column;
     animation: modalPopIn 0.25s ease-out;
+}
+
+.modal-window > form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .modal-window.modal-window-large {
@@ -3352,6 +3371,7 @@ body.modal-open {
     position: sticky;
     top: 0;
     background: #ffffff;
+    flex-shrink: 0;
     z-index: 5;
 }
 
@@ -3389,8 +3409,11 @@ body.modal-open {
 }
 
 .modal-body {
-    padding: 24px;
-    overflow-y: auto;
+    padding: 24px 28px 36px 28px !important;
+    overflow-y: auto !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overscroll-behavior: contain;
 }
 
 .modal-meta-grid {
@@ -3482,6 +3505,8 @@ body.modal-open {
     justify-content: flex-end;
     gap: 12px;
     background: #f8fafc;
+    flex-shrink: 0;
+    z-index: 5;
 }
 
 /* Modal Preview Tài Liệu Chính Thức */
@@ -3829,22 +3854,26 @@ body.modal-open {
 }
 
 .btn-cancel {
-    background: transparent;
-    border: 1px solid var(--border-light);
-    color: var(--text-muted);
-    padding: 10px 18px;
-    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 20px;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    color: #334155;
+    border-radius: 8px;
+    font-size: 0.92rem;
     font-weight: 600;
-    font-size: 0.9rem;
-    text-decoration: none;
-    display: inline-block;
     cursor: pointer;
-    transition: var(--transition);
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
 }
 
 .btn-cancel:hover {
-    background: var(--bg-subtle);
-    color: var(--text-heading);
+    background: #f1f5f9;
+    border-color: #94a3b8;
+    color: #0f172a;
 }
 
 /* ==========================================================================
@@ -5951,6 +5980,8 @@ textarea:focus {
     flex-wrap: wrap;
     gap: 12px;
     background: #f8fafc;
+    flex-shrink: 0;
+    z-index: 5;
 }
 
 .modal-footer-status {
@@ -7366,4 +7397,185 @@ textarea:focus {
 .tab-profile-pill.active .tab-badge-num {
     background: rgba(255, 255, 255, 0.25);
     color: #ffffff;
+}
+
+
+/* ==========================================================================
+   FORM GRIDS & FIELD ITEMS (ENTERPRISE RESPONSIVE PROFILE & DIALOG FORMS)
+   ========================================================================== */
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    width: 100%;
+}
+
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .form-grid-2,
+    .form-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-group-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.form-group-item label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 2px;
+}
+
+.form-group-item input[type="text"],
+.form-group-item input[type="email"],
+.form-group-item input[type="tel"],
+.form-group-item input[type="date"],
+.form-group-item input[type="number"],
+.form-group-item select,
+.form-group-item textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #1e293b;
+    background-color: #ffffff;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.form-group-item textarea {
+    resize: vertical;
+    min-height: 85px;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   STATISTICS OVERVIEW GRID (KHUNG THỐNG KÊ QUÂN SỐ & CHỈ TIÊU GỌN GÀNG)
+   ========================================================================== */
+.shift-stats-overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+@media (max-width: 900px) {
+    .shift-stats-overview {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .shift-stats-overview {
+        grid-template-columns: 1fr;
+    }
+}
+
+.shift-stat-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shift-stat-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.shift-stat-box strong {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.shift-stat-box strong.text-success {
+    color: #059669;
+}
+
+.shift-stat-box strong.text-danger {
+    color: #dc2626;
+}
+
+.shift-stat-box span {
+    font-size: 0.82rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* Trang dang ky ca responsive layout */
+.dang-ky-ca-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .dang-ky-ca-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Tinh chinh badge tieu de va nut Dong lai trong Modal */
+.modal-header-badges {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.modal-header-badges .modal-category-badge,
+.modal-header-badges .quota-pill-status {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 11px;
+    border-radius: 9999px;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.modal-footer .btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    color: #475569;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+}
+
+.modal-footer .btn-cancel:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
 }

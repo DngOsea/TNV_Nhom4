@@ -78,7 +78,7 @@ $volFilters = [
 $volunteers = $db->getVolunteers($volFilters);
 
 $activeTab = $_GET['tab'] ?? 'projects';
-$pageTitle = 'Quản Trị Cơ Sở Dữ Liệu & Bộ Dữ Liệu 50 Ví Dụ Thực Tế';
+$pageTitle = 'Quản Lý Dự Án & Tình Nguyện Viên';
 require_once __DIR__ . '/../templates/header.php';
 ?>
 
@@ -92,22 +92,22 @@ require_once __DIR__ . '/../templates/header.php';
                         <span>Cơ Sở Dữ Liệu Hệ Thống</span> &bull; <span><?= htmlspecialchars($stats['driver']) ?></span>
                     </div>
                     <h1 style="font-size: 26px; font-weight: 800; margin: 0 0 6px 0; color: #ffffff; letter-spacing: -0.5px;">
-                        Quản Trị Dữ Liệu 50 Dự Án & 50 Tình Nguyện Viên
+                        Quản Lý Dự Án & Tình Nguyện Viên
                     </h1>
                     <p style="font-size: 14px; color: #cbd5e1; margin: 0; max-width: 780px; line-height: 1.5;">
-                        Hỗ trợ nạp mới, reset và tra cứu toàn diện 50 chiến dịch cùng 50 tình nguyện viên với bộ lọc đa thuộc tính (thời gian, quy mô, địa điểm, kỹ năng, lịch rảnh, nhóm máu).
+                        Tra cứu, lọc đa tiêu chí và quản lý danh mục hoạt động cùng lực lượng tình nguyện viên.
                     </p>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <form method="POST" style="margin: 0;" onsubmit="return confirm('Bạn có chắc chắn muốn nạp mới lại toàn bộ 50 Dự Án và 50 Tình Nguyện Viên?');">
+                    <form method="POST" style="margin: 0;" onsubmit="return confirm('Bạn có chắc chắn muốn đặt lại dữ liệu gốc của hệ thống?');">
                         <input type="hidden" name="action" value="run_import">
                         <button type="submit" class="btn-import-run" style="background: #059669; color: #ffffff; border: none; padding: 11px 20px; font-size: 13.5px; font-weight: 700; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(5,150,105,0.4);">
                             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                            <span>Nạp / Reset 50 Ví Dụ</span>
+                            <span>Đặt Lại Dữ Liệu</span>
                         </button>
                     </form>
                     <a href="/hoat_dong.php" style="background: #ffffff; color: #0f172a; text-decoration: none; padding: 11px 16px; font-size: 13.5px; font-weight: 700; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1;">
-                        <span>Xem Danh Mục Web</span> &rarr;
+                        <span>Xem Hoạt Động</span> &rarr;
                     </a>
                 </div>
             </div>

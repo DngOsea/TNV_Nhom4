@@ -8,6 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../src/Input.php';
 require_once __DIR__ . '/../src/Auth.php';
 require_once __DIR__ . '/../src/SkillManager.php';
+require_once __DIR__ . '/../src/Database.php';
 
 $currentUser = Auth::getUser();
 
@@ -111,6 +112,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user'] = $currentUser;
             $_SESSION['volunteer_profile'] = $currentUser;
             $savedSuccess = true;
+
+            // Lưu trực tiếp vào bảng volunteers trong CSDL (MySQL / SQLite)
+            try {
+                Database::getInstance()->saveVolunteerProfile($currentUser);
+            } catch (Throwable $e) {
+                error_log("Profile: saveVolunteerProfile error: " . $e->getMessage());
+            }
 
             // Nếu người dùng nhấn nút lưu riêng ở phần Lịch Rảnh
             if (isset($_POST['save_action']) && $_POST['save_action'] === 'save_schedule') {
@@ -225,16 +233,16 @@ require __DIR__ . '/../templates/header.php';
         <div class="profile-layout-grid">
             <!-- CỘT TRÁI: FORM CẬP NHẬT HỒ SƠ & KỸ NĂNG -->
             <div class="profile-main-col">
-                <!-- THANH TABS CHUYỂN NHANH DANH MỤC TRONG HỒ SƠ (VISUAL QUALITY NAVIGATION) -->
+                <!-- THANH TABS CHUYỂN NHANH DANH MỤC TRONG HỒ SƠ -->
                 <nav class="profile-nav-tabs-bar" aria-label="Danh mục hồ sơ">
                     <button type="button" class="tab-profile-pill active" onclick="switchProfileSection('all', this)">
-                        <span>Tất Cả Danh Mục</span>
+                        <span>Tất Cả</span>
                     </button>
                     <button type="button" class="tab-profile-pill" onclick="switchProfileSection('info', this)">
-                        <span>1. Định Danh Cá Nhân</span>
+                        <span>1. Thông Tin Cá Nhân</span>
                     </button>
                     <button type="button" class="tab-profile-pill" onclick="switchProfileSection('skills', this)">
-                        <span>2. Kỹ Năng & Năng Lực</span>
+                        <span>2. Kỹ Năng</span>
                         <span class="tab-badge-num"><?= count($selectedSkills) + count($customSkills) ?></span>
                     </button>
                     <button type="button" class="tab-profile-pill" onclick="switchProfileSection('schedule', this)">
@@ -242,21 +250,21 @@ require __DIR__ . '/../templates/header.php';
                         <span class="tab-badge-num"><?= count($regularAvailability) ?> ca</span>
                     </button>
                     <button type="button" class="tab-profile-pill" onclick="switchProfileSection('emergency', this)">
-                        <span>4. Khẩn Cấp & Nguyện Vọng</span>
+                        <span>4. Liên Hệ Khẩn Cấp</span>
                     </button>
                     <button type="button" class="tab-profile-pill" onclick="switchProfileSection('card', this)">
-                        <span>Thẻ TNV Điện Tử</span>
+                        <span>Thẻ Điện Tử</span>
                     </button>
                 </nav>
 
                 <form method="POST" action="/profile.php" class="profile-form-card" id="volunteer_profile_form">
-                    <!-- KHỐI 1: THÔNG TIN ĐỊNH DANH -->
+                    <!-- KHỐI 1: THÔNG TIN CÁ NHÂN -->
                     <div class="profile-section-box" id="section_info">
                         <div class="section-title-wrap">
                             <span class="step-circle">1</span>
                             <div>
-                                <h3 class="section-h3">Thông Tin Định Danh Tình Nguyện Viên</h3>
-                                <p class="section-desc">Thông tin dùng để cấp Giấy chứng nhận và liên hệ trong các chiến dịch thực địa.</p>
+                                <h3 class="section-h3">Thông Tin Cá Nhân</h3>
+                                <p class="section-desc">Thông tin dùng để liên hệ và cấp giấy chứng nhận.</p>
                             </div>
                         </div>
 
@@ -302,20 +310,20 @@ require __DIR__ . '/../templates/header.php';
                         </div>
                     </div>
 
-                    <!-- KHỐI 2: KỸ NĂNG CỐ ĐỊNH & KỸ NĂNG TỰ NHẬP (TRỌNG TÂM YÊU CẦU) -->
+                    <!-- KHỐI 2: KỸ NĂNG -->
                     <div class="profile-section-box" id="section_skills">
                         <div class="section-title-wrap">
                             <span class="step-circle">2</span>
                             <div>
-                                <h3 class="section-h3">Kỹ Năng Chuyên Môn & Năng Lực Thực Địa</h3>
-                                <p class="section-desc">Bao gồm các kỹ năng cố định của hệ thống, kỹ năng đã được chứng nhận và các kỹ năng do bạn tự bổ sung.</p>
+                                <h3 class="section-h3">Kỹ Năng Chuyên Môn</h3>
+                                <p class="section-desc">Kỹ năng sẵn có và các kỹ năng do bạn tự bổ sung.</p>
                             </div>
                         </div>
 
-                        <!-- 2.1: KỸ NĂNG CỐ ĐỊNH CÓ SẴN (THEO NHÓM CHUYÊN MÔN) -->
+                        <!-- 2.1: KỸ NĂNG TIÊU CHUẨN -->
                         <div class="skills-block-subtitle">
-                            <strong>A. Kỹ năng có sẵn (Chọn từ danh mục tiêu chuẩn của Đội):</strong>
-                            <small style="color: #64748b; display: block; margin-top: 2px;">Tick chọn các kỹ năng bạn tự tin đảm nhận khi tham gia ca trực.</small>
+                            <strong>A. Kỹ năng tiêu chuẩn:</strong>
+                            <small style="color: #64748b; display: block; margin-top: 2px;">Chọn các kỹ năng bạn có thể đảm nhận.</small>
                         </div>
 
                         <div class="preset-skills-accordion">
@@ -352,12 +360,12 @@ require __DIR__ . '/../templates/header.php';
                             <?php endforeach; ?>
                         </div>
 
-                        <!-- 2.2: KỸ NĂNG TỰ NHẬP BỔ SUNG (CUSTOM SKILLS) -->
+                        <!-- 2.2: KỸ NĂNG BỔ SUNG -->
                         <div class="custom-skills-management-box" style="margin-top: 24px; padding: 18px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px;">
                             <div class="skills-block-subtitle">
-                                <strong style="color: #1e293b;">B. Kỹ năng khác do bạn tự bổ sung (Tự do nhập):</strong>
+                                <strong style="color: #1e293b;">B. Kỹ năng bổ sung (tự nhập):</strong>
                                 <small style="color: #64748b; display: block; margin-top: 2px;">
-                                    Tình nguyện viên có thể tự gõ thêm bất kỳ kỹ năng đặc thù nào bạn sở hữu (ví dụ: <em>Lái thuyền, Biết đàn guitar, Sửa chữa điện gia dụng, Tiếng Nhật N3, Thiết kế Photoshop...</em>). Hệ thống sẽ tự động phân nhóm và hiển thị cho người điều phối khi phân ca.
+                                    Nhập thêm các kỹ năng khác của bạn (ví dụ: lái xe, bơi lội, ngoại ngữ, sơ cứu, thiết kế...).
                                 </small>
                             </div>
 
@@ -393,13 +401,13 @@ require __DIR__ . '/../templates/header.php';
                         </div>
                     </div>
 
-                    <!-- KHỐI 3: LỊCH RẢNH ĐỊNH KỲ TRONG TUẦN & BÁO LỊCH BẬN TƯƠNG LAI -->
+                    <!-- KHỐI 3: LỊCH RẢNH & BÁO BẬN -->
                     <div class="profile-section-box" id="section_schedule">
                         <div class="section-title-wrap">
                             <span class="step-circle">3</span>
                             <div>
-                                <h3 class="section-h3">Lịch Rảnh Cố Định Hàng Tuần & Báo Lịch Bận Tương Lai</h3>
-                                <p class="section-desc">Cung cấp khung giờ rảnh cố định để Ban Chỉ Huy ưu tiên điều phối và báo trước các lịch bận để tránh bị trùng lịch.</p>
+                                <h3 class="section-h3">Lịch Rảnh & Báo Bận</h3>
+                                <p class="section-desc">Cập nhật lịch rảnh trong tuần và các ngày bận để sắp xếp ca trực phù hợp.</p>
                             </div>
                         </div>
 
@@ -407,8 +415,8 @@ require __DIR__ . '/../templates/header.php';
                         <div style="margin-bottom: 24px;">
                             <div class="skills-block-subtitle" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                                 <div>
-                                    <strong style="color: #1e293b; font-size: 0.95rem;">A. Khung giờ rảnh chung trong tuần (Lịch rảnh định kỳ):</strong>
-                                    <small style="color: #64748b; display: block; margin-top: 2px;">Tick chọn các buổi trong tuần bạn sẵn sàng tham gia hoạt động thiện nguyện.</small>
+                                    <strong style="color: #1e293b; font-size: 0.95rem;">A. Lịch rảnh trong tuần:</strong>
+                                    <small style="color: #64748b; display: block; margin-top: 2px;">Chọn các buổi bạn có thể tham gia ca trực.</small>
                                 </div>
                                 <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                                     <button type="button" onclick="applyAvailPreset('weekend')" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
@@ -426,7 +434,7 @@ require __DIR__ . '/../templates/header.php';
                                 </div>
                             </div>
 
-                            <!-- BẢNG MA TRẬN 7 NGÀY X 3 CA -->
+                            <!-- BẢNG LỊCH TUẦN -->
                             <div style="overflow-x: auto; margin-top: 14px;">
                                 <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px;">
                                     <thead>
@@ -483,12 +491,12 @@ require __DIR__ . '/../templates/header.php';
                             </div>
                         </div>
 
-                        <!-- 3.2: BÁO LỊCH BẬN ĐỘT XUẤT TRONG TƯƠNG LAI -->
+                        <!-- 3.2: BÁO NGÀY BẬN -->
                         <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 18px;">
                             <div class="skills-block-subtitle">
-                                <strong style="color: #1e293b; font-size: 0.95rem;">B. Báo lịch bận đột xuất trong tương lai:</strong>
+                                <strong style="color: #1e293b; font-size: 0.95rem;">B. Báo ngày bận:</strong>
                                 <small style="color: #64748b; display: block; margin-top: 2px;">
-                                    Nếu bạn có kế hoạch bận thi học kỳ, về quê, hoặc có việc riêng vào những ngày sắp tới, hãy ghi nhận tại đây để hệ thống tự động loại trừ khỏi danh sách điều động.
+                                    Khai báo ngày bận để ban điều phối không xếp ca vào thời gian này.
                                 </small>
                             </div>
 
@@ -538,23 +546,23 @@ require __DIR__ . '/../templates/header.php';
                         <!-- NÚT LƯU RIÊNG DÀNH CHO PHẦN LỊCH RẢNH & BÁO BẬN -->
                         <div style="margin-top: 24px; padding: 16px 20px; background: #ecfdf5; border: 1.5px solid #059669; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 3px 10px rgba(5,150,105,0.12);">
                             <div>
-                                <strong style="color: #065f46; font-size: 0.95rem; display: block;">&#128197; Xác nhận Lưu Cài Đặt Lịch:</strong>
-                                <small style="color: #047857; font-size: 12.5px;">Bấm nút dưới đây để cập nhật ngay ma trận lịch rảnh và danh sách ngày bận cho Ban Chỉ Huy.</small>
+                                <strong style="color: #065f46; font-size: 0.95rem; display: block;">&#128197; Lưu Lịch Làm Việc:</strong>
+                                <small style="color: #047857; font-size: 12.5px;">Lưu lịch rảnh và ngày bận vào hệ thống.</small>
                             </div>
                             <button type="submit" name="save_action" value="save_schedule" class="btn-primary" style="padding: 11px 24px; font-size: 14px; font-weight: 700; border-radius: 8px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(5,150,105,0.35); cursor: pointer; border: none; background: #059669; color: #ffffff;">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                                <span>Lưu Lịch Rảnh & Báo Bận</span>
+                                <span>Lưu Lịch Làm Việc</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- KHỐI 4: LIÊN HỆ KHẨN CẤP & NGUYỆN VỌNG -->
+                    <!-- KHỐI 4: LIÊN HỆ KHẨN CẤP -->
                     <div class="profile-section-box" id="section_emergency">
                         <div class="section-title-wrap">
                             <span class="step-circle">4</span>
                             <div>
-                                <h3 class="section-h3">Liên Hệ Khẩn Cấp & Nguyện Vọng Đóng Góp</h3>
-                                <p class="section-desc">Đảm bảo an toàn tuyệt đối khi triển khai các hoạt động tại địa bàn thực địa.</p>
+                                <h3 class="section-h3">Liên Hệ Khẩn Cấp</h3>
+                                <p class="section-desc">Thông tin người thân khi cần liên lạc trong ca trực.</p>
                             </div>
                         </div>
 
@@ -569,25 +577,25 @@ require __DIR__ . '/../templates/header.php';
                             </div>
                         </div>
 
-                        <div class="form-group-item" style="margin-top: 14px;">
-                            <label for="expectations">Mong muốn / Lời nhắn gửi tới Ban Chỉ Huy</label>
-                            <textarea id="expectations" name="expectations" rows="3" placeholder="Chia sẻ định hướng tham gia hoạt động, các nguyện vọng rèn luyện hoặc đề xuất của bạn..."><?= htmlspecialchars($expectations) ?></textarea>
+                        <div class="form-group-item" style="margin-top: 14px; width: 100%;">
+                            <label for="expectations" style="display: block; font-weight: 700; margin-bottom: 6px; color: #1e293b;">Mong muốn / Lời nhắn gửi tới Ban Chỉ Huy</label>
+                            <textarea id="expectations" name="expectations" rows="3" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; resize: vertical; min-height: 85px; font-family: inherit;" placeholder="Chia sẻ định hướng tham gia hoạt động, các nguyện vọng rèn luyện hoặc đề xuất của bạn..."><?= htmlspecialchars($expectations) ?></textarea>
                         </div>
                     </div>
 
                     <!-- NÚT LƯU THÔNG TIN -->
                     <div class="form-submit-bar" style="display: flex; gap: 14px; align-items: center; margin-top: 24px;">
                         <button type="submit" class="btn-primary" style="padding: 13px 32px; font-size: 1rem; font-weight: 700; border-radius: 8px;">
-                            Lưu Thông Tin Hồ Sơ & Kỹ Năng
+                            Lưu Hồ Sơ
                         </button>
-                        <a href="/dang_ky_ca.php" class="btn-detail" style="padding: 13px 24px; font-weight: 600; border-radius: 8px;">
-                            Chuyển Đến Đăng Ký Ca Làm Việc &rarr;
+                        <a href="/hoat_dong.php" class="btn-detail" style="padding: 13px 24px; font-weight: 600; border-radius: 8px;">
+                            Xem Ca Trực &rarr;
                         </a>
                     </div>
                 </form>
             </div>
 
-            <!-- CỘT PHẢI: XEM TRƯỚC THẺ TÌNH NGUYỆN VIÊN ĐIỆN TỬ (DIGITAL ID PASS) -->
+            <!-- CỘT PHẢI: XEM TRƯỚC THẺ TÌNH NGUYỆN VIÊN ĐIỆN TỬ -->
             <div class="profile-sidebar-col" id="section_card">
                 <div class="digital-id-pass-card sticky-card">
                     <div class="id-pass-top">
@@ -595,7 +603,7 @@ require __DIR__ . '/../templates/header.php';
                             <div class="badge-emblem">D2L</div>
                             <div>
                                 <strong>THẺ TÌNH NGUYỆN VIÊN</strong>
-                                <span>HỆ THỐNG ĐIỀU PHỐI ĐIỆN TỬ</span>
+                                <span>THẺ ĐIỆN TỬ D2L</span>
                             </div>
                         </div>
                         <span class="id-code-pill"><?= htmlspecialchars($passId) ?></span>
@@ -675,13 +683,13 @@ require __DIR__ . '/../templates/header.php';
                                 <rect x="44" y="70" width="6" height="6" fill="#1e293b"/>
                                 <rect x="52" y="82" width="6" height="6" fill="#1e293b"/>
                             </svg>
-                            <span class="qr-note">Quét mã QR để điểm danh thực địa</span>
+                            <span class="qr-note">Mã QR điểm danh</span>
                         </div>
                     </div>
 
                     <div class="id-pass-bottom">
                         <button type="button" class="btn-primary" style="width: 100%;" onclick="window.print()">
-                            In Thẻ Tình Nguyện Viên
+                            In Thẻ
                         </button>
                     </div>
                 </div>

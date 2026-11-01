@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             if (currentViewingActivity) {
                 activityModal.classList.remove('open');
-                openRegisterModal(currentViewingActivity);
+                window.location.href = '/dang_ky_ca.php?event_id=' + encodeURIComponent(currentViewingActivity.id);
             }
         });
     }

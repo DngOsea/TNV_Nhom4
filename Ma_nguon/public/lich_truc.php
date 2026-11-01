@@ -10,6 +10,7 @@ require_once __DIR__ . '/../src/Auth.php';
 require_once __DIR__ . '/../src/AssignmentEngine.php';
 require_once __DIR__ . '/../src/ActivityManager.php';
 require_once __DIR__ . '/../src/SkillManager.php';
+require_once __DIR__ . '/../src/Database.php';
 
 $btlData = require __DIR__ . '/../data/btl_dataset.php';
 $allSkills = $btlData['skills'];
@@ -69,6 +70,15 @@ if (!isset($_SESSION['btl_duty_schedule']) || !is_array($_SESSION['btl_duty_sche
 }
 
 $dutySchedules = &$_SESSION['btl_duty_schedule'];
+$db = Database::getInstance();
+$dbLoadedSchedule = $db->loadDutySchedule();
+if (!empty($dbLoadedSchedule)) {
+    foreach ($dbLoadedSchedule as $sId => $assignedList) {
+        if (isset($dutySchedules[$sId])) {
+            $dutySchedules[$sId]['assigned_volunteers'] = $assignedList;
+        }
+    }
+}
 $currentUser = Auth::getUser();
 $flashMessage = $_SESSION['flash_msg'] ?? null;
 unset($_SESSION['flash_msg']);
@@ -130,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'title' => 'Đã Báo Bận & Chuyển Ban Chỉ Huy Phê Duyệt',
                     'content' => 'Hệ thống đã ghi nhận thông báo vắng mặt của bạn tại hoạt động ' . htmlspecialchars($shiftId) . ' và chuyển sang phần phê duyệt của Ban Chỉ Huy.',
                 ];
+                $db->saveDutySchedule($dutySchedules);
             } else {
                 $_SESSION['flash_msg'] = [
                     'type' => 'danger',
@@ -361,7 +372,7 @@ if ($currentUser) {
                     'leader' => $s['leader'],
                     'leader_phone' => '0912.456.789',
                     'status' => $v['status'] ?? 'confirmed',
-                    'registered_at' => 'Lịch phân công BTL',
+                    'registered_at' => 'Lịch điều phối đơn vị',
                     'note' => 'Ban Chỉ Huy điều phối',
                     'raw_shift_id' => $s['id'],
                     'raw_volunteer_id' => $v['id'],
@@ -390,16 +401,16 @@ require __DIR__ . '/../templates/header.php';
     <div class="heading-container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
         <div>
             <span class="sub-badge">ĐIỀU HÀNH HOẠT ĐỘNG</span>
-            <h1>Lịch Hoạt Động & Quản Lý Đợt Công Tác</h1>
-            <p>Theo dõi lịch hoạt động cá nhân, địa điểm tập kết thực địa và tra cứu lịch tham gia của toàn đội ngũ.</p>
+            <h1>Lịch Trực Hoạt Động</h1>
+            <p>Theo dõi ca trực cá nhân và lịch công tác của toàn đội.</p>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <a href="/dang_ky_ca.php" class="btn-primary" style="padding: 10px 20px; font-weight: 700;">
-                + Đăng Ký Hoạt Động Mới
+                + Đăng Ký Ca Mới
             </a>
             <?php if (Auth::isCoordinator()): ?>
                 <a href="/phan_cong.php" class="btn-detail" style="padding: 10px 18px; font-weight: 600;">
-                    Bảng Điều Phối Ban Chỉ Huy &rarr;
+                    Bảng Điều Phối &rarr;
                 </a>
             <?php endif; ?>
         </div>
@@ -424,13 +435,13 @@ require __DIR__ . '/../templates/header.php';
             <?php if (Auth::isLoggedIn()): ?>
                 <a href="/lich_truc.php?tab=my_shifts" 
                    class="tab-nav-pill <?= $activeTab === 'my_shifts' ? 'active' : '' ?>">
-                    <span>Hoạt Động Của Tôi</span>
+                    <span>Ca Của Tôi</span>
                     <span class="tab-badge-count"><?= count($myUnifiedActivities) ?></span>
                 </a>
             <?php endif; ?>
             <a href="/lich_truc.php?tab=all_shifts" 
                class="tab-nav-pill <?= $activeTab === 'all_shifts' ? 'active' : '' ?>">
-                <span>Lịch Hoạt Động Toàn Đội</span>
+                <span>Lịch Toàn Đội</span>
                 <span class="tab-badge-count"><?= count($dutySchedules) ?></span>
             </a>
         </div>

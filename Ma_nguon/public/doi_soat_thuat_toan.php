@@ -71,9 +71,9 @@ require __DIR__ . '/../templates/header.php';
     <div class="page-heading-pro">
         <div class="heading-container" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
             <div>
-                <span class="sub-badge">BAN CHỈ HUY • ĐỐI SOÁT ĐIỀU PHỐI</span>
-                <h1>Đối Soát & Phân Tích Hiệu Suất Thuật Toán Phân Bổ</h1>
-                <p>Đối chiếu định lượng giữa <strong>Phân bổ tuần tự (FCFS)</strong> và <strong>Tối ưu hóa đa ràng buộc (Smart Greedy)</strong>.</p>
+                <span class="sub-badge">BAN CHỈ HUY</span>
+                <h1>Báo Cáo Hiệu Quả Phân Ca</h1>
+                <p>So sánh kết quả phân bổ theo thứ tự đăng ký và theo tối ưu chuyên môn.</p>
             </div>
             <div>
                 <a href="/phan_cong.php" class="btn-action-pro" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.84rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
@@ -87,24 +87,24 @@ require __DIR__ . '/../templates/header.php';
     <!-- KHUNG CHỌN MÔ HÌNH DỮ LIỆU -->
     <div class="scenario-selector-card">
         <div class="selector-header">
-            <h3>Kịch Bản Thử Nghiệm Đối Soát</h3>
+            <h3>Tình Huống Phân Bổ Nhân Lực</h3>
             <span class="dataset-meta">Đang xử lý: <strong><?= count($volunteers) ?> TNV</strong> | <strong><?= count($shifts) ?> Ca Trực</strong> | <strong><?= array_sum(array_column($shifts, 'needed_count')) ?> Chỉ Tiêu</strong></span>
         </div>
 
         <div class="scenario-tabs-grid">
             <a href="/doi_soat_thuat_toan.php?scenario=standard" class="scenario-tab <?= $scenario === 'standard' ? 'active' : '' ?>">
-                <span class="sc-badge">KỊCH BẢN 1</span>
-                <strong>Dữ Liệu Tiêu Chuẩn</strong>
+                <span class="sc-badge">TÌNH HUỐNG 1</span>
+                <strong>Điều Kiện Tiêu Chuẩn</strong>
                 <small>30 TNV & 12 Ca trực — Đủ 5 nhóm chuyên môn</small>
             </a>
             <a href="/doi_soat_thuat_toan.php?scenario=shortage" class="scenario-tab <?= $scenario === 'shortage' ? 'active' : '' ?>">
-                <span class="sc-badge warning">KỊCH BẢN 2</span>
-                <strong>Áp Lực Thiếu Hụt Chuyên Môn</strong>
+                <span class="sc-badge warning">TÌNH HUỐNG 2</span>
+                <strong>Thiếu Hụt Nhân Sự Chuyên Môn</strong>
                 <small>Kiểm thử phản ứng khi thiếu hụt nhân sự Y tế, Sư phạm</small>
             </a>
             <a href="/doi_soat_thuat_toan.php?scenario=conflict" class="scenario-tab <?= $scenario === 'conflict' ? 'active' : '' ?>">
-                <span class="sc-badge danger">KỊCH BẢN 3</span>
-                <strong>Trùng Lịch Khung Giờ Cao Điểm</strong>
+                <span class="sc-badge danger">TÌNH HUỐNG 3</span>
+                <strong>Khung Giờ Cao Điểm Trùng Lịch</strong>
                 <small>Kiểm thử khả năng xử lý xung đột thời gian</small>
             </a>
         </div>
@@ -116,15 +116,15 @@ require __DIR__ . '/../templates/header.php';
 
     <!-- BẢNG TỔNG QUAN CHỈ SỐ SO SÁNH (KPI CARDS) -->
     <div class="benchmark-summary-panel">
-        <h2 class="section-title">Bảng Đối Chiếu Chỉ Số Kỹ Thuật Trọng Tâm</h2>
+        <h2 class="section-title">Đối Chiếu Chỉ Số Hiệu Quả</h2>
 
         <div class="comparison-grid-cards">
-            <!-- Cột 1: FCFS -->
+            <!-- Cột 1: THEO THỨ TỰ ĐĂNG KÝ -->
             <div class="algo-card algo-fcfs">
                 <div class="algo-card-header">
                     <span class="tag-baseline">PHƯƠNG ÁN TUẦN TỰ</span>
-                    <h3>FCFS (Thứ Tự Đăng Ký)</h3>
-                    <p>Gán nhân sự theo thứ tự nộp đơn ban đầu</p>
+                    <h3>Phân Bổ Theo Thứ Tự Đăng Ký</h3>
+                    <p>Bố trí nhân sự theo thứ tự thời gian nộp đơn ban đầu</p>
                 </div>
 
                 <div class="metric-list-rows">
@@ -179,12 +179,12 @@ require __DIR__ . '/../templates/header.php';
                 </div>
             </div>
 
-            <!-- Cột 2: SMART GREEDY -->
+            <!-- Cột 2: ĐIỀU PHỐI TỐI ƯU -->
             <div class="algo-card algo-smart highlight">
                 <div class="algo-card-header">
                     <span class="tag-recommend">PHƯƠNG ÁN TỐI ƯU</span>
-                    <h3>Tối Ưu Đa Ràng Buộc & Ưu Tiên</h3>
-                    <p>Xét đồng thời chuyên môn, thời gian rảnh và cân bằng khối lượng</p>
+                    <h3>Điều Phối Tối Ưu Toàn Diện</h3>
+                    <p>Xét đồng thời chuyên môn, thời gian rảnh và cân bằng khối lượng công việc</p>
                 </div>
 
                 <div class="metric-list-rows">
@@ -236,8 +236,8 @@ require __DIR__ . '/../templates/header.php';
                     <tr>
                         <th style="width: 24%;">Ca Trực & Chuyên Môn Yêu Cầu</th>
                         <th style="width: 8%; text-align: center;">Chỉ Tiêu</th>
-                        <th style="width: 34%;">Phương Án Tuần Tự (FCFS)</th>
-                        <th style="width: 34%;">Phương Án Tối Ưu Đa Ràng Buộc</th>
+                        <th style="width: 34%;">Phương Án Theo Thứ Tự Đăng Ký</th>
+                        <th style="width: 34%;">Phương Án Điều Phối Tối Ưu</th>
                     </tr>
                 </thead>
                 <tbody>

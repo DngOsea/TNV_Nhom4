@@ -46,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 unset($v);
+                $db->saveDutySchedule($_SESSION['btl_duty_schedule']);
             }
 
             $_SESSION['flash_msg'] = [
@@ -77,6 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 unset($v);
+                $db->saveDutySchedule($_SESSION['btl_duty_schedule']);
             }
 
             $_SESSION['flash_msg'] = [
@@ -122,6 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'role' => 'TNV Thay Thế (' . $absentVId . ')',
                     'replacement_for' => $absentVId,
                 ];
+                $db->saveDutySchedule($_SESSION['btl_duty_schedule']);
             }
 
             $_SESSION['flash_msg'] = [
@@ -188,21 +191,21 @@ require_once __DIR__ . '/../templates/header.php';
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
                 <div>
                     <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(220,38,38,0.25); border: 1px solid #dc2626; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #fca5a5; margin-bottom: 8px;">
-                        <span>Khu Vực Quản Trị</span> &bull; <span>Ban Chỉ Huy Điều Phối</span>
+                        <span>Ban Chỉ Huy</span>
                     </div>
                     <h1 style="font-size: 26px; font-weight: 800; margin: 0 0 6px 0; color: #ffffff;">
-                        Thẩm Định & Phê Duyệt Yêu Cầu Báo Vắng
+                        Duyệt Báo Vắng
                     </h1>
                     <p style="font-size: 14px; color: #cbd5e1; margin: 0; max-width: 820px; line-height: 1.5;">
-                        Quản lý luồng tiếp nhận đơn báo bận/vắng từ Tình nguyện viên (chỉ hợp lệ khi gửi trước ít nhất 2 ngày &ge; 48 giờ). Ban Chỉ Huy xem xét phê duyệt hoặc từ chối, và kích hoạt điều động nhân sự thay thế ngay lập tức.
+                        Xét duyệt đơn xin vắng ca và điều động người thay thế.
                     </p>
                 </div>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <a href="/phan_cong.php" class="btn-action-pro" style="background: #ffffff; color: #0f172a; text-decoration: none; padding: 9px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                        &larr; Bảng Điều Phối Lực Lượng
+                        &larr; Bảng Phân Công
                     </a>
                     <a href="/lich_truc.php" class="btn-action-pro" style="background: rgba(255,255,255,0.12); color: #ffffff; text-decoration: none; padding: 9px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; border: 1px solid rgba(255,255,255,0.2);">
-                        Lịch Hoạt Động
+                        Lịch Trực
                     </a>
                 </div>
             </div>
@@ -220,50 +223,50 @@ require_once __DIR__ . '/../templates/header.php';
 
         <!-- 4 THẺ THỐNG KÊ NHANH (METRIC CARDS TƯƠNG PHẢN CAO) -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 28px;">
-            <!-- Thẻ 1: Chờ Duyệt (Màu Cam Rực Rỡ) -->
+            <!-- Thẻ 1: Chờ Duyệt -->
             <a href="/phe_duyet_vang.php?status=pending" style="text-decoration: none; color: inherit;">
                 <div class="metric-card-interactive" style="background: #ffffff; border-radius: 14px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'pending' ? '#d97706' : '#fde68a' ?>; box-shadow: 0 4px 16px rgba(217,119,6,0.12);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-size: 13px; font-weight: 700; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">Chờ Ban Chỉ Huy Duyệt</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">Chờ Duyệt</span>
                         <span style="background: #fef3c7; color: #b45309; width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 6px rgba(217,119,6,0.15);">&#9203;</span>
                     </div>
                     <div style="font-size: 32px; font-weight: 800; color: #b45309; line-height: 1;">
                         <?= $pendingCount ?>
                     </div>
                     <span style="font-size: 12.5px; color: #92400e; margin-top: 6px; display: block;">
-                        <?= $pendingCount > 0 ? '⚠ Cần Ban Chỉ Huy xử lý gấp' : '✓ Không có đơn tồn đọng' ?>
+                        <?= $pendingCount > 0 ? '⚠ Cần xử lý' : '✓ Không có đơn tồn đọng' ?>
                     </span>
                 </div>
             </a>
 
-            <!-- Thẻ 2: Đã Phê Duyệt (Màu Xanh Lá) -->
+            <!-- Thẻ 2: Đã Phê Duyệt -->
             <a href="/phe_duyet_vang.php?status=approved" style="text-decoration: none; color: inherit;">
                 <div class="metric-card-interactive" style="background: #ffffff; border-radius: 14px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'approved' ? '#059669' : '#a7f3d0' ?>; box-shadow: 0 4px 16px rgba(5,150,105,0.12);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-size: 13px; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: 0.5px;">Đã Chấp Thuận Vắng</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: 0.5px;">Đã Duyệt</span>
                         <span style="background: #ecfdf5; color: #047857; width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 6px rgba(5,150,105,0.15);">&#10003;</span>
                     </div>
                     <div style="font-size: 32px; font-weight: 800; color: #047857; line-height: 1;">
                         <?= $approvedCount ?>
                     </div>
                     <span style="font-size: 12.5px; color: #065f46; margin-top: 6px; display: block;">
-                        Đã điều phối thay thế hoặc mở suất
+                        Đã xác nhận hoặc thay thế
                     </span>
                 </div>
             </a>
 
-            <!-- Thẻ 3: Đã Từ Chối (Màu Đỏ Hồng) -->
+            <!-- Thẻ 3: Đã Từ Chối -->
             <a href="/phe_duyet_vang.php?status=rejected" style="text-decoration: none; color: inherit;">
                 <div class="metric-card-interactive" style="background: #ffffff; border-radius: 14px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'rejected' ? '#dc2626' : '#fecaca' ?>; box-shadow: 0 4px 16px rgba(220,38,38,0.12);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-size: 13px; font-weight: 700; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.5px;">Đã Từ Chối Đơn</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.5px;">Từ Chối</span>
                         <span style="background: #fef2f2; color: #b91c1c; width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 6px rgba(220,38,38,0.15);">&#10005;</span>
                     </div>
                     <div style="font-size: 32px; font-weight: 800; color: #b91c1c; line-height: 1;">
                         <?= $rejectedCount ?>
                     </div>
                     <span style="font-size: 12.5px; color: #991b1b; margin-top: 6px; display: block;">
-                        Yêu cầu TNV tiếp tục nhiệm vụ
+                        Yêu cầu tiếp tục tham gia ca
                     </span>
                 </div>
             </a>
@@ -272,14 +275,14 @@ require_once __DIR__ . '/../templates/header.php';
             <a href="/phe_duyet_vang.php?status=all" style="text-decoration: none; color: inherit;">
                 <div class="metric-card-interactive" style="background: #ffffff; border-radius: 14px; padding: 20px 22px; border: 2px solid <?= $selectedStatus === 'all' ? '#0284c7' : '#bae6fd' ?>; box-shadow: 0 4px 16px rgba(2,132,199,0.12);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="font-size: 13px; font-weight: 700; color: #0369a1; text-transform: uppercase; letter-spacing: 0.5px;">Tổng Lượt Báo Vắng</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #0369a1; text-transform: uppercase; letter-spacing: 0.5px;">Tổng Số Đơn</span>
                         <span style="background: #f0f9ff; color: #0284c7; width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 6px rgba(2,132,199,0.15);">&#9776;</span>
                     </div>
                     <div style="font-size: 32px; font-weight: 800; color: #0369a1; line-height: 1;">
                         <?= $totalRequests ?>
                     </div>
                     <span style="font-size: 12.5px; color: #0284c7; margin-top: 6px; display: block;">
-                        Tất cả các đợt chiến dịch
+                        Tất cả yêu cầu
                     </span>
                 </div>
             </a>

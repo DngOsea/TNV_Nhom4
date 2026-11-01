@@ -203,29 +203,29 @@ body { overflow-x: hidden !important; }
                 Trang Chủ
             </a>
             <a href="/hoat_dong.php" class="nav-item <?= $currentPath === '/hoat_dong.php' ? 'active' : '' ?>">
-                Danh Mục Hoạt Động
+                Hoạt Động
             </a>
 
             <?php if (Auth::isCoordinator()): ?>
-                <!-- MENU DÀNH RIÊNG CHO BAN CHỈ HUY / ĐIỀU PHỐI VIÊN (HỖ TRỢ DROPDOWN HOVER NHANH) -->
+                <!-- MENU DÀNH RIÊNG CHO BAN CHỈ HUY / ĐIỀU PHỐI VIÊN -->
                 <div class="nav-item-dropdown-wrap">
                     <a href="/lich_truc.php" class="nav-item <?= $currentPath === '/lich_truc.php' ? 'active' : '' ?>">
-                        <span>Lịch Hoạt Động</span>
+                        <span>Lịch Trực</span>
                         <span class="nav-caret">&#9662;</span>
                     </a>
                     <div class="nav-sub-dropdown" role="menu">
                         <a href="/lich_truc.php?tab=all_shifts" class="nav-sub-link">
                             <span class="sub-icon">&#128197;</span>
                             <div class="sub-text">
-                                <strong>Lịch Hoạt Động Toàn Đội</strong>
-                                <small>Theo dõi ca trực và quân số các chiến dịch</small>
+                                <strong>Lịch Toàn Đội</strong>
+                                <small>Lịch trực chung toàn đội</small>
                             </div>
                         </a>
                         <a href="/lich_truc.php?tab=my_shifts" class="nav-sub-link">
                             <span class="sub-icon">&#127919;</span>
                             <div class="sub-text">
-                                <strong>Ca Trực Của Tôi</strong>
-                                <small>Các ca trực cá nhân phụ trách chỉ huy</small>
+                                <strong>Ca Của Tôi</strong>
+                                <small>Ca trực phụ trách chỉ huy</small>
                             </div>
                         </a>
                     </div>
@@ -233,7 +233,7 @@ body { overflow-x: hidden !important; }
 
                 <div class="nav-item-dropdown-wrap">
                     <a href="/phan_cong.php" class="nav-item nav-item-bch <?= in_array($currentPath, ['/phan_cong.php', '/phe_duyet_vang.php', '/admin_import.php', '/doi_soat_thuat_toan.php'], true) ? 'active' : '' ?>">
-                        <span>Điều Phối Hoạt Động</span>
+                        <span>Điều Phối</span>
                         <span class="nav-bch-pill">BCH</span>
                         <span class="nav-caret">&#9662;</span>
                     </a>
@@ -241,99 +241,99 @@ body { overflow-x: hidden !important; }
                         <a href="/phan_cong.php" class="nav-sub-link">
                             <span class="sub-icon chip-ruby">&#9881;</span>
                             <div class="sub-text">
-                                <strong>Bảng Phân Công Lực Lượng</strong>
-                                <small>Thuật toán Smart Greedy & điều động nhân sự</small>
+                                <strong>Phân Công Ca</strong>
+                                <small>Xếp lịch và điều động nhân sự</small>
                             </div>
                         </a>
                         <a href="/phe_duyet_vang.php" class="nav-sub-link">
                             <span class="sub-icon chip-amber">&#9203;</span>
                             <div class="sub-text">
-                                <strong>Phê Duyệt Báo Vắng</strong>
-                                <small>Thẩm định đơn vắng & điều động thay thế</small>
+                                <strong>Duyệt Báo Vắng</strong>
+                                <small>Xét duyệt đơn xin vắng ca</small>
                             </div>
                         </a>
                         <a href="/admin_import.php" class="nav-sub-link">
                             <span class="sub-icon chip-emerald">&#128194;</span>
                             <div class="sub-text">
-                                <strong>Quản Trị 50 Dự Án & TNV</strong>
-                                <small>Lọc đa thuộc tính, chỉnh sửa và đồng bộ</small>
+                                <strong>Quản Lý Dự Án & TNV</strong>
+                                <small>Danh mục hoạt động và nhân sự</small>
                             </div>
                         </a>
                         <a href="/doi_soat_thuat_toan.php" class="nav-sub-link">
                             <span class="sub-icon chip-sapphire">&#128202;</span>
                             <div class="sub-text">
-                                <strong>Đối Soát Hiệu Suất</strong>
-                                <small>So sánh FCFS vs Smart Greedy</small>
+                                <strong>Báo Cáo Hiệu Quả</strong>
+                                <small>Đánh giá phương án phân ca</small>
                             </div>
                         </a>
                     </div>
                 </div>
             <?php else: ?>
-                <!-- MENU DÀNH CHO TÌNH NGUYỆN VIÊN & KHÁCH (HỖ TRỢ DROPDOWN HOVER NHANH) -->
+                <!-- MENU DÀNH CHO TÌNH NGUYỆN VIÊN & KHÁCH -->
                 <div class="nav-item-dropdown-wrap">
                     <a href="/lich_truc.php" class="nav-item <?= $currentPath === '/lich_truc.php' ? 'active' : '' ?>">
-                        <span><?= Auth::isVolunteer() ? 'Hoạt Động Của Tôi' : 'Lịch Hoạt Động' ?></span>
+                        <span>Lịch Trực</span>
                         <span class="nav-caret">&#9662;</span>
                     </a>
                     <div class="nav-sub-dropdown" role="menu">
                         <a href="/lich_truc.php?tab=my_shifts" class="nav-sub-link">
                             <span class="sub-icon">&#127919;</span>
                             <div class="sub-text">
-                                <strong>Hoạt Động Của Tôi</strong>
-                                <small>Lịch trực cá nhân, báo vắng & điểm danh</small>
+                                <strong>Ca Của Tôi</strong>
+                                <small>Lịch trực cá nhân và báo vắng</small>
                             </div>
                         </a>
                         <a href="/lich_truc.php?tab=all_shifts" class="nav-sub-link">
                             <span class="sub-icon">&#128197;</span>
                             <div class="sub-text">
                                 <strong>Lịch Toàn Đội</strong>
-                                <small>Tra cứu lịch trực công khai của toàn đơn vị</small>
+                                <small>Lịch trực chung toàn đơn vị</small>
                             </div>
                         </a>
                     </div>
                 </div>
             <?php endif; ?>
 
-            <!-- TRANG HỒ SƠ TÌNH NGUYỆN VIÊN & KỸ NĂNG (HỖ TRỢ DROPDOWN HOVER CHỌN NHANH) -->
+            <!-- TRANG HỒ SƠ TÌNH NGUYỆN VIÊN -->
             <div class="nav-item-dropdown-wrap">
                 <a href="/profile.php" class="nav-item nav-highlight nav-dropdown-trigger <?= in_array($currentPath, ['/profile.php', '/register.php'], true) ? 'active' : '' ?>">
-                    <span>Hồ Sơ Của Tôi</span>
+                    <span>Hồ Sơ</span>
                     <span class="nav-caret">&#9662;</span>
                 </a>
                 <div class="nav-sub-dropdown" role="menu">
                     <a href="/profile.php?section=info" class="nav-sub-link">
                         <span class="sub-icon">&#128100;</span>
                         <div class="sub-text">
-                            <strong>Thông Tin Định Danh</strong>
-                            <small>Họ tên, SĐT, trường/đơn vị, liên hệ</small>
+                            <strong>Thông Tin Cá Nhân</strong>
+                            <small>Họ tên, SĐT và liên hệ</small>
                         </div>
                     </a>
                     <a href="/profile.php?section=skills" class="nav-sub-link">
                         <span class="sub-icon">&#9874;</span>
                         <div class="sub-text">
-                            <strong>Kỹ Năng & Năng Lực</strong>
-                            <small>Kỹ năng chuẩn & kỹ năng tự nhập</small>
+                            <strong>Kỹ Năng</strong>
+                            <small>Chuyên môn và năng lực</small>
                         </div>
                     </a>
                     <a href="/profile.php?section=schedule" class="nav-sub-link">
                         <span class="sub-icon">&#128197;</span>
                         <div class="sub-text">
-                            <strong>Lịch Rảnh & Báo Bận</strong>
-                            <small>Ma trận 7 ngày & báo bận tương lai</small>
+                            <strong>Lịch Rảnh</strong>
+                            <small>Thời gian rảnh và báo bận</small>
                         </div>
                     </a>
                     <a href="/profile.php?section=card" class="nav-sub-link">
                         <span class="sub-icon">&#127379;</span>
                         <div class="sub-text">
-                            <strong>Thẻ TNV Điện Tử</strong>
-                            <small>Mã số định danh, QR code & in thẻ</small>
+                            <strong>Thẻ Điện Tử</strong>
+                            <small>Mã định danh và mã QR</small>
                         </div>
                     </a>
                     <a href="/profile.php?section=emergency" class="nav-sub-link">
                         <span class="sub-icon">&#9742;</span>
                         <div class="sub-text">
                             <strong>Liên Hệ Khẩn Cấp</strong>
-                            <small>Người thân & lời nhắn gửi Ban Chỉ Huy</small>
+                            <small>Thông tin liên hệ người thân</small>
                         </div>
                     </a>
                 </div>
@@ -393,12 +393,12 @@ body { overflow-x: hidden !important; }
                             <?php if (Auth::isCoordinator()): ?>
                                 <a href="/phan_cong.php" class="dropdown-link-item">
                                     <span class="dropdown-icon-chip chip-ruby">&#9881;</span>
-                                    <span class="dropdown-link-label">Bảng Điều Phối Lực Lượng</span>
+                                    <span class="dropdown-link-label">Phân Công Ca Trực</span>
                                 </a>
                                 <a href="/phe_duyet_vang.php" class="dropdown-link-item" style="display: flex; justify-content: space-between; align-items: center;">
                                     <div style="display: inline-flex; align-items: center; gap: 10px;">
                                         <span class="dropdown-icon-chip chip-amber">&#9203;</span>
-                                        <span class="dropdown-link-label">Phê Duyệt Báo Vắng</span>
+                                        <span class="dropdown-link-label">Duyệt Báo Vắng</span>
                                     </div>
                                     <?php 
                                     $pendingAbsences = Database::getInstance()->getPendingAbsenceCount();
@@ -408,36 +408,36 @@ body { overflow-x: hidden !important; }
                                 </a>
                                 <a href="/admin_import.php" class="dropdown-link-item">
                                     <span class="dropdown-icon-chip chip-emerald">&#128194;</span>
-                                    <span class="dropdown-link-label">Cơ Sở Dữ Liệu & 50 Ví Dụ</span>
+                                    <span class="dropdown-link-label">Quản Lý Dự Án & TNV</span>
                                 </a>
                                 <a href="/tao_su_kien.php" class="dropdown-link-item">
                                     <span class="dropdown-icon-chip chip-cyan">&#10010;</span>
-                                    <span class="dropdown-link-label">Thiết Lập Hoạt Động Mới</span>
+                                    <span class="dropdown-link-label">Tạo Hoạt Động Mới</span>
                                 </a>
                                 <a href="/doi_soat_thuat_toan.php" class="dropdown-link-item">
                                     <span class="dropdown-icon-chip chip-sapphire">&#128202;</span>
-                                    <span class="dropdown-link-label">Báo Cáo Đối Soát Hiệu Suất</span>
+                                    <span class="dropdown-link-label">Báo Cáo Hiệu Quả</span>
                                 </a>
                                 <a href="/lich_truc.php" class="dropdown-link-item">
                                     <span class="dropdown-icon-chip chip-violet">&#128197;</span>
-                                    <span class="dropdown-link-label">Lịch Hoạt Động Toàn Đội</span>
+                                    <span class="dropdown-link-label">Lịch Toàn Đội</span>
                                 </a>
                                 <a href="/profile.php" class="dropdown-link-item">
                                     <span class="dropdown-icon-chip chip-slate">&#128100;</span>
-                                    <span class="dropdown-link-label">Hồ Sơ Ban Chỉ Huy</span>
+                                    <span class="dropdown-link-label">Hồ Sơ Cá Nhân</span>
                                 </a>
                             <?php else: ?>
                                 <a href="/profile.php" class="dropdown-link-item">
                                     <span class="dropdown-icon-chip chip-emerald">&#128100;</span>
-                                    <span class="dropdown-link-label">Hồ Sơ & Kỹ Năng Của Tôi</span>
+                                    <span class="dropdown-link-label">Hồ Sơ Cá Nhân</span>
                                 </a>
                                 <a href="/hoat_dong.php" class="dropdown-link-item">
                                     <span class="dropdown-icon-chip chip-sapphire">&#128640;</span>
-                                    <span class="dropdown-link-label">Đăng Ký Tham Gia Hoạt Động</span>
+                                    <span class="dropdown-link-label">Đăng Ký Ca Mới</span>
                                 </a>
                                 <a href="/lich_truc.php?tab=my_shifts" class="dropdown-link-item">
                                     <span class="dropdown-icon-chip chip-amber">&#128197;</span>
-                                    <span class="dropdown-link-label">Hoạt Động Của Tôi</span>
+                                    <span class="dropdown-link-label">Ca Của Tôi</span>
                                 </a>
                             <?php endif; ?>
                         </div>

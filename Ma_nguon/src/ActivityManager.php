@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/Input.php';
 require_once __DIR__ . '/SkillManager.php';
+require_once __DIR__ . '/Database.php';
 
 class ActivityManager
 {
@@ -385,6 +386,13 @@ class ActivityManager
                     ];
                     $_SESSION['volunteer_shift_registrations'][] = $item;
                     $registeredItems[] = $item;
+
+                    // Lưu trực tiếp vào CSDL MySQL/SQLite
+                    try {
+                        Database::getInstance()->recordRegistration($item);
+                    } catch (Throwable $e) {
+                        error_log("ActivityManager: recordRegistration error: " . $e->getMessage());
+                    }
                 }
             }
         }

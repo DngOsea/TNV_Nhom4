@@ -101,10 +101,10 @@ require __DIR__ . '/../templates/header.php';
 
 <div class="page-heading-pro">
     <div class="heading-container">
-        <span class="sub-badge">QUẢN TRỊ NHÂN SỰ TÌNH NGUYỆN</span>
-        <h1>Quản Lý Lực Lượng Tình Nguyện Viên</h1>
+        <span class="sub-badge">QUẢN LÝ NHÂN SỰ</span>
+        <h1>Quản Lý Tình Nguyện Viên</h1>
         <div class="neon-divider-glow"></div>
-        <p>Hệ thống hồ sơ, phân loại kỹ năng chuyên môn và giám sát điều động lực lượng tình nguyện viên nòng cốt toàn hệ thống.</p>
+        <p>Quản lý danh sách, chuyên môn và điều động tình nguyện viên.</p>
     </div>
 </div>
 
@@ -113,7 +113,7 @@ require __DIR__ . '/../templates/header.php';
     <div class="shift-stats-overview" style="margin-bottom: 24px;">
         <div class="shift-stat-box">
             <strong style="color: #0f172a;"><?= $totalCount ?> TNV</strong>
-            <span>Tổng nhân sự trong cơ sở dữ liệu</span>
+            <span>Tổng nhân sự hệ thống</span>
         </div>
         <div class="shift-stat-box">
             <strong class="text-success"><?= $activeCount ?> Sẵn Sàng</strong>
@@ -143,8 +143,8 @@ require __DIR__ . '/../templates/header.php';
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 Thêm Tình Nguyện Viên
             </button>
-            <a href="/phan_cong.php" class="btn-cmd btn-cmd-outline" title="Chuyển sang Bảng Phân Công Ca Trực">
-                Bảng Điều Phối &rarr;
+            <a href="/phan_cong.php" class="btn-cmd btn-cmd-outline" title="Chuyển sang Phân Công Ca">
+                Phân Công Ca &rarr;
             </a>
         </div>
     </div>

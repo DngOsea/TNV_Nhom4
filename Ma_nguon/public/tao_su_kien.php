@@ -108,9 +108,9 @@ require __DIR__ . '/../templates/header.php';
 
 <div class="page-heading-pro">
     <div class="heading-container">
-        <span class="sub-badge">BAN CHỈ HUY ĐIỀU PHỐI</span>
-        <h1>Thiết Lập Sự Kiện & Cấu Hình Ca Làm Việc Đa Ngày</h1>
-        <p>Khởi tạo hoạt động tình nguyện mới, chia lịch theo từng Thứ (Ngày) và thiết lập các ca làm việc cụ thể (8h-12h, 13h-17h...).</p>
+        <span class="sub-badge">TẠO HOẠT ĐỘNG</span>
+        <h1>Tạo Hoạt Động & Ca Trực</h1>
+        <p>Tạo hoạt động mới và thiết lập các ca làm việc.</p>
     </div>
 </div>
 
@@ -123,19 +123,19 @@ require __DIR__ . '/../templates/header.php';
     <?php endif; ?>
 
     <form method="POST" action="/tao_su_kien.php" class="pro-event-form">
-        <!-- KHỐI 1: THÔNG TIN TỔNG QUAN CHIẾN DỊCH -->
+        <!-- KHỐI 1: THÔNG TIN HOẠT ĐỘNG -->
         <div class="form-section-block" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
             <div class="section-block-title" style="margin-bottom: 18px;">
                 <span class="num-step">1</span>
                 <div>
-                    <h3 style="margin: 0; font-size: 1.15rem; color: #1e293b;">Thông Tin Chiến Dịch Tình Nguyện</h3>
+                    <h3 style="margin: 0; font-size: 1.15rem; color: #1e293b;">Thông Tin Hoạt Động</h3>
                     <p style="margin: 2px 0 0; color: #64748b; font-size: 0.88rem;">Nhập tên sự kiện, chủ đề và thông tin điều phối thực địa.</p>
                 </div>
             </div>
 
             <div class="form-row-2">
                 <div class="form-field-pro">
-                    <label for="title">Tên chiến dịch / Hoạt động tình nguyện <strong class="req">*</strong></label>
+                    <label for="title">Tên hoạt động <strong class="req">*</strong></label>
                     <input type="text" id="title" name="title" required placeholder="Ví dụ: Ngày Hội Sống Xanh Thủ Đô 2026 — Dọn Rác & Cải Tạo Mảng Xanh" value="<?= htmlspecialchars($_POST['title'] ?? '') ?>">
                 </div>
 

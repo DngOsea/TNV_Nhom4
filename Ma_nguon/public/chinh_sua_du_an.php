@@ -129,7 +129,7 @@ require_once __DIR__ . '/../templates/header.php';
                         <span style="color: #ffffff;">Chỉnh Sửa Thông Tin</span>
                     </div>
                     <h1 style="font-size: 24px; font-weight: 800; margin: 0; color: #ffffff;">
-                        Chỉnh Sửa Thông Tin Chiến Dịch / Dự Án #<?= $projectId ?>
+                        Chỉnh Sửa Hoạt Động #<?= $projectId ?>
                     </h1>
                 </div>
                 <div style="display: flex; gap: 10px;">
@@ -137,7 +137,7 @@ require_once __DIR__ . '/../templates/header.php';
                         Xem Trang Khách
                     </a>
                     <a href="/admin_import.php?tab=projects" class="btn-action-pro" style="background: #ffffff; color: #0f172a; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 700;">
-                        Quay Lại Bảng Quản Trị
+                        Quay Lại Quản Lý
                     </a>
                 </div>
             </div>
@@ -167,7 +167,7 @@ require_once __DIR__ . '/../templates/header.php';
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span style="background: #059669; color: #ffffff; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">1</span>
-                        <h2 style="font-size: 17px; font-weight: 700; color: #0f172a; margin: 0;">Thông Tin Nhận Diện Chiến Dịch</h2>
+                        <h2 style="font-size: 17px; font-weight: 700; color: #0f172a; margin: 0;">Thông Tin Cơ Bản</h2>
                     </div>
                     <span style="font-size: 12px; background: #ecfdf5; color: #047857; font-weight: 700; padding: 4px 10px; border-radius: 20px; border: 1px solid #a7f3d0;">
                         Mã Dự Án: #<?= $projectId ?>
@@ -336,14 +336,14 @@ require_once __DIR__ . '/../templates/header.php';
             <!-- NÚT LƯU VÀ HÀNH ĐỘNG -->
             <div style="padding: 20px 28px; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                 <span style="font-size: 13px; color: #64748b;">
-                    Mọi thay đổi sẽ tự động đồng bộ sang cơ sở dữ liệu SQLite và file cấu hình nền tảng.
+                    Mọi thay đổi sẽ được cập nhật trực tiếp vào hệ thống dữ liệu.
                 </span>
                 <div style="display: flex; gap: 12px;">
                     <a href="/admin_import.php?tab=projects" style="padding: 10px 20px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; font-size: 14px; text-decoration: none;">
                         Hủy Bỏ
                     </a>
                     <button type="submit" style="padding: 10px 28px; border-radius: 8px; border: none; background: #059669; color: #ffffff; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 2px 8px rgba(5,150,105,0.3);">
-                        Lưu Cập Nhật Dự Án
+                        Lưu Thay Đổi
                     </button>
                 </div>
             </div>
