@@ -232,7 +232,7 @@ body { overflow-x: hidden !important; }
                 </div>
 
                 <div class="nav-item-dropdown-wrap">
-                    <a href="/phan_cong.php" class="nav-item nav-item-bch <?= in_array($currentPath, ['/phan_cong.php', '/phe_duyet_vang.php', '/admin_import.php', '/doi_soat_thuat_toan.php'], true) ? 'active' : '' ?>">
+                    <a href="/phan_cong.php" class="nav-item nav-item-bch <?= in_array($currentPath, ['/phan_cong.php', '/phe_duyet_vang.php', '/admin_import.php', '/doi_soat_thuat_toan.php', '/tao_su_kien.php', '/chinh_sua_du_an.php'], true) ? 'active' : '' ?>">
                         <span>Điều Phối</span>
                         <span class="nav-bch-pill">BCH</span>
                         <span class="nav-caret">&#9662;</span>
@@ -257,6 +257,13 @@ body { overflow-x: hidden !important; }
                             <div class="sub-text">
                                 <strong>Quản Lý Dự Án & TNV</strong>
                                 <small>Danh mục hoạt động và nhân sự</small>
+                            </div>
+                        </a>
+                        <a href="/tao_su_kien.php" class="nav-sub-link <?= $currentPath === '/tao_su_kien.php' ? 'active' : '' ?>">
+                            <span class="sub-icon" style="background: #10b981; color: #ffffff; font-weight: 900;">&#10010;</span>
+                            <div class="sub-text">
+                                <strong style="color: #059669;">+ Tạo Hoạt Động Mới</strong>
+                                <small>Thiết lập sự kiện & các ca trực</small>
                             </div>
                         </a>
                         <a href="/doi_soat_thuat_toan.php" class="nav-sub-link">

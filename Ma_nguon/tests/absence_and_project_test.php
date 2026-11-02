@@ -156,6 +156,58 @@ $db->updateProject(101, [
 ]);
 
 echo "\n============================================================\n";
+echo "KIỂM THỬ TÍNH NĂNG: TẠO HOẠT ĐỘNG MỚI (BAN CHỈ HUY)\n";
+echo "============================================================\n";
+
+$newCampaignTitle = 'Chiến Dịch Tình Nguyện Test ' . time();
+$createdId = $db->createProject([
+    'title' => $newCampaignTitle,
+    'category' => 'thuc_te_moi_truong',
+    'location' => 'Sông Tô Lịch, Cầu Giấy',
+    'meeting_point' => 'Cổng Công viên Cầu Giấy',
+    'capacity' => 35,
+    'leader_name' => 'Nguyễn Văn Chỉ Huy',
+    'leader_phone' => '0912.999.888',
+    'summary' => 'Chiến dịch thử nghiệm chức năng tạo hoạt động.',
+    'schedule_days' => [
+        [
+            'day_code' => 'day_1',
+            'day_name' => 'Thứ Bảy',
+            'date_string' => '15/11/2026',
+            'shifts' => [
+                [
+                    'shift_name' => 'Ca Sáng',
+                    'time_range' => '08:00 – 12:00',
+                    'capacity' => 20,
+                    'skill_req' => 'Hậu cần khuân vác',
+                    'skill_group' => 'hau_can'
+                ],
+                [
+                    'shift_name' => 'Ca Chiều',
+                    'time_range' => '13:00 – 17:00',
+                    'capacity' => 15,
+                    'skill_req' => 'Truyền thông chụp ảnh',
+                    'skill_group' => 'truyen_thong'
+                ]
+            ]
+        ]
+    ]
+]);
+
+assertCondition("7.1-create-project-returns-id", $createdId !== null && $createdId > 0);
+
+$fetchedNew = $db->getProjectById($createdId);
+assertCondition("7.2-fetch-created-project", $fetchedNew !== null && $fetchedNew['title'] === $newCampaignTitle);
+assertCondition("7.3-verify-created-shifts", !empty($fetchedNew['shifts_list']) && count($fetchedNew['shifts_list']) === 2);
+
+// Dọn dẹp dữ liệu test để bảo toàn DB
+if ($db->isAvailable() && $db->getPdo()) {
+    $db->getPdo()->prepare("DELETE FROM shifts WHERE project_id = ?")->execute([$createdId]);
+    $db->getPdo()->prepare("DELETE FROM projects WHERE id = ?")->execute([$createdId]);
+    $db->syncToVolunteerDataFile();
+}
+
+echo "\n============================================================\n";
 echo "TỔNG KẾT KIỂM THỬ:\n";
 echo "TESTS=" . ($passed + $failed) . " FAILED={$failed}\n";
 

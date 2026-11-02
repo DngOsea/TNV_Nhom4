@@ -11,6 +11,8 @@ declare(strict_types=1);
  * 5. Bộ lọc đa thuộc tính (Multi-attribute Filtering) thông minh cho Dự Án & Tình Nguyện Viên
  */
 
+require_once __DIR__ . '/LocationManager.php';
+
 class Database
 {
     private static ?Database $instance = null;
@@ -22,14 +24,20 @@ class Database
     private function __construct(?array $customConfig = null)
     {
         $this->sqlitePath = dirname(__DIR__) . '/data/volunteer_platform.sqlite';
+        $configFile = dirname(__DIR__) . '/config.php';
+        $fileConfig = file_exists($configFile) ? (include $configFile) : [];
+        if (!is_array($fileConfig)) {
+            $fileConfig = [];
+        }
+
         $this->config = $customConfig ?? [
-            'driver' => getenv('DB_DRIVER') ?: 'auto',
+            'driver' => getenv('DB_DRIVER') ?: ($fileConfig['driver'] ?? 'auto'),
             'sqlite_path' => $this->sqlitePath,
-            'host' => getenv('DB_HOST') ?: '127.0.0.1',
-            'port' => getenv('DB_PORT') ?: '3306',
-            'dbname' => getenv('DB_NAME') ?: 'd2l_volunteers',
-            'username' => getenv('DB_USER') ?: 'root',
-            'password' => getenv('DB_PASS') ?: '',
+            'host' => getenv('DB_HOST') ?: ($fileConfig['host'] ?? '127.0.0.1'),
+            'port' => getenv('DB_PORT') ?: ($fileConfig['port'] ?? '3306'),
+            'dbname' => getenv('DB_NAME') ?: ($fileConfig['dbname'] ?? 'd2l_volunteers'),
+            'username' => getenv('DB_USER') ?: ($fileConfig['username'] ?? 'root'),
+            'password' => getenv('DB_PASS') ?: ($fileConfig['password'] ?? ''),
             'charset' => 'utf8mb4'
         ];
 
@@ -442,13 +450,7 @@ class Database
                 $loc = (string)($p['location'] ?? '');
                 $match = false;
                 foreach ($regions as $r) {
-                    if ($r === 'hanoi' && str_contains($loc, 'Hà Nội')) {
-                        $match = true; break;
-                    } elseif ($r === 'north' && (str_contains($loc, 'Lào Cai') || str_contains($loc, 'Yên Bái') || str_contains($loc, 'Hà Giang') || str_contains($loc, 'Sơn La') || str_contains($loc, 'Hải Phòng') || str_contains($loc, 'Ninh Bình') || str_contains($loc, 'Bắc Ninh') || str_contains($loc, 'Thái Bình'))) {
-                        $match = true; break;
-                    } elseif ($r === 'central' && (str_contains($loc, 'Đà Nẵng') || str_contains($loc, 'Quảng Bình') || str_contains($loc, 'Hà Tĩnh') || str_contains($loc, 'Quảng Ngãi') || str_contains($loc, 'Quảng Nam') || str_contains($loc, 'Quảng Trị') || str_contains($loc, 'Ninh Thuận'))) {
-                        $match = true; break;
-                    } elseif ($r === 'south' && (str_contains($loc, 'Hồ Chí Minh') || str_contains($loc, 'TP.HCM') || str_contains($loc, 'Cần Thơ') || str_contains($loc, 'Cần Giờ') || str_contains($loc, 'Bình Tân') || str_contains($loc, 'Bến Tre'))) {
+                    if (LocationManager::matches($loc, $r)) {
                         $match = true; break;
                     }
                 }
@@ -727,6 +729,40 @@ class Database
                 if ($proj) {
                     $proj['skills_needed'] = json_decode($proj['skills_needed'] ?? '[]', true) ?: [];
                     $proj['benefits'] = json_decode($proj['benefits'] ?? '[]', true) ?: [];
+
+                    $shiftStmt = $this->pdo->prepare("SELECT * FROM shifts WHERE project_id = ? ORDER BY id ASC");
+                    $shiftStmt->execute([$id]);
+                    $proj['shifts_list'] = $shiftStmt->fetchAll(PDO::FETCH_ASSOC);
+
+                    if (!empty($proj['shifts_list'])) {
+                        $shiftsByDay = [];
+                        foreach ($proj['shifts_list'] as $s) {
+                            $dCode = $s['day_code'] ?: 'day_1';
+                            $shiftsByDay[$dCode][] = [
+                                'shift_id' => $s['id'],
+                                'shift_name' => $s['shift_name'],
+                                'time_range' => $s['time_range'],
+                                'capacity' => (int)$s['capacity'],
+                                'registered' => (int)$s['registered'],
+                                'skill_req' => $s['skill_req'] ?: 'Theo phân công',
+                                'skill_group' => $s['skill_group'] ?: 'hau_can',
+                                'day_name' => $s['day_name'] ?? ($dCode === 'day_1' ? 'Thứ Bảy' : 'Chủ Nhật')
+                            ];
+                        }
+                        $scheduleDays = [];
+                        foreach ($shiftsByDay as $dCode => $sList) {
+                            $dayName = $sList[0]['day_name'] ?? ($dCode === 'day_1' ? 'Thứ Bảy' : 'Chủ Nhật');
+                            $scheduleDays[] = [
+                                'day_code' => $dCode,
+                                'day_name' => $dayName,
+                                'date_string' => $proj['date_string'] ?? '',
+                                'full_label' => $dayName . ($proj['date_string'] ? ' (' . $proj['date_string'] . ')' : ''),
+                                'shifts' => $sList
+                            ];
+                        }
+                        $proj['schedule_days'] = $scheduleDays;
+                    }
+
                     return $proj;
                 }
             } catch (Throwable $e) {
@@ -837,6 +873,162 @@ class Database
         }
 
         return true;
+    }
+
+    /**
+     * Thêm mới một dự án / hoạt động tình nguyện vào cơ sở dữ liệu
+     * Đồng thời khởi tạo các ca trực tương ứng trong bảng shifts và đồng bộ toàn hệ thống
+     */
+    public function createProject(array $data): ?int
+    {
+        $categoryNames = [
+            'thuc_te_moi_truong' => 'Bảo Vệ Môi Trường',
+            'hien_mau_y_te' => 'Hiến Máu & Y Tế',
+            'tiep_suc_giao_duc' => 'Tiếp Sức Giáo Dục',
+            'cuu_tro_an_sinh' => 'Cứu Trợ & Bếp Ăn 0Đ',
+            'cham_soc_yeu_thuong' => 'Chăm Sóc Người Già & Trẻ Em',
+        ];
+
+        $category = $data['category'] ?? 'thuc_te_moi_truong';
+        $categoryName = $data['category_name'] ?? ($categoryNames[$category] ?? 'Hoạt Động Tình Nguyện');
+        $skillsJson = json_encode($data['skills_needed'] ?? ['Làm việc nhóm', 'Hậu cần'], JSON_UNESCAPED_UNICODE);
+        $benefitsJson = json_encode($data['benefits'] ?? ['Áo TNV', 'Nước uống', 'Giấy chứng nhận công tác xã hội'], JSON_UNESCAPED_UNICODE);
+        $isUrgent = !empty($data['is_urgent']) ? 1 : 0;
+        $title = trim($data['title'] ?? 'Chiến Dịch Tình Nguyện Mới');
+        $dateString = trim($data['date_string'] ?? 'Nhiều ngày');
+        $timeRange = trim($data['time_range'] ?? 'Theo từng ca trực');
+        $location = trim($data['location'] ?? 'Địa bàn hoạt động');
+        $meetingPoint = trim($data['meeting_point'] ?? 'Tại địa bàn');
+        $capacity = max(1, (int)($data['capacity'] ?? 20));
+        $leaderName = trim($data['leader_name'] ?? 'Ban Chỉ Huy');
+        $leaderPhone = trim($data['leader_phone'] ?? '0912.456.789');
+        $summary = trim($data['summary'] ?? '');
+        $status = $data['status'] ?? 'recruiting';
+        $scheduleDays = $data['schedule_days'] ?? [];
+
+        $newId = null;
+
+        if ($this->isAvailable()) {
+            try {
+                // Xác định new ID tuần tự không trùng lặp
+                $maxStmt = $this->pdo->query("SELECT MAX(id) as max_id FROM projects");
+                $maxRow = $maxStmt ? $maxStmt->fetch(PDO::FETCH_ASSOC) : null;
+                $newId = max(501, ((int)($maxRow['max_id'] ?? 500)) + 1);
+
+                $stmt = $this->pdo->prepare("
+                    INSERT INTO projects (
+                        id, title, category, category_name, date_string, time_range,
+                        location, meeting_point, capacity, registered,
+                        leader_name, leader_phone, skills_needed, benefits,
+                        summary, status, is_urgent
+                    ) VALUES (
+                        ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?, 0,
+                        ?, ?, ?, ?,
+                        ?, ?, ?
+                    )
+                ");
+
+                $stmt->execute([
+                    $newId,
+                    $title,
+                    $category,
+                    $categoryName,
+                    $dateString,
+                    $timeRange,
+                    $location,
+                    $meetingPoint,
+                    $capacity,
+                    $leaderName,
+                    $leaderPhone,
+                    $skillsJson,
+                    $benefitsJson,
+                    $summary,
+                    $status,
+                    $isUrgent
+                ]);
+
+                // Thêm các ca trực vào bảng shifts
+                $shiftStmt = $this->pdo->prepare("
+                    INSERT INTO shifts (
+                        id, project_id, day_code, day_name, shift_name,
+                        time_range, capacity, registered, skill_req, skill_group
+                    ) VALUES (
+                        ?, ?, ?, ?, ?,
+                        ?, ?, 0, ?, ?
+                    )
+                ");
+
+                foreach ($scheduleDays as $dIdx => $d) {
+                    $dCode = $d['day_code'] ?? ('day_' . ($dIdx + 1));
+                    $dName = $d['day_name'] ?? ('Ngày ' . ($dIdx + 1));
+                    $shifts = $d['shifts'] ?? [];
+
+                    foreach ($shifts as $sIdx => $s) {
+                        $sId = $newId . '-D' . ($dIdx + 1) . '-S' . ($sIdx + 1);
+                        $sName = $s['shift_name'] ?? $s['name'] ?? 'Ca Sáng';
+                        $sTime = $s['time_range'] ?? $s['time'] ?? '08:00 – 12:00';
+                        $sCap = max(1, (int)($s['capacity'] ?? 15));
+                        $sReq = $s['skill_req'] ?? 'Hậu cần khuân vác';
+                        $sGroup = $s['skill_group'] ?? (class_exists('SkillManager') ? SkillManager::detectSkillGroup($sReq) : 'hau_can');
+
+                        $shiftStmt->execute([
+                            $sId,
+                            $newId,
+                            $dCode,
+                            $dName,
+                            $sName,
+                            $sTime,
+                            $sCap,
+                            $sReq,
+                            $sGroup
+                        ]);
+                    }
+                }
+            } catch (Throwable $e) {
+                error_log("Database: createProject error: " . $e->getMessage());
+            }
+        }
+
+        if ($newId === null) {
+            $newId = time();
+        }
+
+        // Tạo mảng định dạng đầy đủ của hoạt động mới
+        $newAct = [
+            'id' => $newId,
+            'title' => $title,
+            'category' => $category,
+            'category_name' => $categoryName,
+            'date_string' => $dateString,
+            'time_range' => $timeRange,
+            'location' => $location,
+            'meeting_point' => $meetingPoint,
+            'capacity' => $capacity,
+            'registered' => 0,
+            'leader_name' => $leaderName,
+            'leader_phone' => $leaderPhone,
+            'skills_needed' => json_decode($skillsJson, true),
+            'benefits' => json_decode($benefitsJson, true),
+            'summary' => $summary,
+            'status' => $status,
+            'is_urgent' => $isUrgent,
+            'schedule_days' => $scheduleDays,
+        ];
+
+        // Đồng bộ file cache volunteer_data.php
+        $this->syncToVolunteerDataFile();
+
+        // Đồng bộ vào $_SESSION['custom_activities']
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            @session_start();
+        }
+        if (!isset($_SESSION['custom_activities']) || !is_array($_SESSION['custom_activities'])) {
+            $_SESSION['custom_activities'] = [];
+        }
+        array_unshift($_SESSION['custom_activities'], $newAct);
+
+        return $newId;
     }
 
     /**
@@ -1442,8 +1634,13 @@ class Database
             ");
             $insReg->execute([$vId, $projId, $shiftId, $role, $status]);
 
-            // Cập nhật số lượng đăng ký của dự án
+            // Cập nhật số lượng đăng ký của dự án và ca trực
             $this->pdo->prepare("UPDATE projects SET registered = registered + 1 WHERE id = ?")->execute([$projId]);
+            $this->pdo->prepare("UPDATE shifts SET registered = registered + 1 WHERE id = ?")->execute([$shiftId]);
+            $this->pdo->prepare("UPDATE projects SET status = 'full' WHERE id = ? AND registered >= capacity")->execute([$projId]);
+
+            // Đồng bộ dữ liệu ra tập tin volunteer_data.php
+            $this->syncToVolunteerDataFile();
 
             return true;
         } catch (Throwable $e) {

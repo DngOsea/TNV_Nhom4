@@ -12,6 +12,14 @@ require_once __DIR__ . '/../src/Database.php';
 
 $allActivities = ActivityManager::getAllActivities();
 $selectedEventId = field($_POST, 'activity_id') ?: field($_GET, 'event_id') ?: field($_GET, 'activity_id') ?: '';
+$fromPage = (int)(field($_GET, 'from_page') ?: field($_POST, 'from_page') ?: 1);
+if ($fromPage < 1) $fromPage = 1;
+
+// Nếu truy cập trực tiếp trang đăng ký mà chưa chọn hoạt động, chuyển hướng sang danh mục hoạt động để chọn trước
+if ($selectedEventId === '' && ($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+    header('Location: /hoat_dong.php');
+    exit;
+}
 
 // Tìm hoạt động được chọn, mặc định lấy hoạt động đầu tiên nếu không có ID hợp lệ
 $selectedActivity = null;
@@ -82,8 +90,8 @@ require_once __DIR__ . '/../templates/header.php';
             <p>Lựa chọn các ca làm việc phù hợp với lịch trình của bạn.</p>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <a href="/hoat_dong.php" class="btn-detail" style="padding: 10px 18px; font-weight: 600; text-decoration: none;">
-                &larr; Xem Danh Sách Hoạt Động
+            <a href="/hoat_dong.php?page=<?= $fromPage ?>#act_<?= $selectedEventId ?>" class="btn-detail" style="padding: 10px 18px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                &larr; Quay Lại Danh Sách Hoạt Động
             </a>
             <a href="/lich_truc.php?tab=my_shifts" class="btn-primary" style="padding: 10px 18px; font-weight: 700; text-decoration: none;">
                 Ca Của Tôi
@@ -116,16 +124,12 @@ require_once __DIR__ . '/../templates/header.php';
                             [<?= htmlspecialchars($catCode) ?>] <?= htmlspecialchars($catName) ?>
                         </span>
                         
-                        <!-- CHỌN HOẠT ĐỘNG KHÁC -->
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <label for="switch_activity" style="font-size: 13px; color: #64748b; font-weight: 600;">Đổi hoạt động:</label>
-                            <select id="switch_activity" style="padding: 6px 10px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc;" onchange="window.location.href='/dang_ky_ca.php?event_id=' + this.value;">
-                                <?php foreach ($allActivities as $actItem): ?>
-                                    <option value="<?= $actItem['id'] ?>" <?= (string)$actItem['id'] === (string)$selectedEventId ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($actItem['title']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                        <!-- NÚT QUAY LẠI ĐỔI HOẠT ĐỘNG KHÁC -->
+                        <div>
+                            <a href="/hoat_dong.php?page=<?= $fromPage ?>#act_<?= $selectedEventId ?>" class="btn-detail" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 13px; font-weight: 700; border-radius: 8px; text-decoration: none; background: #f8fafc;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                <span>Đổi Hoạt Động Khác (Quay lại danh mục)</span>
+                            </a>
                         </div>
                     </div>
 
@@ -161,6 +165,7 @@ require_once __DIR__ . '/../templates/header.php';
                 <form method="POST" action="/dang_ky_ca.php" id="form_dang_ky_ca" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                     <input type="hidden" name="action" value="register_shifts">
                     <input type="hidden" name="activity_id" value="<?= htmlspecialchars((string)$selectedEventId) ?>">
+                    <input type="hidden" name="from_page" value="<?= $fromPage ?>">
 
                     <!-- KHỐI 2: THÔNG TIN TÌNH NGUYỆN VIÊN -->
                     <div style="margin-bottom: 22px;">

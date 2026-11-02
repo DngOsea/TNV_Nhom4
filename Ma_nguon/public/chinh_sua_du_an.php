@@ -10,6 +10,7 @@ require_once __DIR__ . '/../src/Auth.php';
 require_once __DIR__ . '/../src/Database.php';
 require_once __DIR__ . '/../src/SkillManager.php';
 require_once __DIR__ . '/../src/ActivityManager.php';
+require_once __DIR__ . '/../src/LocationManager.php';
 
 Auth::requireCoordinator();
 
@@ -47,7 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $category = trim((string)($_POST['category'] ?? 'thuc_te_moi_truong'));
     $dateString = trim((string)($_POST['date_string'] ?? ''));
     $timeRange = trim((string)($_POST['time_range'] ?? ''));
+    $locRegion = trim((string)($_POST['loc_region'] ?? ''));
+    $locProvince = trim((string)($_POST['loc_province'] ?? ''));
+    $locDistrict = trim((string)($_POST['loc_district'] ?? ''));
+    $locDetail = trim((string)($_POST['loc_detail'] ?? ''));
+
     $location = trim((string)($_POST['location'] ?? ''));
+    if (empty($location)) {
+        $parts = array_filter([$locDetail, $locDistrict, $locProvince]);
+        $location = implode(', ', $parts);
+    }
     $meetingPoint = trim((string)($_POST['meeting_point'] ?? ''));
     $capacity = (int)($_POST['capacity'] ?? 20);
     $leaderName = trim((string)($_POST['leader_name'] ?? ''));
@@ -113,6 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 $pageTitle = 'Chỉnh Sửa Thông Tin Dự Án #' . $projectId;
 require_once __DIR__ . '/../templates/header.php';
+$locParsed = LocationManager::parse($project['location'] ?? '');
 ?>
 
 <div class="pro-page-wrapper" style="background: #f8fafc; min-height: 85vh; padding-bottom: 60px;">
@@ -230,21 +241,63 @@ require_once __DIR__ . '/../templates/header.php';
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 16px;">
-                    <div>
-                        <label style="display: block; font-size: 13.5px; font-weight: 700; color: #334155; margin-bottom: 6px;">
-                            Địa Bàn Thực Địa
-                        </label>
-                        <input type="text" name="location" value="<?= htmlspecialchars($project['location'] ?? '') ?>" placeholder="Ví dụ: Quận Hoàn Kiếm, Hà Nội hoặc Huyện Bát Xát, Lào Cai"
-                               style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;">
+                <!-- CẤU TRÚC PHÂN LOẠI ĐỊA BÀN & ĐỊA ĐIỂM -->
+                <div style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                    <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                        <span style="color: #059669;">📍</span>
+                        <span>Phân Loại Địa Bàn & Địa Điểm Hoạt Động <span style="color: #dc2626;">*</span></span>
                     </div>
 
-                    <div>
-                        <label style="display: block; font-size: 13.5px; font-weight: 700; color: #334155; margin-bottom: 6px;">
-                            Điểm Tập Kết / Xuất Phát
-                        </label>
-                        <input type="text" name="meeting_point" value="<?= htmlspecialchars($project['meeting_point'] ?? '') ?>" placeholder="Ví dụ: Cổng chính Công viên Thống Nhất"
-                               style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 5px;">
+                                Vùng Miền / Khu Vực
+                            </label>
+                            <select id="edit_loc_region" name="loc_region" onchange="onEditRegionChange(this.value)" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 13.5px; background: #ffffff;">
+                                <option value="hanoi" <?= $locParsed['region_key'] === 'hanoi' ? 'selected' : '' ?>>Hà Nội (Thủ đô)</option>
+                                <option value="north" <?= $locParsed['region_key'] === 'north' ? 'selected' : '' ?>>Miền Bắc (Tây Bắc & Đông Bắc)</option>
+                                <option value="central" <?= $locParsed['region_key'] === 'central' ? 'selected' : '' ?>>Miền Trung & Tây Nguyên</option>
+                                <option value="south" <?= $locParsed['region_key'] === 'south' ? 'selected' : '' ?>>Miền Nam (TP.HCM & Miền Tây)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 5px;">
+                                Tỉnh / Thành Phố
+                            </label>
+                            <select id="edit_loc_province" name="loc_province" onchange="syncEditLocation()" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 13.5px; background: #ffffff;">
+                                <!-- Điền bởi JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 5px;">
+                                Quận / Huyện / Thị Xã
+                            </label>
+                            <input type="text" id="edit_loc_district" name="loc_district" value="<?= htmlspecialchars($locParsed['district'] ?? '') ?>" placeholder="Ví dụ: Cầu Giấy, Mù Cang Chải..." oninput="syncEditLocation()" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 13.5px; background: #ffffff;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 5px;">
+                                Địa Chỉ Chi Tiết / Tuyến Đường
+                            </label>
+                            <input type="text" id="edit_loc_detail" name="loc_detail" value="<?= htmlspecialchars($project['location'] ?? '') ?>" placeholder="Ví dụ: Dọc bờ kênh, Công viên Cầu Giấy..." oninput="syncEditLocation()" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 13.5px; background: #ffffff;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 5px;">
+                                Địa Chỉ Tổng Hợp (Chuẩn hóa tự động)
+                            </label>
+                            <input type="text" id="edit_location" name="location" readonly value="<?= htmlspecialchars($project['location'] ?? '') ?>" style="width: 100%; padding: 9px 12px; border: 1.5px solid #10b981; border-radius: 7px; font-size: 13.5px; background: #ffffff; font-weight: 700; color: #0f172a;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 5px;">
+                                Điểm Tập Kết / Xuất Phát
+                            </label>
+                            <input type="text" name="meeting_point" value="<?= htmlspecialchars($project['meeting_point'] ?? '') ?>" placeholder="Ví dụ: Cổng chính Công viên Thống Nhất" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 13.5px; background: #ffffff;">
+                        </div>
                     </div>
                 </div>
 
@@ -350,6 +403,48 @@ require_once __DIR__ . '/../templates/header.php';
         </form>
     </div>
 </div>
+
+<script>
+var provincesData = <?= json_encode(LocationManager::PROVINCES_MAP, JSON_UNESCAPED_UNICODE) ?>;
+
+function onEditRegionChange(regKey, selectedProv) {
+    var provSelect = document.getElementById('edit_loc_province');
+    if (!provSelect) return;
+    provSelect.innerHTML = '';
+    var provs = provincesData[regKey] || {};
+    for (var p in provs) {
+        var opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = p;
+        if (selectedProv && p === selectedProv) {
+            opt.selected = true;
+        }
+        provSelect.appendChild(opt);
+    }
+    syncEditLocation();
+}
+
+function syncEditLocation() {
+    var prov = document.getElementById('edit_loc_province')?.value || '';
+    var dist = document.getElementById('edit_loc_district')?.value.trim() || '';
+    var detail = document.getElementById('edit_loc_detail')?.value.trim() || '';
+    var locInput = document.getElementById('edit_location');
+    if (!locInput) return;
+
+    var parts = [];
+    if (detail && detail !== prov) parts.push(detail);
+    if (dist && detail.indexOf(dist) === -1) parts.push(dist);
+    if (prov && detail.indexOf(prov) === -1) parts.push(prov);
+    locInput.value = parts.join(', ') || prov;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var regSelect = document.getElementById('edit_loc_region');
+    if (regSelect) {
+        onEditRegionChange(regSelect.value, '<?= addslashes($locParsed['province'] ?? 'Hà Nội') ?>');
+    }
+});
+</script>
 
 <?php require_once __DIR__ . '/../templates/footer.php'; ?>
 

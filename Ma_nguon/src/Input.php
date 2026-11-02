@@ -54,3 +54,10 @@ if (!function_exists('mb_strtolower')) {
         return strtolower($string);
     }
 }
+if (!function_exists('mb_stripos')) {
+    function mb_stripos(string $haystack, string $needle, int $offset = 0, ?string $encoding = null) {
+        $h = function_exists('mb_strtolower') ? mb_strtolower($haystack, $encoding ?? 'UTF-8') : strtolower($haystack);
+        $n = function_exists('mb_strtolower') ? mb_strtolower($needle, $encoding ?? 'UTF-8') : strtolower($needle);
+        return function_exists('mb_strpos') ? mb_strpos($h, $n, $offset, $encoding) : strpos($h, $n, $offset);
+    }
+}

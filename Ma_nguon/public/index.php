@@ -44,7 +44,7 @@ require __DIR__ . '/../templates/header.php';
                 </p>
                 <div class="cum_nut_slide">
                     <a href="/hoat_dong.php" class="btn-primary nut_cta_lon">Xem Danh Sách Hoạt Động</a>
-                    <a href="/dang_ky_ca.php" class="btn-detail nut_cta_trang">Đăng Ký Ca Làm Việc</a>
+                    <a href="/hoat_dong.php" class="btn-detail nut_cta_trang">Đăng Ký Ca Làm Việc</a>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@ require __DIR__ . '/../templates/header.php';
                 </p>
                 <div class="cum_nut_slide">
                     <a href="/lich_truc.php" class="btn-primary nut_cta_lon">Xem Lịch Trực Thực Địa</a>
-                    <a href="/dang_ky_ca.php" class="btn-detail nut_cta_trang">Đăng Ký Ca Đa Ngày</a>
+                    <a href="/hoat_dong.php" class="btn-detail nut_cta_trang">Đăng Ký Ca Đa Ngày</a>
                 </div>
             </div>
         </div>

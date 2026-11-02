@@ -79,7 +79,7 @@ if (!empty($dbLoadedSchedule)) {
         }
     }
 }
-$currentUser = Auth::getUser();
+$currentUser = Auth::getUser() ?? ($_SESSION['guest_user'] ?? null);
 $flashMessage = $_SESSION['flash_msg'] ?? null;
 unset($_SESSION['flash_msg']);
 
@@ -405,7 +405,7 @@ require __DIR__ . '/../templates/header.php';
             <p>Theo dõi ca trực cá nhân và lịch công tác của toàn đội.</p>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <a href="/dang_ky_ca.php" class="btn-primary" style="padding: 10px 20px; font-weight: 700;">
+            <a href="/hoat_dong.php" class="btn-primary" style="padding: 10px 20px; font-weight: 700;">
                 + Đăng Ký Ca Mới
             </a>
             <?php if (Auth::isCoordinator()): ?>
@@ -496,7 +496,7 @@ require __DIR__ . '/../templates/header.php';
                 <p style="color: #64748b; max-width: 520px; margin: 0 auto 20px; font-size: 0.92rem;">
                     Hãy khám phá các chiến dịch tình nguyện đang mở và chọn các khung giờ phù hợp để tham gia cống hiến.
                 </p>
-                <a href="/dang_ky_ca.php" class="btn-primary" style="padding: 11px 28px; font-weight: 700;">
+                <a href="/hoat_dong.php" class="btn-primary" style="padding: 11px 28px; font-weight: 700;">
                     Đăng Ký Tham Gia Hoạt Động Ngay
                 </a>
             </div>

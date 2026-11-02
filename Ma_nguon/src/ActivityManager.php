@@ -17,7 +17,7 @@ require_once __DIR__ . '/Database.php';
 class ActivityManager
 {
     /**
-     * Lấy toàn bộ danh sách hoạt động (bao gồm hoạt động mặc định + hoạt động do điều phối viên tạo mới)
+     * Lấy toàn bộ danh sách hoạt động (đồng bộ từ Cơ Sở Dữ Liệu SQLite/MySQL + Session)
      */
     public static function getAllActivities(): array
     {
@@ -25,17 +25,47 @@ class ActivityManager
             @session_start();
         }
 
-        $baseData = require __DIR__ . '/../data/volunteer_data.php';
-        $activities = $baseData['activities'] ?? [];
+        $activities = [];
 
-        // Hợp nhất với các hoạt động mới được tạo trong Session
-        $customActivities = $_SESSION['custom_activities'] ?? [];
-        if (is_array($customActivities) && !empty($customActivities)) {
-            $activities = array_merge($customActivities, $activities);
+        // 1. Đồng bộ trực tiếp từ CSDL Database nếu có
+        try {
+            $db = Database::getInstance();
+            if ($db->isAvailable()) {
+                $dbProjects = $db->getProjects();
+                if (!empty($dbProjects)) {
+                    $activities = $dbProjects;
+                }
+            }
+        } catch (Throwable $e) {
+            error_log("ActivityManager::getAllActivities DB error: " . $e->getMessage());
         }
 
-        // Chuẩn hóa cấu trúc schedule_days cho từng hoạt động
+        // 2. Cơ chế dự phòng từ tập tin tĩnh volunteer_data.php nếu CSDL trống
+        if (empty($activities)) {
+            $baseData = require __DIR__ . '/../data/volunteer_data.php';
+            $activities = $baseData['activities'] ?? [];
+        }
+
+        // 3. Hợp nhất với các hoạt động mới được tạo trong Session (nếu chưa có trong CSDL)
+        $customActivities = $_SESSION['custom_activities'] ?? [];
+        if (is_array($customActivities) && !empty($customActivities)) {
+            $existingIds = array_map('strval', array_column($activities, 'id'));
+            foreach ($customActivities as $cAct) {
+                if (!in_array((string)($cAct['id'] ?? ''), $existingIds, true)) {
+                    array_unshift($activities, $cAct);
+                }
+            }
+        }
+
+        // 4. Chuẩn hóa cấu trúc schedule_days & shifts cho từng hoạt động
         foreach ($activities as &$act) {
+            if (empty($act['shifts'])) {
+                if (!empty($act['shifts_list'])) {
+                    $act['shifts'] = array_values(array_unique(array_column($act['shifts_list'], 'shift_name')));
+                } else {
+                    $act['shifts'] = ['Ca Sáng (08:00 – 12:00)', 'Ca Chiều (13:00 – 17:00)'];
+                }
+            }
             $act['schedule_days'] = self::ensureScheduleDays($act);
         }
         unset($act);
@@ -64,6 +94,36 @@ class ActivityManager
     {
         if (!empty($act['schedule_days']) && is_array($act['schedule_days'])) {
             return $act['schedule_days'];
+        }
+
+        // 1. Tự động phân nhóm các ca trực từ CSDL nếu có shifts_list
+        if (!empty($act['shifts_list']) && is_array($act['shifts_list'])) {
+            $grouped = [];
+            foreach ($act['shifts_list'] as $s) {
+                $dCode = $s['day_code'] ?? 'day_1';
+                $dName = $s['day_name'] ?? 'Ngày 1';
+                if (!isset($grouped[$dCode])) {
+                    $grouped[$dCode] = [
+                        'day_code' => $dCode,
+                        'day_name' => $dName,
+                        'date_string' => $act['date_string'] ?? '',
+                        'full_label' => $dName . ' (' . ($act['date_string'] ?? '') . ')',
+                        'shifts' => []
+                    ];
+                }
+                $grouped[$dCode]['shifts'][] = [
+                    'shift_id' => $s['id'] ?? ($act['id'] . '-' . count($grouped[$dCode]['shifts'])),
+                    'shift_name' => $s['shift_name'],
+                    'time_range' => $s['time_range'] ?? '08:00 – 12:00',
+                    'capacity' => (int)($s['capacity'] ?? 20),
+                    'registered' => (int)($s['registered'] ?? 0),
+                    'skill_req' => $s['skill_req'] ?? '',
+                    'skill_group' => $s['skill_group'] ?? 'hau_can',
+                ];
+            }
+            if (!empty($grouped)) {
+                return array_values($grouped);
+            }
         }
 
         // Tự động phân tách đa ngày dựa trên thông tin sẵn có
@@ -297,7 +357,17 @@ class ActivityManager
             @session_start();
         }
 
-        $id = time(); // ID duy nhất
+        // Tích hợp lưu trữ trực tiếp vào CSDL Database
+        $db = Database::getInstance();
+        $newId = $db->createProject($data);
+        if ($newId) {
+            $act = $db->getProjectById($newId);
+            if ($act) {
+                return $act;
+            }
+        }
+
+        $id = $newId ?: time();
         $newAct = [
             'id' => $id,
             'title' => trim($data['title'] ?? 'Chiến dịch tình nguyện mới'),
@@ -463,6 +533,115 @@ class ActivityManager
                 return true;
             }
         }
+        return false;
+    }
+
+    /**
+     * Bóc tách tất cả các ngày diễn ra hoạt động thành định dạng Y-m-d
+     */
+    public static function extractDates(array $act): array
+    {
+        $dates = [];
+        $text = ($act['date_string'] ?? '') . ' ';
+        if (!empty($act['schedule_days']) && is_array($act['schedule_days'])) {
+            foreach ($act['schedule_days'] as $d) {
+                $text .= ($d['date_string'] ?? '') . ' ' . ($d['full_label'] ?? '') . ' ';
+            }
+        }
+        // Khớp ngày dạng dd/mm/yyyy hoặc dd.mm.yyyy
+        if (preg_match_all('/(\d{1,2})[\/\.](\d{1,2})[\/\.](\d{4})/', $text, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $m) {
+                $day = str_pad($m[1], 2, '0', STR_PAD_LEFT);
+                $month = str_pad($m[2], 2, '0', STR_PAD_LEFT);
+                $year = $m[3];
+                $dates[] = "$year-$month-$day";
+            }
+        }
+        // Khớp ngày dạng yyyy-mm-dd
+        if (preg_match_all('/(\d{4})[\-](\d{1,2})[\-](\d{1,2})/', $text, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $m) {
+                $year = $m[1];
+                $month = str_pad($m[2], 2, '0', STR_PAD_LEFT);
+                $day = str_pad($m[3], 2, '0', STR_PAD_LEFT);
+                $dates[] = "$year-$month-$day";
+            }
+        }
+        return array_values(array_unique($dates));
+    }
+
+    /**
+     * Lấy mốc thời gian sớm nhất của hoạt động (phục vụ sắp xếp thời gian)
+     */
+    public static function getEarliestTimestamp(array $act): int
+    {
+        $dates = self::extractDates($act);
+        if (!empty($dates)) {
+            sort($dates);
+            $ts = strtotime($dates[0]);
+            if ($ts !== false) {
+                return $ts;
+            }
+        }
+        if (!empty($act['created_at'])) {
+            $ts = strtotime($act['created_at']);
+            if ($ts !== false) {
+                return $ts;
+            }
+        }
+        return (int)($act['id'] ?? 0) * 10000;
+    }
+
+    /**
+     * Kiểm tra xem hoạt động có khớp với ngày được chọn trên lịch hay không
+     */
+    public static function matchesDate(array $act, string $targetDate): bool
+    {
+        if (empty($targetDate)) {
+            return true;
+        }
+        $targetTs = strtotime($targetDate);
+        if ($targetTs === false) {
+            return true;
+        }
+
+        $targetDateFormatted = date('Y-m-d', $targetTs);
+        $dayOfWeek = (int)date('w', $targetTs); // 0 = CN, 1 = T2, ..., 6 = T7
+
+        // 1. Kiểm tra ngày chính xác
+        $dates = self::extractDates($act);
+        if (in_array($targetDateFormatted, $dates, true)) {
+            return true;
+        }
+
+        // 2. Nếu có từ 2 mốc ngày trở lên, kiểm tra xem ngày chọn có nằm trong khoảng [ngày đầu, ngày cuối] không
+        if (count($dates) >= 2) {
+            sort($dates);
+            if ($targetDateFormatted >= $dates[0] && $targetDateFormatted <= end($dates)) {
+                return true;
+            }
+        }
+
+        // 3. Khớp các hoạt động diễn ra định kỳ theo Thứ (Chủ Nhật, Thứ Bảy, Trong tuần, 24/7...)
+        $text = mb_strtolower(($act['date_string'] ?? '') . ' ' . ($act['title'] ?? '') . ' ' . ($act['summary'] ?? ''));
+        if ($dayOfWeek === 0) {
+            if (str_contains($text, 'chủ nhật') || str_contains($text, 'cuối tuần') || str_contains($text, '24/7')) {
+                return true;
+            }
+        } elseif ($dayOfWeek === 6) {
+            if (str_contains($text, 'thứ bảy') || str_contains($text, 'thứ 7') || str_contains($text, 'cuối tuần') || str_contains($text, '24/7')) {
+                return true;
+            }
+        } else {
+            $weekMap = [1 => 'thứ hai', 2 => 'thứ ba', 3 => 'thứ tư', 4 => 'thứ năm', 5 => 'thứ sáu'];
+            $wName = $weekMap[$dayOfWeek] ?? '';
+            if ($wName && str_contains($text, $wName)) {
+                return true;
+            }
+            if (str_contains($text, 'trong tuần') || str_contains($text, 'thứ hai đến thứ sáu') || str_contains($text, 'hàng ngày') || str_contains($text, '24/7')) {
+                return true;
+            }
+        }
+
         return false;
     }
 }

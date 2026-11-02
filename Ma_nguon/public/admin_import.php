@@ -10,6 +10,7 @@ require_once __DIR__ . '/../src/Auth.php';
 require_once __DIR__ . '/../src/Database.php';
 require_once __DIR__ . '/../src/SkillManager.php';
 require_once __DIR__ . '/../src/ActivityManager.php';
+require_once __DIR__ . '/../src/LocationManager.php';
 
 Auth::requireCoordinator();
 
@@ -170,15 +171,22 @@ require_once __DIR__ . '/../templates/header.php';
 
         <!-- TABS XEM CHI TIẾT DỮ LIỆU: DỰ ÁN & TÌNH NGUYỆN VIÊN -->
         <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden; margin-bottom: 30px;">
-            <div style="display: flex; border-bottom: 2px solid #e2e8f0; background: #f8fafc; padding: 0 16px;">
-                <button type="button" class="admin-tab-btn <?= $activeTab === 'projects' ? 'active' : '' ?>" id="tab_btn_projects" onclick="switchAdminTab('projects')" style="padding: 14px 20px; font-size: 14.5px; font-weight: 700; color: <?= $activeTab === 'projects' ? '#059669' : '#64748b' ?>; border: none; background: transparent; border-bottom: 3px solid <?= $activeTab === 'projects' ? '#059669' : 'transparent' ?>; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                    <span>Dự Án / Hoạt Động</span>
-                    <span id="badge_count_projects" style="background: #ecfdf5; color: #059669; padding: 2px 8px; border-radius: 12px; font-size: 12px;"><?= count($projects) ?> / <?= $stats['projects_count'] ?></span>
-                </button>
-                <button type="button" class="admin-tab-btn <?= $activeTab === 'volunteers' ? 'active' : '' ?>" id="tab_btn_volunteers" onclick="switchAdminTab('volunteers')" style="padding: 14px 20px; font-size: 14.5px; font-weight: 700; color: <?= $activeTab === 'volunteers' ? '#059669' : '#64748b' ?>; border: none; background: transparent; border-bottom: 3px solid <?= $activeTab === 'volunteers' ? '#059669' : 'transparent' ?>; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                    <span>Tình Nguyện Viên</span>
-                    <span id="badge_count_volunteers" style="background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 12px; font-size: 12px;"><?= count($volunteers) ?> / <?= $stats['volunteers_count'] ?></span>
-                </button>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; background: #f8fafc; padding: 0 16px; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex;">
+                    <button type="button" class="admin-tab-btn <?= $activeTab === 'projects' ? 'active' : '' ?>" id="tab_btn_projects" onclick="switchAdminTab('projects')" style="padding: 14px 20px; font-size: 14.5px; font-weight: 700; color: <?= $activeTab === 'projects' ? '#059669' : '#64748b' ?>; border: none; background: transparent; border-bottom: 3px solid <?= $activeTab === 'projects' ? '#059669' : 'transparent' ?>; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                        <span>Dự Án / Hoạt Động</span>
+                        <span id="badge_count_projects" style="background: #ecfdf5; color: #059669; padding: 2px 8px; border-radius: 12px; font-size: 12px;"><?= count($projects) ?> / <?= $stats['projects_count'] ?></span>
+                    </button>
+                    <button type="button" class="admin-tab-btn <?= $activeTab === 'volunteers' ? 'active' : '' ?>" id="tab_btn_volunteers" onclick="switchAdminTab('volunteers')" style="padding: 14px 20px; font-size: 14.5px; font-weight: 700; color: <?= $activeTab === 'volunteers' ? '#059669' : '#64748b' ?>; border: none; background: transparent; border-bottom: 3px solid <?= $activeTab === 'volunteers' ? '#059669' : 'transparent' ?>; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                        <span>Tình Nguyện Viên</span>
+                        <span id="badge_count_volunteers" style="background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 12px; font-size: 12px;"><?= count($volunteers) ?> / <?= $stats['volunteers_count'] ?></span>
+                    </button>
+                </div>
+                <div style="padding: 8px 0;">
+                    <a href="/tao_su_kien.php?from=admin" class="btn-create-activity" style="background: #059669; color: #ffffff; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(5,150,105,0.25); transition: background 0.2s ease;">
+                        <span>&#10010;</span> Thêm Hoạt Động Mới
+                    </a>
+                </div>
             </div>
 
             <!-- ======================================================== -->
@@ -330,8 +338,16 @@ require_once __DIR__ . '/../templates/header.php';
                                             </span>
                                             <div style="font-size: 11.5px; color: #64748b;"><?= htmlspecialchars($p['date_string'] ?? '') ?></div>
                                         </td>
-                                        <td style="padding: 10px 12px; color: #475569; font-size: 12.5px;">
-                                            <?= htmlspecialchars($p['location'] ?? '') ?>
+                                        <?php $locAdmin = LocationManager::parse($p['location'] ?? ''); ?>
+                                        <td style="padding: 10px 12px; font-size: 12.5px;">
+                                            <div style="font-weight: 700; color: #0f172a; margin-bottom: 3px;">
+                                                📍 <?= htmlspecialchars($locAdmin['short_location']) ?>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 4px;">
+                                                <span style="background: <?= $locAdmin['region_bg'] ?>; color: <?= $locAdmin['region_color'] ?>; padding: 1px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 700; border: 1px solid <?= $locAdmin['region_color'] ?>25;" title="<?= htmlspecialchars($locAdmin['full_location']) ?>">
+                                                    <?= htmlspecialchars($locAdmin['region_name']) ?>
+                                                </span>
+                                            </div>
                                         </td>
                                         <td style="padding: 10px 12px;">
                                             <div style="font-weight: 700; font-size: 13px; color: <?= $isUrgent ? '#dc2626' : ($isFull ? '#059669' : '#0f172a') ?>;">
@@ -365,9 +381,12 @@ require_once __DIR__ . '/../templates/header.php';
                                                 <?= count($p['shifts_list'] ?? []) ?> ca
                                             </span>
                                         </td>
-                                        <td style="padding: 10px 12px; text-align: center;">
+                                        <td style="padding: 10px 12px; text-align: center; white-space: nowrap;">
                                             <a href="/chinh_sua_du_an.php?id=<?= $p['id'] ?>" style="display: inline-flex; align-items: center; gap: 4px; background: #0284c7; color: #ffffff; text-decoration: none; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; box-shadow: 0 1px 3px rgba(2,132,199,0.3);">
                                                 &#9998; Sửa
+                                            </a>
+                                            <a href="/hoat_dong.php#act_<?= $p['id'] ?>" title="Xem trên trang công khai" style="display: inline-flex; align-items: center; gap: 3px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; text-decoration: none; padding: 5px 8px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-left: 4px;">
+                                                👁 Xem
                                             </a>
                                         </td>
                                     </tr>
