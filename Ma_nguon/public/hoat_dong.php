@@ -76,6 +76,26 @@ if ($perPage <= 0 || !in_array($perPage, [6, 9, 12, 18, 24, 48], true)) {
     $perPage = 12; // Mặc định 12 hoạt động / trang (gọn gàng, dễ quét thông tin, không phải lật trang liên tục)
 }
 
+// Nếu có tham số find_id: tìm đúng trang chứa hoạt động đó rồi redirect
+$findId = (int)field($_GET, 'find_id');
+if ($findId > 0) {
+    $allForFind = ActivityManager::getAllActivities();
+    $findIndex = null;
+    foreach ($allForFind as $fi => $fa) {
+        if ((int)$fa['id'] === $findId) {
+            $findIndex = $fi;
+            break;
+        }
+    }
+    if ($findIndex !== null) {
+        $targetPage = max(1, (int)ceil(($findIndex + 1) / $perPage));
+        header('Location: /hoat_dong.php?page=' . $targetPage . '#act_' . $findId);
+    } else {
+        header('Location: /hoat_dong.php');
+    }
+    exit;
+}
+
 $totalItems = count($filtered);
 $totalPages = max(1, (int)ceil($totalItems / $perPage));
 
