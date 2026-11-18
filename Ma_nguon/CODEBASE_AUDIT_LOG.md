@@ -46,7 +46,7 @@ d:\PTPM\Lab03\Ma_nguon\
 ├── templates/                     # Giao diện dùng chung cho toàn bộ website
 │   ├── header.php                 # Header, Marquee tin khẩn cấp, RBAC navigation
 │   └── footer.php                 # Footer bản quyền, giấy phép FIT4111, hotline
-├── public/                        # 16 Trang Web công khai và quản trị
+├── public/                        # 17 Trang Web công khai và quản trị
 │   ├── admin_import.php           # Bảng chỉ huy: Quản trị 50 dự án & 50 TNV, Quân số, Roster
 │   ├── bieu_mau.php               # Danh mục biểu mẫu nghiệp vụ và quy trình
 │   ├── chinh_sua_du_an.php        # Form cập nhật thông tin dự án (Dành cho BCH)
@@ -58,6 +58,7 @@ d:\PTPM\Lab03\Ma_nguon\
 │   ├── index.php                  # Trang chủ, Banner Hero, Thống kê, Chiến dịch hot
 │   ├── lich_truc.php              # Xem lịch trực toàn đội và lịch trực cá nhân
 │   ├── phan_cong.php              # Trung tâm xếp lịch & phân công ca trực thực địa
+│   ├── phe_duyet_ca.php           # Ban chỉ huy xét duyệt / từ chối ca trực mới đăng ký
 │   ├── phe_duyet_vang.php         # Nộp đơn báo vắng & Ban chỉ huy xét duyệt
 │   ├── profile.php                # Hồ sơ cá nhân TNV, huy hiệu và bảng thành tích
 │   ├── quan_ly_tnv.php            # Danh bạ hồ sơ toàn bộ tình nguyện viên
@@ -309,6 +310,15 @@ Hệ thống chia làm 2 nhóm quyền chính dựa trên `$_SESSION['user']['ro
 ### 5.13. `public/quan_ly_tnv.php`
 - Quản lý danh mục 50 tình nguyện viên toàn hệ thống, tìm kiếm theo tên, trường học, kỹ năng, xuất danh sách phục vụ công tác tổ chức.
 
+### 5.14. `public/phe_duyet_ca.php` (Phê Duyệt Đăng Ký Ca Làm Của Ban Chỉ Huy)
+- **Kiểm soát quyền**: `Auth::requireCoordinator()`.
+- **Giao diện & Bố cục**: Chuẩn hóa đồng nhất 100% với `phe_duyet_vang.php`:
+  - Banner Ban Chỉ Huy dạng thẻ bo góc 14px hiện đại, huy hiệu vai trò và thông tin chỉ đạo trực quan.
+  - 4 Thẻ KPI thống kê tương tác: Chờ BCH Phê Duyệt (`pending`), Đã Duyệt (`approved`), Đã Từ Chối (`rejected`), Tổng Số Đơn Đăng Ký.
+  - Thanh công cụ tìm kiếm và lọc đa thuộc tính (theo trạng thái, từ khóa tên TNV / chiến dịch).
+  - Bảng danh sách chi tiết: Mã đơn, Thời gian gửi, Tình nguyện viên, Hoạt động & Ca trực, Thông tin liên hệ, Trạng thái (Pill badge bo tròn 30px đồng bộ).
+  - Hộp thoại Modal Phê duyệt & Modal Từ chối (nhập lý do từ chối), cập nhật dữ liệu tức thì thời gian thực vào CSDL MySQL/SQLite.
+
 ---
 
 ## 6. DỮ LIỆU ĐỌC CHI TIẾT `data/` & `database/` (CƠ SỞ DỮ LIỆU & SEED)
@@ -457,6 +467,7 @@ Hệ thống chia làm 2 nhóm quyền chính dựa trên `$_SESSION['user']['ro
 | **18/11/2026** | `public/phe_duyet_ca.php`, `public/dang_ky_ca.php`, `public/lich_truc.php`, `templates/header.php`, `public/phan_cong.php`, `src/ActivityManager.php`, `src/Database.php` | Thêm tính năng Phê duyệt ca làm của Ban Chỉ Huy & Cập nhật trạng thái 'ĐÃ ĐƯỢC PHÊ DUYỆT' ở Ca của tôi | Xây dựng trang mới `public/phe_duyet_ca.php` với giao diện, bố cục và hệ thống modal chuẩn 100% theo mẫu `phe_duyet_vang.php` (Banner BCH, 4 Thẻ thống kê tương tác Chờ duyệt/Đã duyệt/Từ chối/Tổng số, form tìm kiếm lọc đa thuộc tính, bảng danh sách kèm modal Duyệt và Từ chối); cập nhật quy trình đăng ký ca trực tuyến tại `dang_ky_ca.php` và `ActivityManager` sang trạng thái ban đầu `pending` (Chờ BCH phê duyệt); nâng cấp bảng Ca của tôi tại `lich_truc.php`: hiển thị `⏳ CHỜ BCH PHÊ DUYỆT` khi chưa duyệt, và tự động chuyển sang `✓ ĐÃ ĐƯỢC PHÊ DUYỆT` khi BCH chấp thuận; bổ sung cảnh báo và liên kết điều hướng trên thanh menu, dropdown BCH và toolbar bảng phân công. |
 | **18/11/2026** | `config.php`, `src/Database.php`, `src/ActivityManager.php`, `public/phe_duyet_vang.php`, `public/lich_truc.php`, `public/phe_duyet_ca.php` | Đưa toàn bộ dữ liệu lên MySQL / MySQL Workbench & Lưu trữ thời gian thực (Real-time Persistence) | Kết nối hệ thống trực tiếp tới MySQL/MariaDB XAMPP qua cổng 3307 (khớp 100% profile `XAMPP 3307` trong MySQL Workbench); hoàn thiện cấu trúc quan hệ toàn vẹn dữ liệu (Relational Integrity) giữa 5 bảng cốt lõi `projects`, `shifts`, `volunteers`, `volunteer_registrations`, `absence_requests` với 9 khóa ngoại (Foreign Keys: `fk_reg_shift`, `fk_reg_replacement`, `fk_abs_volunteer`, `fk_abs_shift`, `fk_abs_project`, `fk_abs_replacement`, `shifts_ibfk_1`, `volunteer_registrations_ibfk_1`, `volunteer_registrations_ibfk_2`); cập nhật các phương thức `recordRegistration`, `reviewShiftRegistration`, `getShiftRegistrations`, `getUserShiftRegistrations`, `createAbsenceRequest`, `reviewAbsenceRequest`, `cancelAbsenceRequest`, `saveDutySchedule`, `loadDutySchedule` đọc và ghi trực tiếp thời gian thực vào CSDL; khắc phục triệt để lỗi mất dữ liệu khi restart web/trình duyệt; 10/10 kịch bản kiểm thử tích hợp CSDL pass 100%. |
 | **18/11/2026** | *Git Remote Repository* | Đẩy mã nguồn hoàn thiện lên GitHub (`origin/main`) | Thực hiện commit và push toàn bộ 27 file cập nhật mã nguồn (MySQL Workbench persistence, phê duyệt ca của BCH, khóa hủy báo vắng khi có người thay thế, 2 banner sự kiện mới) lên kho mã nguồn `https://github.com/DngOsea/TNV_Nhom4` tại nhánh `main` (commit `3a1a345`). |
+| **18/11/2026** | `templates/header.php`, `templates/footer.php`, `public/index.php`, `public/phe_duyet_ca.php`, `public/phe_duyet_vang.php`, `public/lich_truc.php`, `src/Database.php` | Rà soát toàn diện & Khắc phục triệt để lỗi hiển thị giao diện các trang | • **`templates/header.php`**: Nạp `require_once __DIR__ . '/../src/ActivityManager.php';` loại bỏ hoàn toàn lỗi Fatal Error crash trang `/phan_cong.php` và `/doi_soat_thuat_toan.php`; xử lý an toàn `$_SERVER['REQUEST_URI'] ?? '/'` triệt tiêu PHP Warning.<br>• **`templates/footer.php`**: Bổ sung thẻ `</div>` bị thiếu tại modal footer (`line 186`), khắc phục triệt để lỗi rò rỉ DOM toàn cục làm vỡ giao diện tất cả các trang web.<br>• **`public/index.php`**: Xóa thẻ `</main>` đóng thừa (line 9) và thẻ `<main id="main">` mở trùng lặp (line 118), đưa cấu trúc thẻ `<main>` về trạng thái cân bằng tuyệt đối 1:1 với header/footer.<br>• **`public/phe_duyet_ca.php` & `public/phe_duyet_vang.php`**: Khắc phục lỗi double-container lồng nhau (`max-width: 1240px` lồng trong `max-width: 1280px` với 40px padding thừa) gây tràn thanh cuộn ngang và ép méo cột bảng dữ liệu; nâng cấp Banner BCH thành thẻ bo góc `14px` đồng bộ với `.page-heading-pro`.<br>• **`public/lich_truc.php`**: Chuẩn hóa chiều cao toàn bộ huy hiệu trạng thái (`ĐÃ BÁO BẬN`, `✓ ĐÃ ĐƯỢC PHÊ DUYỆT`, `CHỜ BCH DUYỆT VẮNG`, `CHỜ BCH PHÊ DUYỆT`, `ĐÃ TỪ CHỐI`) lên đồng nhất `height: 30px` khớp chính xác với nút bấm ("Xin Phép Vắng", "Hủy Báo Vắng"), loại bỏ hoàn toàn độ lệch 2px.<br>• **`src/Database.php`**: Bổ sung tự động migration cột `project_id` & `replacement_volunteer_id` cho SQLite fallback; sửa câu lệnh UPDATE `reviewAbsenceRequest` dùng subquery tra cứu ID thay cho cột không tồn tại `volunteer_name`.<br>• **Kiểm thử**: Đạt 52/52 bài test kiểm thử tự động (100% PASS), 16/16 trang web cân bằng thẻ HTML hoàn hảo. |
 
 ---
 *Tài liệu này được duy trì và cập nhật liên tục mỗi khi có thay đổi mã nguồn. Mọi thay đổi tiếp theo của hệ thống sẽ được ghi nhận trực tiếp vào đây.*

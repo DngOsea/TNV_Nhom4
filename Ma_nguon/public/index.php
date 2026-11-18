@@ -6,7 +6,6 @@ $allActivities = $volunteerData['activities'];
 
 require __DIR__ . '/../templates/header.php';
 ?>
-</main>
 
 <!-- ========================================================
      1. BANNER HERO TỔNG QUAN
@@ -115,8 +114,6 @@ require __DIR__ . '/../templates/header.php';
         <span class="cham_chuyen_slide"></span>
     </div>
 </section>
-
-<main id="main" tabindex="-1">
 
 <!-- ========================================================
      2. DẢI THỐNG KÊ TỔNG QUAN

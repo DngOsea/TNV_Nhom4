@@ -724,7 +724,7 @@ require __DIR__ . '/../templates/header.php';
                                         <?php if ($isPending): ?>
                                             <!-- Trạng thái: Chờ BCH phê duyệt ca -->
                                             <div style="display: inline-flex; flex-direction: column; align-items: flex-end; gap: 3px;">
-                                                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; white-space: nowrap;">
+                                                <span style="height: 30px; display: inline-flex; align-items: center; padding: 0 11px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; white-space: nowrap;">
                                                     &#9203; CHỜ BCH PHÊ DUYỆT
                                                 </span>
                                                 <span style="font-size: 0.72rem; color: #b45309; font-weight: 600; white-space: nowrap;">(Đơn đang chờ thẩm định)</span>
@@ -733,7 +733,7 @@ require __DIR__ . '/../templates/header.php';
                                         <?php elseif ($isRejected): ?>
                                             <!-- Trạng thái: Đã bị từ chối -->
                                             <div style="display: inline-flex; flex-direction: column; align-items: flex-end; gap: 3px;">
-                                                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; white-space: nowrap;">
+                                                <span style="height: 30px; display: inline-flex; align-items: center; padding: 0 11px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; white-space: nowrap;">
                                                     &#10005; ĐÃ TỪ CHỐI
                                                 </span>
                                                 <span style="font-size: 0.72rem; color: #991b1b; white-space: nowrap;">(Chưa đủ điều kiện)</span>
@@ -743,7 +743,7 @@ require __DIR__ . '/../templates/header.php';
                                             <!-- Trạng thái: Chờ duyệt vắng -->
                                             <div style="display: inline-flex; flex-direction: column; align-items: flex-end; gap: 3px;">
                                                 <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap;">
-                                                    <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; white-space: nowrap;">
+                                                    <span style="height: 30px; display: inline-flex; align-items: center; padding: 0 11px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; white-space: nowrap;">
                                                         &#9203; CHỜ BCH DUYỆT VẮNG
                                                     </span>
                                                     <form method="post" action="/lich_truc.php" onsubmit="return confirm('Bạn có chắc chắn muốn HỦY BÁO VẮNG và xác nhận tiếp tục tham gia hoạt động này không?');" style="margin: 0; display: inline-flex; align-items: center;">
@@ -764,10 +764,10 @@ require __DIR__ . '/../templates/header.php';
                                             <!-- Trạng thái: Đã duyệt báo vắng (chỉ hiển thị Đã Báo Bận & Đã Được Phê Duyệt) -->
                                             <div style="display: inline-flex; flex-direction: column; align-items: flex-end; gap: 3px;">
                                                 <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap;">
-                                                    <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; white-space: nowrap;">
+                                                    <span style="height: 30px; display: inline-flex; align-items: center; padding: 0 11px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; white-space: nowrap;">
                                                         ĐÃ BÁO BẬN
                                                     </span>
-                                                    <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; white-space: nowrap;">
+                                                    <span style="height: 30px; display: inline-flex; align-items: center; padding: 0 11px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; white-space: nowrap;">
                                                         &#10003; ĐÃ ĐƯỢC PHÊ DUYỆT
                                                     </span>
                                                 </div>
@@ -779,7 +779,7 @@ require __DIR__ . '/../templates/header.php';
                                         <?php elseif ($isAbsent): ?>
                                             <!-- Trạng thái: Đã báo bận nhưng chưa có người thay thế -->
                                             <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: nowrap; white-space: nowrap;">
-                                                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; white-space: nowrap;">
+                                                <span style="height: 30px; display: inline-flex; align-items: center; padding: 0 11px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; white-space: nowrap;">
                                                     ĐÃ BÁO BẬN
                                                 </span>
                                                 <form method="post" action="/lich_truc.php" onsubmit="return confirm('Bạn có chắc chắn muốn HỦY BÁO VẮNG và xác nhận tiếp tục tham gia hoạt động này không?');" style="margin: 0; display: inline-flex; align-items: center;">
@@ -797,7 +797,7 @@ require __DIR__ . '/../templates/header.php';
                                         <?php elseif ($isCancelled): ?>
                                             <!-- Trạng thái: Đã hủy -->
                                             <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: nowrap; white-space: nowrap;">
-                                                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #f1f5f9; color: #64748b; white-space: nowrap;">
+                                                <span style="height: 30px; display: inline-flex; align-items: center; padding: 0 11px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #f1f5f9; color: #64748b; white-space: nowrap;">
                                                     ĐÃ HỦY
                                                 </span>
                                                 <span style="font-size: 0.78rem; color: #94a3b8; font-style: italic; white-space: nowrap;">
@@ -808,7 +808,7 @@ require __DIR__ . '/../templates/header.php';
                                         <?php else: ?>
                                             <!-- Trạng thái: Đã được phê duyệt tham gia -->
                                             <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: nowrap; white-space: nowrap;">
-                                                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; white-space: nowrap;">
+                                                <span style="height: 30px; display: inline-flex; align-items: center; padding: 0 11px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; white-space: nowrap;">
                                                     &#10003; ĐÃ ĐƯỢC PHÊ DUYỆT
                                                 </span>
                                                 <button type="button" class="t-btn-action t-btn-warn" onclick='openAbsenceRequestModal(<?= $actJson ?>)' style="height: 30px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 12px; font-size: 12px; font-weight: 700; border-radius: 6px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; cursor: pointer; white-space: nowrap; box-shadow: 0 1px 3px rgba(225,29,72,0.12);" title="Báo bận / Xin phép vắng mặt gửi Ban Chỉ Huy phê duyệt">

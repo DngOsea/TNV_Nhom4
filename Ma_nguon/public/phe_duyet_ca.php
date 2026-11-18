@@ -106,39 +106,36 @@ $pageTitle = 'Phê Duyệt Đăng Ký Ca Làm | Ban Chỉ Huy';
 require_once __DIR__ . '/../templates/header.php';
 ?>
 
-<div class="pro-page-wrapper" style="background: #f8fafc; min-height: 85vh; padding-bottom: 60px;">
+<div class="pro-page-wrapper" style="min-height: 85vh; padding-bottom: 40px;">
     <!-- BANNER BAN CHỈ HUY -->
-    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; padding: 28px 0; border-bottom: 3px solid #2563eb;">
-        <div style="max-width: 1240px; margin: 0 auto; padding: 0 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-                <div>
-                    <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(37,99,235,0.25); border: 1px solid #2563eb; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #93c5fd; margin-bottom: 8px;">
-                        <span>Ban Chỉ Huy</span>
-                    </div>
-                    <h1 style="font-size: 26px; font-weight: 800; margin: 0 0 6px 0; color: #ffffff;">
-                        Duyệt Đăng Ký Ca Làm
-                    </h1>
-                    <p style="font-size: 14px; color: #cbd5e1; margin: 0; max-width: 820px; line-height: 1.5;">
-                        Xét duyệt đơn đăng ký ca trực của tình nguyện viên và phân công vào ca chính thức.
-                    </p>
+    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; padding: 24px 28px; border-radius: 14px; border-bottom: 3.5px solid #2563eb; box-shadow: 0 8px 24px rgba(15,23,42,0.12); margin: 12px 0 24px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(37,99,235,0.25); border: 1px solid #2563eb; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #93c5fd; margin-bottom: 8px;">
+                    <span>Ban Chỉ Huy</span>
                 </div>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <a href="/phan_cong.php" class="btn-action-pro" style="background: #ffffff; color: #0f172a; text-decoration: none; padding: 9px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                        &larr; Bảng Phân Công
-                    </a>
-                    <a href="/phe_duyet_vang.php" class="btn-action-pro" style="background: rgba(255,255,255,0.12); color: #ffffff; text-decoration: none; padding: 9px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; border: 1px solid rgba(255,255,255,0.2);">
-                        Duyệt Báo Vắng
-                    </a>
-                    <a href="/lich_truc.php" class="btn-action-pro" style="background: rgba(255,255,255,0.12); color: #ffffff; text-decoration: none; padding: 9px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; border: 1px solid rgba(255,255,255,0.2);">
-                        Lịch Trực
-                    </a>
-                </div>
+                <h1 style="font-size: 24px; font-weight: 800; margin: 0 0 6px 0; color: #ffffff;">
+                    Duyệt Đăng Ký Ca Làm
+                </h1>
+                <p style="font-size: 14px; color: #cbd5e1; margin: 0; max-width: 820px; line-height: 1.5;">
+                    Xét duyệt đơn đăng ký ca trực của tình nguyện viên và phân công vào ca chính thức.
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/phan_cong.php" class="btn-action-pro" style="background: #ffffff; color: #0f172a; text-decoration: none; padding: 9px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                    &larr; Bảng Phân Công
+                </a>
+                <a href="/phe_duyet_vang.php" class="btn-action-pro" style="background: rgba(255,255,255,0.12); color: #ffffff; text-decoration: none; padding: 9px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; border: 1px solid rgba(255,255,255,0.2);">
+                    Duyệt Báo Vắng
+                </a>
+                <a href="/lich_truc.php" class="btn-action-pro" style="background: rgba(255,255,255,0.12); color: #ffffff; text-decoration: none; padding: 9px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; border: 1px solid rgba(255,255,255,0.2);">
+                    Lịch Trực
+                </a>
             </div>
         </div>
     </div>
 
-    <div style="max-width: 1240px; margin: 28px auto 0; padding: 0 20px;">
-        <!-- THÔNG BÁO TƯƠNG TÁC -->
+    <!-- THÔNG BÁO TƯƠNG TÁC -->
         <?php if ($flashMessage): ?>
             <div class="alert alert-<?= htmlspecialchars($flashMessage['type']) ?>" role="alert" style="margin-bottom: 24px; border-radius: 10px; padding: 14px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                 <strong style="font-size: 14.5px;"><?= htmlspecialchars($flashMessage['title']) ?>:</strong>
@@ -378,7 +375,6 @@ require_once __DIR__ . '/../templates/header.php';
                 </table>
             </div>
         </div>
-    </div>
 </div>
 
 <!-- =========================================================================

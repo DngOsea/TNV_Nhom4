@@ -5,6 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../src/Auth.php';
 require_once __DIR__ . '/../src/Database.php';
+require_once __DIR__ . '/../src/ActivityManager.php';
 $volunteerData = require __DIR__ . '/../data/volunteer_data.php';
 
 // Xử lý đăng xuất tài khoản
@@ -15,7 +16,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
 }
 
 $currentUser = $_SESSION['user'] ?? null;
-$currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
+$currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
 // TỔNG HỢP & ƯU TIÊN THÔNG BÁO HOẠT ĐỘNG TUYỂN NHÂN SỰ GẤP
 $topAnnouncements = [];

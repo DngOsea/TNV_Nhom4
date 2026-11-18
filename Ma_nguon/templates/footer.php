@@ -184,11 +184,12 @@
                 <div class="modal-footer-actions">
                     <button type="button" class="btn-cancel btn-modal-close">Hủy bỏ</button>
                     <button type="submit" id="btn_confirm_reg" class="btn-primary modal-cta-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    Xác Nhận Đăng Ký
-                </button>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Xác Nhận Đăng Ký
+                    </button>
+                </div>
             </div>
         </form>
     </div>
