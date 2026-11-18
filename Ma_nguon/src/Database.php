@@ -1109,6 +1109,31 @@ class Database
                 if (!in_array('replacement_volunteer_id', $existingCols, true)) {
                     $this->pdo->exec("ALTER TABLE absence_requests ADD COLUMN replacement_volunteer_id VARCHAR(50) DEFAULT NULL");
                 }
+
+                // Đồng bộ cột cho volunteer_registrations trên SQLite
+                $vrCols = [];
+                $resVr = $this->pdo->query("PRAGMA table_info(volunteer_registrations)");
+                if ($resVr) {
+                    foreach ($resVr->fetchAll(PDO::FETCH_ASSOC) as $col) {
+                        $vrCols[] = strtolower($col['name']);
+                    }
+                }
+                $neededCols = [
+                    'volunteer_name' => "TEXT DEFAULT ''",
+                    'volunteer_phone' => "TEXT DEFAULT ''",
+                    'volunteer_email' => "TEXT DEFAULT ''",
+                    'replacement_for' => "VARCHAR(50) DEFAULT NULL",
+                    'registration_code' => "VARCHAR(50) DEFAULT NULL",
+                    'note' => "TEXT DEFAULT NULL",
+                    'coordinator_note' => "TEXT DEFAULT NULL",
+                    'reviewed_by' => "VARCHAR(100) DEFAULT ''",
+                    'reviewed_at' => "VARCHAR(100) DEFAULT ''"
+                ];
+                foreach ($neededCols as $colName => $colDef) {
+                    if (!in_array($colName, $vrCols, true)) {
+                        $this->pdo->exec("ALTER TABLE volunteer_registrations ADD COLUMN {$colName} {$colDef}");
+                    }
+                }
             }
         } catch (Throwable $e) {
             error_log("Database: initAbsenceRequestsTable error: " . $e->getMessage());
@@ -1201,8 +1226,10 @@ class Database
                 $chkVol = $this->pdo->prepare("SELECT id FROM volunteers WHERE id = ?");
                 $chkVol->execute([$volId]);
                 if (!$chkVol->fetch()) {
-                    $insV = $this->pdo->prepare("INSERT INTO volunteers (id, name, phone, role) VALUES (?, ?, ?, 'Tình Nguyện Viên')");
-                    $insV->execute([$volId, $volName, $volPhone]);
+                    $defaultEmail = strtolower($volId) . '@d2l.org';
+                    $defaultPhone = $volPhone ?: '0900000000';
+                    $insV = $this->pdo->prepare("INSERT INTO volunteers (id, name, phone, email, role) VALUES (?, ?, ?, ?, 'Tình Nguyện Viên')");
+                    $insV->execute([$volId, $volName, $defaultPhone, $defaultEmail]);
                 }
             } catch (Throwable $e) {
                 error_log("Database: createAbsenceRequest prep error: " . $e->getMessage());
@@ -1475,10 +1502,11 @@ class Database
                         SELECT vr.volunteer_id, COALESCE(vr.volunteer_name, v.name) as rep_name
                         FROM volunteer_registrations vr
                         LEFT JOIN volunteers v ON vr.volunteer_id = v.id
-                        WHERE vr.shift_id = ? AND (vr.replacement_for = ? OR vr.role_in_shift LIKE CONCAT('%Thay cho ', ?, '%'))
+                        WHERE vr.shift_id = ? AND (vr.replacement_for = ? OR vr.role_in_shift LIKE ?)
                         LIMIT 1
                     ");
-                    $stmtReg->execute([$shiftId, $volunteerId ?? '', $volunteerId ?? '']);
+                    $likePattern = '%Thay cho ' . ($volunteerId ?? '') . '%';
+                    $stmtReg->execute([$shiftId, $volunteerId ?? '', $likePattern]);
                     if ($rRow = $stmtReg->fetch()) {
                         $isReplaced = true;
                         $replacedName = $rRow['rep_name'] ?? '';
