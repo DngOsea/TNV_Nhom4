@@ -1,7 +1,7 @@
 # NHẬT KÝ ĐỌC VÀ LƯU TRỮ TOÀN BỘ MÃ NGUỒN (CODEBASE AUDIT & KNOWLEDGE BASE LOG)
 > **Dự án**: Hệ Thống Quản Lý Tình Nguyện Viên & Hoạt Động Xã Hội — Đội Tình Nguyện D2L  
-> **Repository**: `https://github.com/DngOsea/TNV_Nhom4.git` (Branch `main`, Commit `d485d9f`)  
-> **Thời điểm lập log**: Ngày 17 Tháng 11 Năm 2026  
+> **Repository**: `https://github.com/DngOsea/TNV_Nhom4.git` (Branch `main`, Commit `f2e62a1`)  
+> **Thời điểm cập nhật toàn diện**: Ngày 18 Tháng 11 Năm 2026 (Đồng bộ 100% Codebase)  
 > **Mục đích duy nhất**: Lưu lại toàn bộ 100% dữ liệu, cấu trúc, hàm, biến, cơ sở dữ liệu và logic đã đọc từ tất cả các file trong dự án.  
 > **QUY TẮC BẮT BUỘC CHO CÁC LẦN SAU**: Tuyệt đối không cần đọc lại các file mã nguồn từ đầu. Mỗi khi người dùng yêu cầu chỉnh sửa hoặc thêm tính năng mới, AI Agent sẽ trích xuất trực tiếp thông tin từ tài liệu này để định vị và cập nhật mã nguồn một cách chính xác, an toàn nhất.
 
@@ -18,6 +18,7 @@
 7. [Dữ Liệu Đọc Chi Tiết `public/assets/` (CSS & JavaScript)](#7-dữ-liệu-đọc-chi-tiết-publicassets-css--javascript)
 8. [Từ Điển Biến Phiên & Cấu Trúc Dữ Liệu Toàn Hệ Thống](#8-từ-điển-biến-phiên--cấu-trúc-dữ-liệu-toàn-hệ-thống)
 9. [Bản Đồ Ánh Xạ Tính Năng Phục Vụ Cập Nhật Code Nhanh](#9-bản-đồ-ánh-xạ-tính-năng-phục-vụ-cập-nhật-code-nhanh)
+10. [Nhật Ký Theo Dõi Thay Đổi & Cập Nhật Code](#10-nhật-ký-theo-dõi-thay-đổi--cập-nhật-code-continuous-update-changelog)
 
 ---
 
@@ -27,9 +28,11 @@
 d:\PTPM\Lab03\Ma_nguon\
 ├── .gitignore
 ├── CODEBASE_AUDIT_LOG.md          # [File này] Bản lưu trữ tri thức toàn diện của hệ thống
+├── CODING_RULES.md                # 5 Quy tắc phát triển code chuẩn mực (Clean, KISS, Đúng phạm vi)
 ├── LICENSE
 ├── README.md                      # Hướng dẫn đề tài BTL và kiến trúc hệ thống
-├── config.example.php             # Mẫu cấu hình môi trường (DB_PATH, APP_NAME, DEBUG)
+├── config.example.php             # Mẫu cấu hình môi trường gốc
+├── config.php                     # Cấu hình môi trường runtime (Kết nối MySQL Workbench cổng 3307)
 ├── lab.sh                         # Shell script hỗ trợ chạy kiểm thử và khởi tạo lab
 ├── src/                           # 11 Lớp xử lý nghiệp vụ lõi (PHP 8.x)
 │   ├── ActivityManager.php        # Quản lý 50 hoạt động/dự án, tính lấp đầy quân số
@@ -78,6 +81,12 @@ d:\PTPM\Lab03\Ma_nguon\
 │   ├── import_50_volunteers_and_projects.sql # SQL nạp 50 dự án và 50 TNV
 │   ├── mysql_full_init.sql        # Bản chuyển đổi tương thích MySQL
 │   └── schema.sql                 # Lược đồ bảng SQLite nguyên bản
+├── tests/                         # Bộ kiểm thử tự động toàn diện (52/52 Tests PASS)
+│   ├── absence_and_project_test.php # Kiểm thử báo vắng >= 2 ngày, tạo & sửa dự án (13 tests)
+│   ├── assignment_test.php        # Kiểm thử 5 phép thử thuật toán phân công theo Rubric (16 tests)
+│   ├── auth_test.php              # Kiểm thử ma trận phân quyền RBAC & báo vắng chính chủ (16 tests)
+│   ├── test_absence_integration.php # Kiểm thử tích hợp hủy báo vắng & khóa hủy khi có người thay
+│   └── run.php                    # Trình chạy kiểm thử tổng hợp cốt lõi (7 tests)
 └── public/assets/                 # Tài nguyên giao diện tĩnh
     ├── css/
     │   ├── app.css                # CSS nền tảng ứng dụng
@@ -87,9 +96,17 @@ d:\PTPM\Lab03\Ma_nguon\
     ├── images/
     │   ├── banner_logo_d2l.jpg    # Logo đội hình và nhận diện thương hiệu
     │   ├── banner_tnv_1.jpg       # Ảnh chụp thực địa tình nguyện độ phân giải cao
-    │   └── banner_tnv_2.jpg       # Ảnh hoạt động cộng đồng độ phân giải cao
+    │   ├── banner_tnv_2.jpg       # Ảnh hoạt động cộng đồng độ phân giải cao
+    │   ├── banner_tnv_3.jpg       # Ảnh chiến dịch Tiếp Sức Mùa Thi chính thống
+    │   ├── banner_tnv_4.jpg       # Ảnh chiến dịch Viện Dưỡng Lão / Chăm Sóc Yêu Thương
+    │   └── categories/            # 5 Ảnh thực tế đại diện cho 5 nhóm chủ đề
+    │       ├── cat_moi_truong.jpg # Môi trường xanh & Dọn rác
+    │       ├── cat_hien_mau.jpg   # Hiến máu nhân đạo & Y tế
+    │       ├── cat_giao_duc.jpg   # Tiếp sức mùa thi & Giáo dục
+    │       ├── cat_cuu_tro.jpg    # Bếp ăn 0 đồng & Cứu trợ khẩn cấp
+    │       └── cat_cham_soc.jpg   # Chăm sóc người cao tuổi & Trẻ em
     └── js/
-        ├── banner_chuyen_dong.js  # Điều khiển slider tự động và nút trượt
+        ├── banner_chuyen_dong.js  # Điều khiển slider 5 banner tự động và 5 chấm trượt
         └── volunteer_portal.js    # Logic tương tác, lọc tab, validate biểu mẫu
 ```
 
@@ -101,15 +118,23 @@ d:\PTPM\Lab03\Ma_nguon\
 Hệ thống chia làm 2 nhóm quyền chính dựa trên `$_SESSION['user']['role_type']`:
 1. **Ban Chỉ Huy / Điều Phối Viên (`coordinator`)**:
    - Tài khoản mẫu: `USR-001` (Trần Hoàng Nam - Chỉ Huy Trưởng), `USR-002` (Lê Nguyễn Phương Thảo - Y tế), `USR-003` (Phạm Minh Quân - Hậu cần).
-   - Quyền hạn: Quản trị dự án (`admin_import.php`), phân công thuật toán (`phan_cong.php`), phê duyệt báo vắng (`phe_duyet_vang.php`), chỉnh sửa dự án (`chinh_sua_du_an.php`), tạo sự kiện (`tao_su_kien.php`), đối soát AI (`doi_soat_thuat_toan.php`).
+   - Quyền hạn: Quản trị dự án (`admin_import.php`), phân công thuật toán (`phan_cong.php`), phê duyệt ca làm mới (`phe_duyet_ca.php`), phê duyệt báo vắng (`phe_duyet_vang.php`), chỉnh sửa dự án (`chinh_sua_du_an.php`), tạo sự kiện (`tao_su_kien.php`), đối soát AI (`doi_soat_thuat_toan.php`).
 2. **Tình Nguyện Viên Thường (`volunteer`)**:
    - Tài khoản mẫu: `USR-004` (Nguyễn Hà My - TNV Nòng cốt).
-   - Quyền hạn: Xem trang chủ, tìm kiếm hoạt động (`hoat_dong.php`), đăng ký ca trực (`dang_ky_ca.php`), xem lịch trực cá nhân (`lich_truc.php`), nộp đơn báo vắng (`phe_duyet_vang.php`), xem hồ sơ và điểm thưởng cá nhân (`profile.php`).
+   - Quyền hạn: Xem trang chủ, tìm kiếm hoạt động (`hoat_dong.php`), đăng ký ca trực (`dang_ky_ca.php`), xem lịch trực toàn đội và lịch trực cá nhân kèm trạng thái duyệt ca (`lich_truc.php`), nộp đơn báo vắng (`phe_duyet_vang.php`), hủy báo vắng (nếu chưa điều động người thay), xem hồ sơ và điểm thưởng cá nhân (`profile.php`).
 
-### 2.2. Cơ chế Lưu Trữ 3 Tầng (3-Tier Storage Strategy)
-1. **Tầng 1 (Primary Database)**: SQLite database tại `data/volunteer_platform.sqlite` qua class `Database` (PDO).
-2. **Tầng 2 (Fallback JSON)**: Tự động nạp từ `data/seed_volunteers.json` và `data/volunteer_data.php` nếu môi trường máy chủ thiếu SQLite driver hoặc CSDL chưa import.
-3. **Tầng 3 (Runtime Session State)**: `$_SESSION['project_roster_custom'][$projectId]` lưu trữ danh sách quân số điều phối thủ công thời gian thực. Khi người điều phối thêm/sửa/xóa thành viên trên `admin_import.php`, dữ liệu được lưu tức thì vào session này.
+### 2.2. Cơ chế Lưu Trữ 3 Tầng Đồng Bộ Thời Gian Thực (Real-Time 3-Tier Storage)
+1. **Tầng 1 (Primary Relational Database - MySQL / MariaDB)**:
+   - Kết nối trực tiếp qua `config.php` tới MariaDB/MySQL cổng 3307 (khớp 100% hồ sơ kết nối `XAMPP 3307` trên MySQL Workbench).
+   - Database: `d2l_volunteers` gồm 5 bảng lõi liên kết chặt chẽ bằng 9 Foreign Keys (`projects`, `shifts`, `volunteers`, `volunteer_registrations`, `absence_requests`).
+   - Đảm bảo lưu trữ dữ liệu thời gian thực (Real-time Persistence), không bị mất dữ liệu khi restart server hoặc tải lại trang.
+2. **Tầng 2 (Auto Fallback SQLite Database)**:
+   - Tự động kích hoạt khi MySQL không khả dụng hoặc khi chạy trong môi trường sandbox cô lập socket TCP.
+   - Sử dụng tệp CSDL SQLite tại `data/volunteer_platform.sqlite` với cấu trúc cột và bảng được tự động migration tương thích 100% với MySQL.
+3. **Tầng 3 (Runtime Session State & Seed JSON Cache)**:
+   - `$_SESSION['btl_duty_schedule']`: Lưu trữ trạng thái phân công và lịch trực runtime.
+   - `$_SESSION['project_roster_custom'][$projectId]`: Lưu trữ quân số điều phối thủ công trên `admin_import.php`.
+   - `data/seed_volunteers.json` & `data/volunteer_data.php`: Nguồn dữ liệu hạt giống dự phòng gốc (Initial Seeding).
 
 ---
 
@@ -196,34 +221,49 @@ Hệ thống chia làm 2 nhóm quyền chính dựa trên `$_SESSION['user']['ro
   - Tự động gán TNV có kỹ năng sơ cấp cứu vào các vị trí trọng điểm y tế.
 
 ### 3.11. `src/Database.php`
-- **Mục đích**: Singleton kết nối CSDL SQLite (`volunteer_platform.sqlite`), tự động seed và có cơ chế fallback.
-- **Hàm chính**:
-  - `getInstance()`: Khởi tạo/truy xuất thực thể kết nối duy nhất.
-  - `getActivities($filters)`: Truy vấn danh sách hoạt động từ SQL hoặc dữ liệu fallback.
-  - `getVolunteers($filters)`: Truy vấn danh sách TNV từ bảng `volunteers` hoặc `seed_volunteers.json`.
-  - `importSeedSql()`: Thực thi nạp CSDL từ file `database/import_50_volunteers_and_projects.sql`.
-  - `resetDatabase()`: Khôi phục CSDL về trạng thái gốc ban đầu.
+- **Mục đích**: Kiến trúc kết nối CSDL kép (Dual Engine): MySQL/MariaDB (Primary trên cổng 3307, khớp MySQL Workbench) + SQLite cục bộ tự động dự phòng (`data/volunteer_platform.sqlite`), tự động seed và đồng bộ quan hệ toàn vẹn dữ liệu.
+- **Các hàm & phương thức chính**:
+  - `getInstance()`: Khởi tạo và truy xuất thực thể kết nối PDO Singleton.
+  - `isAvailable()`: Kiểm tra trạng thái sẵn sàng của kết nối CSDL (`bool`).
+  - `getDriver()`: Trả về loại driver đang hoạt động (`mysql` hoặc `sqlite`).
+  - `getActivities(array $filters = [])`: Truy vấn danh sách hoạt động từ SQL hoặc nạp fallback.
+  - `getVolunteers(array $filters = [])`: Truy vấn danh sách 50 TNV từ bảng `volunteers`.
+  - `recordRegistration(array $regData)`: Ghi nhận ca trực mới đăng ký vào bảng `volunteer_registrations` ở trạng thái `pending`.
+  - `reviewShiftRegistration(string $regCode, string $action, string $coordinatorNote, string $reviewerName)`: Ban Chỉ Huy phê duyệt (`approved`) hoặc từ chối (`rejected`) ca đăng ký.
+  - `getShiftRegistrations(array $filters)`: Lấy danh sách ca đăng ký đa tiêu chí phục vụ trang phê duyệt ca.
+  - `getUserShiftRegistrations(string $volunteerId, string $volunteerName)`: Lấy toàn bộ ca đăng ký của từng cá nhân phục vụ tab "Ca của tôi".
+  - `createAbsenceRequest(array $data)`: Tiếp nhận đơn báo vắng, tự động tính số ngày còn lại và kiểm tra điều kiện báo trước tối thiểu 2 ngày (>= 48 giờ).
+  - `reviewAbsenceRequest(string $requestCode, string $action, string $coordinatorNote, string $reviewerName, ?string $replacementVolId)`: BCH phê duyệt/từ chối đơn báo vắng kèm điều động người thay thế.
+  - `cancelAbsenceRequest(string $shiftId, string $volunteerName, string $volunteerId)`: TNV chủ động hủy báo vắng; tự động chặn và khóa hủy nếu BCH đã bố trí người thay thế nhiệm vụ.
+  - `saveDutySchedule(array $schedule)` & `loadDutySchedule()`: Đọc và ghi bảng phân công trực tiếp vào CSDL.
+  - `getPendingAbsenceCount()` & `getPendingRegistrationCount()`: Đếm số lượng đơn chờ duyệt hiển thị huy hiệu đỏ trên thanh menu.
+  - `importSeedSql()` & `resetDatabase()`: Nạp lại bộ dữ liệu 50 dự án & 50 TNV chuẩn.
 
 ---
 
 ## 4. DỮ LIỆU ĐỌC CHI TIẾT TỪNG FILE TRONG `templates/` (GIAO DIỆN CHUNG)
 
 ### 4.1. `templates/header.php`
-- **Khởi tạo**: Chạy `session_start()` nếu chưa có; xử lý đăng xuất khi có query `?action=logout`.
+- **Khởi tạo & Nạp an toàn**:
+  - Nạp bắt buộc `require_once __DIR__ . '/../src/ActivityManager.php';` khắc phục triệt để lỗi Fatal Error khi nạp bảng phân công.
+  - Chạy `session_start()` an toàn; xử lý fallback `$_SERVER['REQUEST_URI'] ?? '/'` triệt tiêu cảnh báo PHP Notice.
+  - Xử lý đăng xuất khi có query `?action=logout`.
 - **Marquee Thông Báo Khẩn Cấp**:
-  - Tự động quét mảng `$volunteerData['activities']`.
-  - Tính toán số chỉ tiêu còn thiếu: `$deficit = max(0, $capacity - $registered)`.
-  - Lập mảng `$topAnnouncements` ưu tiên các ca trực khẩn cấp (Viện Huyết Học, Đội Xe Máy, Sông Tô Lịch, Bệnh Viện K).
-- **Thanh Điều Hướng (Navigation Bar)**:
+  - Quét danh mục chiến dịch, tự động tính thiếu hụt quân số: `$deficit = max(0, $capacity - $registered)`.
+  - Nút "Đăng ký tham gia" và "Ứng tuyển gấp" liên kết trực tiếp sang `/dang_ky_ca.php?event_id=ID`.
+- **Thanh Điều Hướng (Navigation Bar - RBAC)**:
   - Menu Trang Chủ (`/`), Hoạt Động (`/hoat_dong.php`).
-  - Nếu là Ban Chỉ Huy (`Auth::isCoordinator()`): Hiển thị menu dropdown Lịch Trực (`/lich_truc.php`) và menu dropdown Điều Phối (gồm: Phân Công Ca, Duyệt Báo Vắng, Quản Lý Dự Án & TNV `admin_import.php`, Tạo Sự Kiện Mới, Đối Soát Thuật Toán).
-  - Nếu là TNV: Hiển thị Đăng Ký Ca (`/dang_ky_ca.php`), Lịch Trực Cá Nhân (`/lich_truc.php`), Báo Vắng Ca (`/phe_duyet_vang.php`).
-- **Nút Chuyển Vai Trò Nhanh**:
-  - Cho phép người kiểm thử bấm 1-click chuyển đổi qua lại giữa Chỉ Huy Trưởng (`USR-001`) và TNV Nòng Cốt (`USR-004`).
-- **Khung chứa nội dung**: Mở thẻ `<main id="main">` với `max-width: 1280px; margin: 0 auto;`.
+  - Nếu là Ban Chỉ Huy (`Auth::isCoordinator()`):
+    - Menu Lịch Trực (`/lich_truc.php`).
+    - Menu Điều Phối mở rộng: Phê Duyệt Ca Mới (`/phe_duyet_ca.php` kèm badge số đơn chờ duyệt), Phê Duyệt Báo Vắng (`/phe_duyet_vang.php` kèm badge chờ duyệt), Phân Công Ca (`/phan_cong.php`), Quản Lý Quân Số & Roster (`/admin_import.php`), Tạo Sự Kiện Mới, Đối Soát Thuật Toán.
+  - Nếu là TNV: Đăng Ký Ca (`/dang_ky_ca.php`), Ca Của Tôi (`/lich_truc.php?tab=my_shifts`), Báo Vắng Ca (`/phe_duyet_vang.php`).
+- **Nút Chuyển Vai Trò Nhanh**: Chuyển đổi 1-click giữa Chỉ Huy Trưởng (`USR-001`) và TNV Nòng Cốt (`USR-004`).
+- **Khung chứa nội dung**: Mở thẻ `<main id="main">` với `max-width: 1280px; margin: 0 auto; padding: 0 20px;`.
+- **Styling**: Nhãn chức danh `.user-position-tag` dạng pill bo tròn hoàn toàn `border-radius: 9999px` ôm sát nội dung.
 
 ### 4.2. `templates/footer.php`
 - **Thành phần**:
+  - Đóng hoàn chỉnh các modal nâng cao và modal-footer-enhanced (khắc phục dứt điểm lỗi rò rỉ unclosed tag `<div>`).
   - Đóng thẻ `</main>`.
   - Chân trang hiển thị thông tin Đội Tình Nguyện D2L, Giấy phép Đào tạo CNTT FIT4111.
   - Hotline hỗ trợ 24/7 (`0908.123.456`), email điều phối (`banbch@d2l.org`).
@@ -234,21 +274,17 @@ Hệ thống chia làm 2 nhóm quyền chính dựa trên `$_SESSION['user']['ro
 ## 5. DỮ LIỆU ĐỌC CHI TIẾT TỪNG FILE TRONG `public/` (CÁC TRANG CHỨC NĂNG)
 
 ### 5.1. `public/index.php` (Trang Chủ & Hero Banner)
-- **Banner Hero Slider**:
-  - Chứa 3 slide chính:
-    - Slide 1: **Showcase Lịch Ra Quân / Khởi Hành**.
-    - Slide 2: **Chiến Dịch Trọng Điểm — Chủ Nhật Xanh & Trồng Rừng Cần Giờ**.
-    - Slide 3: **Hoạt Động An Sinh — Giọt Hồng Nghĩa Tình & Bếp Ăn 0 Đồng**.
-  - Nút trượt trái/phải (`.nut_chuyen_trai`, `.nut_chuyen_phai`) và 3 chấm điều khiển (`.cham_chuyen_slide`).
-- **Dải Thống Kê Nhanh**:
-  - 05 Nhóm Chủ Đề Hoạt Động.
-  - 08 Chiến Dịch Trọng Điểm.
-  - 1.250+ Lượt TNV Tham Gia.
-  - 24/7 Sẵn Sàng Điều Động.
-- **Danh Mục 5 Lĩnh Vực Tác Nghiệp**:
-  - Môi Trường Xanh, Hiến Máu Y Tế, Mùa Thi Giáo Dục, Cứu Trợ Bếp Ăn 0Đ, Chăm Sóc Xã Hội.
-- **Chiến Dịch Nổi Bật Đang Mở Đăng Ký**:
-  - Hiển thị danh sách card hoạt động kèm nút *Đăng ký ca làm việc* và *Xem chi tiết*.
+- **Banner Hero Slider 5 Slide**:
+  - Slide 1: **Showcase Lịch Ra Quân / Khởi Hành Toàn Đội** (`banner_logo_d2l.jpg`).
+  - Slide 2: **Chiến Dịch Môi Trường Xanh — Chủ Nhật Xanh & Trồng Rừng Cần Giờ** (`banner_tnv_1.jpg`, Link `dang_ky_ca.php?event_id=101`).
+  - Slide 3: **Hoạt Động An Sinh — Giọt Hồng Nghĩa Tình & Bếp Ăn 0 Đồng** (`banner_tnv_2.jpg`, Link `dang_ky_ca.php?event_id=201`).
+  - Slide 4: **Chiến Dịch Tiếp Sức Mùa Thi 2026 — Đội Xe Máy Áo Xanh** (`banner_tnv_3.jpg`, Link `dang_ky_ca.php?event_id=301`).
+  - Slide 5: **Chăm Sóc Người Cao Tuổi & Viện Dưỡng Lão Ấm Áp** (`banner_tnv_4.jpg`, Link `dang_ky_ca.php?event_id=501`).
+  - Nút trượt trái/phải (`.nut_chuyen_trai`, `.nut_chuyen_phai`) và 5 chấm điều khiển (`.cham_chuyen_slide`).
+- **Dải Thống Kê Nhanh**: 05 Nhóm Chủ Đề, 08 Chiến Dịch Trọng Điểm, 1.250+ Lượt TNV, 24/7 Sẵn Sàng Điều Động.
+- **Danh Mục 5 Lĩnh Vực Tác Nghiệp (Ảnh Thực Địa)**:
+  - 5 Card chủ đề gắn kèm 5 ảnh thực tế tại `public/assets/images/categories/` (`cat_moi_truong.jpg`, `cat_hien_mau.jpg`, `cat_giao_duc.jpg`, `cat_cuu_tro.jpg`, `cat_cham_soc.jpg`).
+  - Nút hành động: "Xem Toàn Bộ Chiến Dịch &rarr;".
 
 ### 5.2. `public/admin_import.php` (Bảng Chỉ Huy Quản Trị)
 - **Kiểm soát quyền**: `Auth::requireCoordinator()`.
@@ -288,13 +324,26 @@ Hệ thống chia làm 2 nhóm quyền chính dựa trên `$_SESSION['user']['ro
 - Cung cấp nút *Chạy thuật toán phân công tự động* (gọi `AssignmentEngine`).
 - Hiển thị bảng ma trận phân ca và cho phép điều chỉnh thủ công từng ca trực.
 
-### 5.8. `public/lich_truc.php` (Lịch Trực Toàn Đội & Cá Nhân)
-- Tab 1: Lịch toàn đội theo từng ngày/tuần, hiển thị danh sách TNV trong từng ca.
-- Tab 2: Ca của tôi — Lọc danh sách các ca trực mà tài khoản đang đăng nhập đã được ghi nhận.
+### 5.8. `public/lich_truc.php` (Lịch Trực Toàn Đội & Ca Của Tôi)
+- **Tab 1: Lịch Trực Toàn Đội**: Hiển thị bảng phân công nhiệm vụ theo tuần, ca sáng/chiều/tối, người phụ trách và danh sách nhân sự thực địa.
+- **Tab 2: Ca Của Tôi (Personal Shift Roster)**:
+  - Tự động truy vấn từ CSDL các ca trực mà tài khoản cá nhân đang đăng nhập đã đăng ký hoặc được phân công.
+  - Cột "Trạng Thái & Thao Tác" thiết kế phẳng 1 hàng ngang đồng nhất cao 30px:
+    - `⏳ CHỜ BCH PHÊ DUYỆT`: Ca trực mới đăng ký, chờ Ban Chỉ Huy xem xét.
+    - `✓ ĐÃ ĐƯỢC PHÊ DUYỆT`: Ca trực chính thức đã được BCH phê duyệt tiếp nhận.
+    - `ĐÃ BÁO BẬN` & `CHỜ BCH DUYỆT VẮNG`: Đơn xin vắng ca đang được xử lý.
+    - `ĐÃ TỪ CHỐI`: Đơn đăng ký ca không được chấp thuận kèm ghi chú.
+  - Nút "Xin Phép Vắng": Kích hoạt gửi đơn vắng ca trực tuyến.
+  - Nút "Hủy Báo Vắng": Cho phép TNV tiếp tục đi làm; tự động khóa và ẩn nút khi BCH đã điều động nhân sự khác thay thế nhiệm vụ (hiển thị nhãn cảnh báo an toàn).
 
-### 5.9. `public/phe_duyet_vang.php` (Phê Duyệt Đơn Báo Vắng)
-- Dành cho TNV: Form gửi đơn xin vắng ca (chọn ca trực, nhập lý do, đính kèm chứng từ).
-- Dành cho BCH: Danh sách đơn chờ duyệt, nút *Chấp thuận* (tự động giải phóng vị trí để tuyển bổ sung) hoặc *Từ chối*.
+### 5.9. `public/phe_duyet_vang.php` (Phê Duyệt Đơn Báo Vắng & Điều Động Thay Người)
+- **Kiểm soát quyền**: `Auth::requireCoordinator()`.
+- **Dành cho TNV**: Form gửi đơn báo vắng trực tuyến, bắt buộc quy định báo trước tối thiểu 2 ngày (>= 48 giờ).
+- **Dành cho BCH**:
+  - Banner Ban Chỉ Huy card bo góc 14px hiện đại, 4 thẻ thống kê số lượng đơn theo trạng thái.
+  - Luồng phê duyệt thông minh: Bấm "Duyệt" lập tức mở modal kèm danh sách 50 TNV để điều động người thay thế ngay (hỗ trợ "Duyệt & Thay Người" hoặc "Chỉ Duyệt Vắng").
+  - Tự động đồng bộ nhân sự thay thế vào ca trực trong CSDL và khóa quyền hủy đơn của TNV nghỉ.
+  - Danh mục đã duyệt chuyển về chế độ theo dõi chuyên nghiệp, các cột căn giữa dọc `vertical-align: middle` và không rớt dòng chữ.
 
 ### 5.10. `public/profile.php` (Hồ Sơ Năng Lực TNV)
 - Thống kê tổng giờ cống hiến, số hoạt động đã tham gia, điểm uy tín.
@@ -374,14 +423,15 @@ Hệ thống chia làm 2 nhóm quyền chính dựa trên `$_SESSION['user']['ro
 - **Hệ thống Design Tokens**: Định nghĩa biến `--primary`, `--success`, `--danger`, `--warning`, `--neutral`, `--radius`, `--shadow`.
 - **Responsive Breakpoints**: `@media (max-width: 1200px)`, `@media (max-width: 1024px)`, `@media (max-width: 768px)`, `@media (max-width: 480px)`.
 - **Bộ Component chuẩn**:
-  - Button styles: `.btn-primary`, `.btn-detail`, `.btn-participants`, `.btn-danger`.
-  - Badges: `.badge-urgent` (đỏ), `.badge-open` (xanh), `.badge-full` (xám).
-  - Modals: Lớp phủ `#project_detail_modal`, hiệu ứng `@keyframes adminModalFadeIn`.
-  - Tables: Bảng dữ liệu có sticky header, sọc so le xen kẽ `#ffffff` và `#f8fafc`.
+  - Button styles: `.btn-primary`, `.btn-detail`, `.btn-participants`, `.btn-danger`, chuẩn hóa chiều cao 30px trên bảng.
+  - Badges: `.badge-urgent` (đỏ), `.badge-open` (xanh), `.badge-full` (xám), `.user-position-tag` dạng pill bo tròn hoàn toàn `border-radius: 9999px`.
+  - Checkbox tùy chỉnh: `input[type="checkbox"]` bo góc 4px, màu `#245d78`, tick SVG trắng sắc nét, highlight viền xanh lá `#059669` và nền `#ecfdf5` khi kích hoạt.
+  - Coordinator Banner Card: Định dạng thẻ bo góc `14px`, bóng đổ nhẹ, căn lề chuẩn mực thay thế cho dải banner tràn cạnh cũ.
+  - Modals & Tables: Lớp phủ `#project_detail_modal`, bảng dữ liệu sticky header, hỗ trợ `vertical-align: middle` và `white-space: nowrap` không rớt dòng.
 
 ### 7.2. File `public/assets/js/banner_chuyen_dong.js`
-- **Bộ lắng nghe sự kiện Slider**:
-  - `showSlide(index)`: Kích hoạt class `.active` trên slide và chấm tròn tương ứng.
+- **Bộ lắng nghe sự kiện Slider 5 Slide**:
+  - `showSlide(index)`: Kích hoạt class `.active` trên 5 slide sự kiện và 5 chấm tròn tương ứng (`.cham_chuyen_slide`).
   - `nextSlide()` & `prevSlide()`: Tự động tính chỉ số vòng lặp `(currentSlide + 1) % slides.length`.
   - `startAutoPlay()`: Khởi động bộ đếm thời gian chuyển động tự động sau 5 giây (`setInterval(nextSlide, 5000)`).
   - Tự động tạm dừng (`mouseenter`) và tiếp tục (`mouseleave`) khi người dùng rê chuột vào banner.
@@ -400,7 +450,9 @@ Hệ thống chia làm 2 nhóm quyền chính dựa trên `$_SESSION['user']['ro
 |---|---|---|---|
 | `$_SESSION['user']` | PHP Session | `array` | Lưu hồ sơ tài khoản đang đăng nhập (`id`, `name`, `email`, `role_type`, `unit`, `volunteer_hours`). |
 | `$_SESSION['project_roster_custom']` | PHP Session | `array<int, array>` | Lưu trữ danh sách quân số điều phối thủ công theo từng `projectId`. |
-| `$_SESSION['leave_requests']` | PHP Session | `array` | Lưu trữ danh sách đơn xin vắng ca chờ xét duyệt. |
+| `$_SESSION['absence_requests']` | PHP Session | `array` | Lưu trữ danh sách đơn xin vắng ca trực tiếp (đang chờ duyệt, đã duyệt, đã từ chối). |
+| `$_SESSION['volunteer_registrations']` | PHP Session | `array` | Lưu trữ lịch sử các đơn đăng ký ca trực của tình nguyện viên. |
+| `$_SESSION['btl_duty_schedule']` | PHP Session | `array` | Bảng phân công ca trực thực địa thời gian thực, lưu trữ danh sách nhân sự được phân công theo từng mã ca (`shift_id`). |
 | `adminProjectsData` | JavaScript Window | `Object<int, Object>` | Bản đồ 50 dự án nạp từ PHP phục vụ render modal và cập nhật DOM tức thì. |
 | `allVolunteersMaster` | JavaScript Window | `Object<string, Object>`| Từ điển 50 TNV nạp từ CSDL phục vụ tra cứu chi tiết hồ sơ nhanh. |
 | `currentModalProjectId` | JavaScript Scope | `int` | ID của dự án đang được mở trên Modal điều phối. |
@@ -428,6 +480,8 @@ Hệ thống chia làm 2 nhóm quyền chính dựa trên `$_SESSION['user']['ro
 | **Lưu Trữ MySQL Workbench & Đồng Bộ Real-time** | `config.php` & `src/Database.php` | Cấu hình MySQL cổng 3307, các phương thức `recordRegistration`, `reviewShiftRegistration`, `saveDutySchedule` |
 | **Khóa Hủy Báo Vắng Khi Đã Phân Công Người Khác** | `public/lich_truc.php` & `src/Database.php` | Phương thức `cancelAbsenceRequest()`, kiểm tra ràng buộc `replacement_volunteer_id` / `replacement_for` |
 | **Menu Thanh Điều Hướng & Tin Khẩn Marquee** | `templates/header.php` | Mảng `$urgentNotes`, thanh menu `<nav class="main-nav-pro">` |
+| **Bảo Vệ Tính Toàn Vẹn DOM & Chuẩn Hóa Hiển Thị** | `templates/header.php`, `templates/footer.php`, `public/lich_truc.php` | Thẻ đóng `</div>` footer, cân bằng `<main>`, chuẩn hóa chiều cao 30px, `vertical-align: middle` |
+| **Bộ Kiểm Thử Tự Động Toàn Diện (52/52 Tests)** | Thư mục `tests/` | `tests/run.php`, `absence_and_project_test.php`, `assignment_test.php`, `auth_test.php` |
 
 ---
 
@@ -468,6 +522,7 @@ Hệ thống chia làm 2 nhóm quyền chính dựa trên `$_SESSION['user']['ro
 | **18/11/2026** | `config.php`, `src/Database.php`, `src/ActivityManager.php`, `public/phe_duyet_vang.php`, `public/lich_truc.php`, `public/phe_duyet_ca.php` | Đưa toàn bộ dữ liệu lên MySQL / MySQL Workbench & Lưu trữ thời gian thực (Real-time Persistence) | Kết nối hệ thống trực tiếp tới MySQL/MariaDB XAMPP qua cổng 3307 (khớp 100% profile `XAMPP 3307` trong MySQL Workbench); hoàn thiện cấu trúc quan hệ toàn vẹn dữ liệu (Relational Integrity) giữa 5 bảng cốt lõi `projects`, `shifts`, `volunteers`, `volunteer_registrations`, `absence_requests` với 9 khóa ngoại (Foreign Keys: `fk_reg_shift`, `fk_reg_replacement`, `fk_abs_volunteer`, `fk_abs_shift`, `fk_abs_project`, `fk_abs_replacement`, `shifts_ibfk_1`, `volunteer_registrations_ibfk_1`, `volunteer_registrations_ibfk_2`); cập nhật các phương thức `recordRegistration`, `reviewShiftRegistration`, `getShiftRegistrations`, `getUserShiftRegistrations`, `createAbsenceRequest`, `reviewAbsenceRequest`, `cancelAbsenceRequest`, `saveDutySchedule`, `loadDutySchedule` đọc và ghi trực tiếp thời gian thực vào CSDL; khắc phục triệt để lỗi mất dữ liệu khi restart web/trình duyệt; 10/10 kịch bản kiểm thử tích hợp CSDL pass 100%. |
 | **18/11/2026** | *Git Remote Repository* | Đẩy mã nguồn hoàn thiện lên GitHub (`origin/main`) | Thực hiện commit và push toàn bộ 27 file cập nhật mã nguồn (MySQL Workbench persistence, phê duyệt ca của BCH, khóa hủy báo vắng khi có người thay thế, 2 banner sự kiện mới) lên kho mã nguồn `https://github.com/DngOsea/TNV_Nhom4` tại nhánh `main` (commit `3a1a345`). |
 | **18/11/2026** | `templates/header.php`, `templates/footer.php`, `public/index.php`, `public/phe_duyet_ca.php`, `public/phe_duyet_vang.php`, `public/lich_truc.php`, `src/Database.php` | Rà soát toàn diện & Khắc phục triệt để lỗi hiển thị giao diện các trang | • **`templates/header.php`**: Nạp `require_once __DIR__ . '/../src/ActivityManager.php';` loại bỏ hoàn toàn lỗi Fatal Error crash trang `/phan_cong.php` và `/doi_soat_thuat_toan.php`; xử lý an toàn `$_SERVER['REQUEST_URI'] ?? '/'` triệt tiêu PHP Warning.<br>• **`templates/footer.php`**: Bổ sung thẻ `</div>` bị thiếu tại modal footer (`line 186`), khắc phục triệt để lỗi rò rỉ DOM toàn cục làm vỡ giao diện tất cả các trang web.<br>• **`public/index.php`**: Xóa thẻ `</main>` đóng thừa (line 9) và thẻ `<main id="main">` mở trùng lặp (line 118), đưa cấu trúc thẻ `<main>` về trạng thái cân bằng tuyệt đối 1:1 với header/footer.<br>• **`public/phe_duyet_ca.php` & `public/phe_duyet_vang.php`**: Khắc phục lỗi double-container lồng nhau (`max-width: 1240px` lồng trong `max-width: 1280px` với 40px padding thừa) gây tràn thanh cuộn ngang và ép méo cột bảng dữ liệu; nâng cấp Banner BCH thành thẻ bo góc `14px` đồng bộ với `.page-heading-pro`.<br>• **`public/lich_truc.php`**: Chuẩn hóa chiều cao toàn bộ huy hiệu trạng thái (`ĐÃ BÁO BẬN`, `✓ ĐÃ ĐƯỢC PHÊ DUYỆT`, `CHỜ BCH DUYỆT VẮNG`, `CHỜ BCH PHÊ DUYỆT`, `ĐÃ TỪ CHỐI`) lên đồng nhất `height: 30px` khớp chính xác với nút bấm ("Xin Phép Vắng", "Hủy Báo Vắng"), loại bỏ hoàn toàn độ lệch 2px.<br>• **`src/Database.php`**: Bổ sung tự động migration cột `project_id` & `replacement_volunteer_id` cho SQLite fallback; sửa câu lệnh UPDATE `reviewAbsenceRequest` dùng subquery tra cứu ID thay cho cột không tồn tại `volunteer_name`.<br>• **Kiểm thử**: Đạt 52/52 bài test kiểm thử tự động (100% PASS), 16/16 trang web cân bằng thẻ HTML hoàn hảo. |
+| **18/11/2026** | *Git Remote Repository* | Đẩy toàn bộ bản vá giao diện & nhật ký lên GitHub (`origin/main`) | Đã commit (`f2e62a1`) và push toàn bộ 10 file cập nhật (giao diện, template header/footer, bảng CSDL, và audit log đồng bộ) lên repository `https://github.com/DngOsea/TNV_Nhom4` tại nhánh `main` (trạng thái: Clean & Up to date). |
 
 ---
 *Tài liệu này được duy trì và cập nhật liên tục mỗi khi có thay đổi mã nguồn. Mọi thay đổi tiếp theo của hệ thống sẽ được ghi nhận trực tiếp vào đây.*
