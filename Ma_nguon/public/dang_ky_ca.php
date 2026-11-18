@@ -68,7 +68,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && field($_POST, 'action') 
         } else {
             $regResult = ActivityManager::registerVolunteerShifts($user, $selectedEventId, $selectedShifts, $note);
             if ($regResult['success']) {
-                $_SESSION['flash_message'] = 'Đăng ký thành công ' . $regResult['count'] . ' ca trực cho hoạt động "' . ($selectedActivity['title'] ?? '') . '"! Lịch trực của bạn đã được cập nhật.';
+                $_SESSION['flash_message'] = 'Đăng ký thành công ' . $regResult['count'] . ' ca trực cho hoạt động "' . ($selectedActivity['title'] ?? '') . '"! Ca làm việc đã được chuyển tới Ban Chỉ Huy để phê duyệt.';
                 header('Location: /lich_truc.php?tab=my_shifts');
                 exit;
             } else {
@@ -82,19 +82,19 @@ $pageTitle = 'Đăng Ký Ca Trực';
 require_once __DIR__ . '/../templates/header.php';
 ?>
 
-<div class="page-heading-pro">
-    <div class="heading-container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-        <div>
+<div class="page-heading-pro" style="padding: 24px 32px;">
+    <div class="heading-container" style="max-width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div style="text-align: left;">
             <span class="sub-badge">ĐĂNG KÝ CA TRỰC</span>
-            <h1>Đăng Ký Ca Trực</h1>
-            <p>Lựa chọn các ca làm việc phù hợp với lịch trình của bạn.</p>
+            <h1 style="margin: 6px 0 4px;">Đăng Ký Ca Trực</h1>
+            <p style="margin: 0;">Lựa chọn các ca làm việc phù hợp với lịch trình của bạn.</p>
         </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <a href="/hoat_dong.php?page=<?= $fromPage ?>#act_<?= $selectedEventId ?>" class="btn-detail" style="padding: 10px 18px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-                &larr; Quay Lại Danh Sách Hoạt Động
-            </a>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-left: auto;">
             <a href="/lich_truc.php?tab=my_shifts" class="btn-primary" style="padding: 10px 18px; font-weight: 700; text-decoration: none;">
                 Ca Của Tôi
+            </a>
+            <a href="/hoat_dong.php?page=<?= $fromPage ?>#act_<?= $selectedEventId ?>" class="btn-detail" style="padding: 10px 18px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                &larr; Quay Lại Danh Sách Hoạt Động
             </a>
         </div>
     </div>

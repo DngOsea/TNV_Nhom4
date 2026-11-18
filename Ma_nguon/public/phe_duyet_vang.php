@@ -91,11 +91,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 3. Phê duyệt VÀ Điều động người thay thế ngay lập tức
+    // 3. Điều động người thay thế cho đơn vắng đã duyệt / phê duyệt kèm thay người
     if ($action === 'approve_and_replace') {
         $reqCode = field($_POST, 'request_code');
         $shiftId = field($_POST, 'shift_id');
-        $absentVId = field($_POST, 'absent_volunteer_id');
+        $absentVId = field($_POST, 'volunteer_id') ?: field($_POST, 'absent_volunteer_id');
         $replacementVId = field($_POST, 'replacement_volunteer_id');
         $coordName = $currentUser['name'] ?? 'Cán Bộ Chỉ Huy';
 
@@ -110,27 +110,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($replacementVol) {
-            // Chấp thuận đơn vắng trước
+            // Cập nhật trạng thái duyệt & ghi chú điều động
             $note = "Đã chấp thuận vắng. Điều động đồng chí {$replacementVol['name']} ({$replacementVId}) thay thế.";
-            $db->reviewAbsenceRequest($reqCode, 'approved', $coordName, $note);
+            $db->reviewAbsenceRequest($reqCode, 'approved', $coordName, $note, $replacementVId);
 
-            // Bổ sung nhân sự thay thế vào ca trực trong session
-            if (isset($_SESSION['btl_duty_schedule'][$shiftId])) {
-                $_SESSION['btl_duty_schedule'][$shiftId]['assigned_volunteers'][] = [
-                    'id' => $replacementVol['id'],
-                    'name' => $replacementVol['name'],
-                    'skills' => $replacementVol['skills'] ?? [],
-                    'status' => 'confirmed',
-                    'role' => 'TNV Thay Thế (' . $absentVId . ')',
-                    'replacement_for' => $absentVId,
-                ];
+            // Bổ sung hoặc cập nhật nhân sự thay thế vào ca trực trong session
+            if (!empty($shiftId) && isset($_SESSION['btl_duty_schedule'][$shiftId])) {
+                // Đảm bảo người vắng mang trạng thái 'absent'
+                foreach ($_SESSION['btl_duty_schedule'][$shiftId]['assigned_volunteers'] as &$v) {
+                    if ($absentVId !== '' && $v['id'] === $absentVId) {
+                        $v['status'] = 'absent';
+                        break;
+                    }
+                }
+                unset($v);
+
+                // Cập nhật người thay thế nếu đã có hoặc thêm mới
+                $replacedFound = false;
+                foreach ($_SESSION['btl_duty_schedule'][$shiftId]['assigned_volunteers'] as &$asv) {
+                    if (($asv['replacement_for'] ?? '') === $absentVId) {
+                        $asv['id'] = $replacementVol['id'];
+                        $asv['name'] = $replacementVol['name'];
+                        $asv['skills'] = $replacementVol['skills'] ?? [];
+                        $asv['role'] = 'TNV Thay Thế (' . $absentVId . ')';
+                        $replacedFound = true;
+                        break;
+                    }
+                }
+                unset($asv);
+
+                if (!$replacedFound) {
+                    $_SESSION['btl_duty_schedule'][$shiftId]['assigned_volunteers'][] = [
+                        'id' => $replacementVol['id'],
+                        'name' => $replacementVol['name'],
+                        'skills' => $replacementVol['skills'] ?? [],
+                        'status' => 'confirmed',
+                        'role' => 'TNV Thay Thế (' . $absentVId . ')',
+                        'replacement_for' => $absentVId,
+                    ];
+                }
                 $db->saveDutySchedule($_SESSION['btl_duty_schedule']);
             }
 
             $_SESSION['flash_msg'] = [
                 'type' => 'success',
-                'title' => 'Phê Duyệt & Điều Động Thành Công',
-                'content' => "Đã chấp thuận đơn vắng và điều động đồng chí {$replacementVol['name']} ({$replacementVol['id']}) đảm nhiệm vị trí tại ca {$shiftId}.",
+                'title' => 'Điều Động Nhân Sự Thành Công',
+                'content' => "Đã điều động đồng chí {$replacementVol['name']} ({$replacementVol['id']}) thay thế vị trí cho ca {$shiftId}.",
             ];
         } else {
             $_SESSION['flash_msg'] = [
@@ -321,13 +346,13 @@ require_once __DIR__ . '/../templates/header.php';
                 <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; text-align: left;">
                     <thead>
                         <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #334155; font-weight: 700;">
-                            <th style="padding: 12px 16px; width: 140px;">Mã Đơn & Giờ Gửi</th>
-                            <th style="padding: 12px 16px; min-width: 190px;">Tình Nguyện Viên</th>
-                            <th style="padding: 12px 16px; min-width: 220px;">Hoạt Động & Ca Trực</th>
-                            <th style="padding: 12px 16px; width: 150px;">Thời Hạn Báo</th>
-                            <th style="padding: 12px 16px; min-width: 200px;">Lý Do Xin Vắng</th>
-                            <th style="padding: 12px 16px; width: 130px; text-align: center;">Trạng Thái</th>
-                            <th style="padding: 12px 18px; width: 180px; text-align: right;">Thao Tác Ban Chỉ Huy</th>
+                            <th style="padding: 12px 14px; width: 130px; white-space: nowrap;">Mã Đơn & Giờ Gửi</th>
+                            <th style="padding: 12px 14px; min-width: 175px;">Tình Nguyện Viên</th>
+                            <th style="padding: 12px 14px; min-width: 210px;">Hoạt Động & Ca Trực</th>
+                            <th style="padding: 12px 14px; width: 145px; white-space: nowrap;">Thời Hạn Báo</th>
+                            <th style="padding: 12px 14px; min-width: 195px;">Lý Do Xin Vắng</th>
+                            <th style="padding: 12px 14px; width: 125px; text-align: center; white-space: nowrap;">Trạng Thái</th>
+                            <th style="padding: 12px 16px; width: 180px; min-width: 170px; text-align: right; white-space: nowrap;">Thao Tác Ban Chỉ Huy</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -351,26 +376,26 @@ require_once __DIR__ . '/../templates/header.php';
                             ?>
                                 <tr style="border-bottom: 1px solid #f1f5f9; background: <?= $isPending ? '#fffdfa' : '#ffffff' ?>; transition: background 0.15s ease;">
                                     <!-- Cột 1: Mã đơn & Giờ gửi -->
-                                    <td style="padding: 14px 16px;">
-                                        <span style="font-weight: 800; color: #0284c7; font-family: monospace; font-size: 13px; display: block;">
+                                    <td style="padding: 12px 14px; vertical-align: middle; white-space: nowrap;">
+                                        <span style="font-weight: 800; color: #0284c7; font-family: monospace; font-size: 13px; display: block; white-space: nowrap;">
                                             <?= htmlspecialchars($req['request_code'] ?? '') ?>
                                         </span>
-                                        <span style="font-size: 11.5px; color: #64748b; margin-top: 3px; display: block;">
+                                        <span style="font-size: 11.5px; color: #64748b; margin-top: 3px; display: block; white-space: nowrap;">
                                             <?= htmlspecialchars($req['created_at'] ?? '') ?>
                                         </span>
                                     </td>
 
                                     <!-- Cột 2: Tình nguyện viên -->
-                                    <td style="padding: 14px 16px;">
-                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                            <span style="width: 32px; height: 32px; border-radius: 50%; background: #059669; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">
+                                    <td style="padding: 12px 14px; vertical-align: middle;">
+                                        <div style="display: flex; align-items: center; gap: 9px;">
+                                            <span style="width: 34px; height: 34px; min-width: 34px; border-radius: 50%; background: #059669; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">
                                                 <?= mb_substr($req['volunteer_name'] ?? 'T', 0, 1) ?>
                                             </span>
                                             <div>
-                                                <strong style="color: #0f172a; font-size: 13.5px; display: block;">
+                                                <strong style="color: #0f172a; font-size: 13.5px; display: block; line-height: 1.3;">
                                                     <?= htmlspecialchars($req['volunteer_name'] ?? '') ?>
                                                 </strong>
-                                                <span style="font-size: 12px; color: #64748b;">
+                                                <span style="font-size: 11.5px; color: #64748b; display: block; margin-top: 2px;">
                                                     <?= htmlspecialchars($req['volunteer_phone'] ?? 'TNV-ID: ' . ($req['volunteer_id'] ?? '')) ?>
                                                 </span>
                                             </div>
@@ -378,100 +403,107 @@ require_once __DIR__ . '/../templates/header.php';
                                     </td>
 
                                     <!-- Cột 3: Hoạt động & Ca trực -->
-                                    <td style="padding: 14px 16px;">
-                                        <span style="display: inline-block; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-bottom: 3px;">
+                                    <td style="padding: 12px 14px; vertical-align: middle;">
+                                        <span style="display: inline-block; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-bottom: 3px; white-space: nowrap;">
                                             <?= htmlspecialchars($req['shift_id'] ?? '') ?>
                                         </span>
                                         <strong style="color: #1e293b; font-size: 13px; display: block; line-height: 1.35;">
                                             <?= htmlspecialchars($req['activity_title'] ?? '') ?>
                                         </strong>
-                                        <span style="font-size: 11.5px; color: #64748b;">
+                                        <span style="font-size: 11.5px; color: #64748b; display: block; margin-top: 2px;">
                                             Ngày ca: <?= htmlspecialchars($req['event_date'] ?? '') ?>
                                         </span>
                                     </td>
 
                                     <!-- Cột 4: Thời hạn báo (Điều kiện >= 2 ngày) -->
-                                    <td style="padding: 14px 16px;">
-                                        <span style="display: inline-flex; align-items: center; gap: 4px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 700;">
-                                            &#10003; Trước <?= round($daysPrior, 1) ?> ngày
-                                        </span>
-                                        <span style="display: block; font-size: 11px; color: #059669; margin-top: 2px;">
-                                            (~<?= round($hoursPrior, 0) ?> giờ &ge; 48h hợp lệ)
-                                        </span>
+                                    <td style="padding: 12px 14px; vertical-align: middle; white-space: nowrap;">
+                                        <?php if ($daysPrior >= 2.0): ?>
+                                            <div style="display: inline-block; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 4px 10px; border-radius: 6px; white-space: nowrap;">
+                                                <span style="font-size: 12px; font-weight: 700; display: block; line-height: 1.2;">
+                                                    &#10003; Trước <?= round($daysPrior, 1) ?> ngày
+                                                </span>
+                                                <span style="font-size: 10.5px; color: #059669; display: block; margin-top: 2px;">
+                                                    (~<?= round($hoursPrior, 0) ?> giờ &ge; 48h hợp lệ)
+                                                </span>
+                                            </div>
+                                        <?php else: ?>
+                                            <div style="display: inline-block; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 4px 10px; border-radius: 6px; white-space: nowrap;">
+                                                <span style="font-size: 12px; font-weight: 700; display: block; line-height: 1.2;">
+                                                    &#9888; Trước <?= round($daysPrior, 1) ?> ngày
+                                                </span>
+                                                <span style="font-size: 10.5px; color: #d97706; display: block; margin-top: 2px;">
+                                                    (~<?= round($hoursPrior, 0) ?> giờ &lt; 48h báo gấp)
+                                                </span>
+                                            </div>
+                                        <?php endif; ?>
                                     </td>
 
                                     <!-- Cột 5: Lý do vắng -->
-                                    <td style="padding: 14px 16px;">
-                                        <strong style="color: #334155; font-size: 12.5px; display: block;">
+                                    <td style="padding: 12px 14px; vertical-align: middle;">
+                                        <strong style="color: #334155; font-size: 12.5px; display: block; line-height: 1.35;">
                                             <?= htmlspecialchars($req['reason'] ?? '') ?>
                                         </strong>
                                         <?php if (!empty($req['detail_note'])): ?>
-                                            <span style="font-size: 12px; color: #64748b; font-style: italic; display: block; margin-top: 2px;">
+                                            <span style="font-size: 11.5px; color: #64748b; font-style: italic; display: block; margin-top: 2px;">
                                                 "<?= htmlspecialchars($req['detail_note']) ?>"
                                             </span>
                                         <?php endif; ?>
                                         <?php if (!empty($req['coordinator_note'])): ?>
-                                            <div style="margin-top: 4px; font-size: 11.5px; color: #0284c7; background: #f0f9ff; padding: 3px 6px; border-radius: 4px; border-left: 2px solid #0284c7;">
+                                            <div style="margin-top: 5px; font-size: 11.5px; color: #0284c7; background: #f0f9ff; padding: 4px 8px; border-radius: 4px; border-left: 2px solid #0284c7; line-height: 1.35;">
                                                 <strong>Chỉ huy:</strong> <?= htmlspecialchars($req['coordinator_note']) ?>
                                             </div>
                                         <?php endif; ?>
                                     </td>
 
                                     <!-- Cột 6: Trạng thái -->
-                                    <td style="padding: 14px 16px; text-align: center;">
+                                    <td style="padding: 12px 14px; text-align: center; vertical-align: middle; white-space: nowrap;">
                                         <?php if ($isPending): ?>
-                                            <span style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; display: inline-block;">
+                                            <span style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; display: inline-block; white-space: nowrap;">
                                                 &#9203; CHỜ DUYỆT
                                             </span>
                                         <?php elseif ($isApproved): ?>
-                                            <span style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; display: inline-block;">
+                                            <span style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; display: inline-block; white-space: nowrap;">
                                                 &#10003; ĐÃ DUYỆT
                                             </span>
                                         <?php elseif ($status === 'cancelled_by_volunteer'): ?>
-                                            <span style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; display: inline-block;">
+                                            <span style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; display: inline-block; white-space: nowrap;">
                                                 &#8630; TNV ĐÃ HỦY VẮNG
                                             </span>
                                         <?php else: ?>
-                                            <span style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; display: inline-block;">
+                                            <span style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; display: inline-block; white-space: nowrap;">
                                                 &#10005; TỪ CHỐI
                                             </span>
                                         <?php endif; ?>
                                     </td>
 
                                     <!-- Cột 7: Thao tác của Ban Chỉ Huy -->
-                                    <td style="padding: 14px 18px; text-align: right;">
+                                    <td style="padding: 12px 16px; text-align: right; vertical-align: middle; white-space: nowrap;">
                                         <?php if ($isPending): ?>
-                                            <div style="display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap;">
-                                                <!-- Nút Chấp thuận -->
-                                                <form method="POST" action="/phe_duyet_vang.php" onsubmit="return confirm('Chấp thuận cho đồng chí <?= htmlspecialchars($req['volunteer_name'] ?? '') ?> vắng mặt tại ca này?')" style="margin: 0;">
-                                                    <input type="hidden" name="action" value="approve_absence">
-                                                    <input type="hidden" name="request_code" value="<?= htmlspecialchars($req['request_code'] ?? '') ?>">
-                                                    <input type="hidden" name="shift_id" value="<?= htmlspecialchars($req['shift_id'] ?? '') ?>">
-                                                    <input type="hidden" name="volunteer_id" value="<?= htmlspecialchars($req['volunteer_id'] ?? '') ?>">
-                                                    <input type="hidden" name="volunteer_name" value="<?= htmlspecialchars($req['volunteer_name'] ?? '') ?>">
-                                                    <button type="submit" style="background: #059669; color: #ffffff; border: none; padding: 6px 11px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(5,150,105,0.3);" title="Chấp thuận đơn vắng">
-                                                        &#10003; Duyệt
-                                                    </button>
-                                                </form>
+                                            <!-- Khu vực chờ duyệt: Click Duyệt -> Mở modal danh sách thay người -->
+                                            <div style="display: inline-flex; gap: 6px; justify-content: flex-end; align-items: center; flex-wrap: nowrap; white-space: nowrap;">
+                                                <!-- Nút Duyệt: Kích hoạt tính năng chọn người thay thế ngay khi duyệt -->
+                                                <button type="button" onclick='openReplaceModal(<?= $reqJson ?>)'
+                                                        style="height: 30px; display: inline-flex; align-items: center; justify-content: center; background: #059669; color: #ffffff; border: none; padding: 0 13px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 1px 3px rgba(5,150,105,0.3); white-space: nowrap;" title="Phê duyệt đơn báo vắng và chọn nhân sự thay thế">
+                                                    &#10003; Duyệt
+                                                </button>
 
                                                 <!-- Nút Từ chối -->
                                                 <button type="button" onclick="openRejectModal('<?= htmlspecialchars($req['request_code'] ?? '') ?>', '<?= htmlspecialchars($req['volunteer_name'] ?? '') ?>', '<?= htmlspecialchars($req['shift_id'] ?? '') ?>', '<?= htmlspecialchars($req['volunteer_id'] ?? '') ?>')"
-                                                        style="background: #ffffff; color: #dc2626; border: 1px solid #dc2626; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;" title="Từ chối đơn">
+                                                        style="height: 30px; display: inline-flex; align-items: center; justify-content: center; background: #ffffff; color: #dc2626; border: 1px solid #dc2626; padding: 0 11px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;" title="Từ chối đơn">
                                                     Từ Chối
                                                 </button>
-
-                                                <!-- Nút Duyệt & Thay thế ngay -->
-                                                <button type="button" onclick='openReplaceModal(<?= $reqJson ?>)'
-                                                        style="background: #0284c7; color: #ffffff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;" title="Chọn nhân sự thay thế ngay">
-                                                    ⇄ Thế Chân
-                                                </button>
                                             </div>
+                                        <?php elseif ($isApproved): ?>
+                                            <!-- Đơn đã duyệt: Chỉ hiển thị để theo dõi, không có tính năng thay người -->
+                                            <span style="font-size: 12px; color: #64748b; font-style: italic; white-space: nowrap;">
+                                                Bởi <?= htmlspecialchars($req['reviewed_by'] ?? 'BCH') ?>
+                                            </span>
                                         <?php elseif ($status === 'cancelled_by_volunteer'): ?>
-                                            <span style="font-size: 12px; color: #059669; font-weight: 700;">
+                                            <span style="font-size: 12px; color: #059669; font-weight: 700; white-space: nowrap;">
                                                 ✓ Tiếp tục tham gia
                                             </span>
                                         <?php else: ?>
-                                            <span style="font-size: 12px; color: #94a3b8; font-style: italic;">
+                                            <span style="font-size: 12px; color: #94a3b8; font-style: italic; white-space: nowrap;">
                                                 Bởi <?= htmlspecialchars($req['reviewed_by'] ?? 'BCH') ?>
                                             </span>
                                         <?php endif; ?>
@@ -513,8 +545,8 @@ require_once __DIR__ . '/../templates/header.php';
                       placeholder="Ví dụ: Ca trực đặc thù đang thiếu chuyên môn, đề nghị đồng chí thu xếp có mặt đúng giờ..."></textarea>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                <button type="button" onclick="closeRejectModal()" style="padding: 8px 16px; border: 1px solid #cbd5e1; background: #ffffff; border-radius: 6px; font-size: 13px; cursor: pointer;">
-                    Hủy
+                <button type="button" onclick="closeRejectModal()" style="padding: 8px 16px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; border-radius: 6px; font-size: 13px; cursor: pointer;">
+                    Đóng
                 </button>
                 <button type="submit" style="padding: 8px 20px; border: none; background: #dc2626; color: #ffffff; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer;">
                     Xác Nhận Từ Chối
@@ -525,45 +557,50 @@ require_once __DIR__ . '/../templates/header.php';
 </div>
 
 <!-- =========================================================================
-     MODAL 2: DUYỆT VÀ ĐIỀU ĐỘNG NGƯỜI THAY THẾ NGAY
+     MODAL 2: DUYỆT BÁO VẮNG & ĐIỀU ĐỘNG NGƯỜI THAY THẾ
      ========================================================================= -->
 <div id="modal_replace_absence" class="modal-backdrop-pro" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
     <div style="background: #ffffff; border-radius: 14px; max-width: 580px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow: hidden;">
         <div style="padding: 18px 24px; background: #f0fdf4; border-bottom: 1px solid #dcfce7; display: flex; justify-content: space-between; align-items: center;">
-            <strong style="color: #166534; font-size: 16px;">Phê Duyệt & Điều Động Người Thay Thế</strong>
+            <strong style="color: #166534; font-size: 16px;">Phê Duyệt Đơn Báo Vắng & Chọn Người Thay Thế</strong>
             <button type="button" onclick="closeReplaceModal()" style="border: none; background: none; font-size: 20px; cursor: pointer; color: #64748b;">&times;</button>
         </div>
         <form method="POST" action="/phe_duyet_vang.php" style="padding: 24px;">
-            <input type="hidden" name="action" value="approve_and_replace">
             <input type="hidden" name="request_code" id="rep_req_code" value="">
             <input type="hidden" name="shift_id" id="rep_shift_id" value="">
-            <input type="hidden" name="absent_volunteer_id" id="rep_absent_vid" value="">
+            <input type="hidden" name="volunteer_id" id="rep_absent_vid" value="">
+            <input type="hidden" name="volunteer_name" id="rep_absent_vname" value="">
 
             <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px;">
-                <div>TNV Xin Vắng: <strong id="rep_vol_name" style="color: #dc2626;">—</strong></div>
+                <div style="margin-bottom: 4px;">TNV Xin Vắng: <strong id="rep_vol_name" style="color: #dc2626;">—</strong></div>
                 <div>Ca Trực Cần Bổ Sung: <strong id="rep_shift_code" style="color: #0284c7;">—</strong></div>
             </div>
 
             <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">
-                Chọn Nhân Sự Thay Thế Từ Danh Sách 50 Tình Nguyện Viên: <span style="color: #dc2626;">*</span>
+                Chọn Nhân Sự Thay Thế (Danh Sách 50 Tình Nguyện Viên):
             </label>
-            <select name="replacement_volunteer_id" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: #ffffff; margin-bottom: 14px;">
-                <option value="">-- Chọn 1 Tình Nguyện Viên Đang Rảnh --</option>
-                <?php foreach ($availableVolunteers as $vItem): 
-                    $vSkills = implode(', ', (array)($vItem['skills'] ?? []));
-                ?>
-                    <option value="<?= htmlspecialchars($vItem['id']) ?>">
-                        <?= htmlspecialchars($vItem['id']) ?> - <?= htmlspecialchars($vItem['name']) ?> (Kỹ năng: <?= htmlspecialchars($vSkills ?: 'Đa nhiệm') ?>)
-                    </option>
-                <?php endforeach; ?>
+            <select name="replacement_volunteer_id" id="rep_replacement_select" style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: #ffffff; margin-bottom: 14px;">
+                <option value="">-- Duyệt vắng (Không điều động người thay) --</option>
+                <optgroup label="Danh sách 50 tình nguyện viên:">
+                    <?php foreach ($availableVolunteers as $vItem): 
+                        $vSkills = implode(', ', (array)($vItem['skills'] ?? []));
+                    ?>
+                        <option value="<?= htmlspecialchars($vItem['id']) ?>">
+                            <?= htmlspecialchars($vItem['id']) ?> - <?= htmlspecialchars($vItem['name']) ?> (Kỹ năng: <?= htmlspecialchars($vSkills ?: 'Đa nhiệm') ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </optgroup>
             </select>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                <button type="button" onclick="closeReplaceModal()" style="padding: 8px 16px; border: 1px solid #cbd5e1; background: #ffffff; border-radius: 6px; font-size: 13px; cursor: pointer;">
-                    Hủy
+                <button type="button" onclick="closeReplaceModal()" style="padding: 8px 16px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; border-radius: 6px; font-size: 13px; cursor: pointer;">
+                    Đóng
                 </button>
-                <button type="submit" style="padding: 8px 22px; border: none; background: #059669; color: #ffffff; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(5,150,105,0.3);">
-                    Xác Nhận & Điều Động
+                <button type="submit" name="action" value="approve_absence" style="padding: 8px 16px; border: 1px solid #059669; background: #ffffff; color: #059669; font-weight: 700; border-radius: 6px; font-size: 13px; cursor: pointer;">
+                    Chỉ Duyệt Vắng
+                </button>
+                <button type="submit" name="action" value="approve_and_replace" onclick="if(!document.getElementById('rep_replacement_select').value){ alert('Vui lòng chọn 1 tình nguyện viên thay thế từ danh sách hoặc bấm \'Chỉ Duyệt Vắng\'.'); return false; }" style="padding: 8px 20px; border: none; background: #059669; color: #ffffff; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(5,150,105,0.3);">
+                    ✓ Duyệt & Thay Người
                 </button>
             </div>
         </form>
@@ -584,11 +621,15 @@ function closeRejectModal() {
 }
 
 function openReplaceModal(req) {
-    document.getElementById('rep_req_code').value = req.request_code;
-    document.getElementById('rep_shift_id').value = req.shift_id;
-    document.getElementById('rep_absent_vid').value = req.volunteer_id;
-    document.getElementById('rep_vol_name').textContent = req.volunteer_name;
-    document.getElementById('rep_shift_code').textContent = req.shift_id + ' - ' + req.activity_title;
+    document.getElementById('rep_req_code').value = req.request_code || '';
+    document.getElementById('rep_shift_id').value = req.shift_id || '';
+    document.getElementById('rep_absent_vid').value = req.volunteer_id || '';
+    document.getElementById('rep_absent_vname').value = req.volunteer_name || '';
+    document.getElementById('rep_vol_name').textContent = req.volunteer_name || '—';
+    document.getElementById('rep_shift_code').textContent = (req.shift_id || '') + ' - ' + (req.activity_title || '');
+    if (document.getElementById('rep_replacement_select')) {
+        document.getElementById('rep_replacement_select').value = '';
+    }
     document.getElementById('modal_replace_absence').style.display = 'flex';
 }
 function closeReplaceModal() {

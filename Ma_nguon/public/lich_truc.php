@@ -291,6 +291,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $result = $db->cancelAbsenceRequest($shiftId ?: $regId, $currentUser['name'] ?? null, $currentUser['id'] ?? null);
 
+        if (!$result['success']) {
+            $_SESSION['flash_msg'] = [
+                'type' => 'danger',
+                'title' => 'Không Thể Hủy Báo Vắng',
+                'content' => $result['message'],
+            ];
+            header('Location: /lich_truc.php?tab=my_shifts');
+            exit;
+        }
+
         // Khôi phục trạng thái ca trong btl_duty_schedule
         if (!empty($shiftId) && isset($dutySchedules[$shiftId])) {
             foreach ($dutySchedules[$shiftId]['assigned_volunteers'] as &$v) {
@@ -346,7 +356,7 @@ if ($currentUser) {
             'meeting_point' => $item['meeting_point'] ?? 'Tại thực địa',
             'leader' => $item['leader_name'] ?? 'Ban Chỉ Huy',
             'leader_phone' => $item['leader_phone'] ?? '0912.456.789',
-            'status' => $item['status'] ?? 'confirmed',
+            'status' => $item['status'] ?? 'pending',
             'registered_at' => $item['registered_at'] ?? date('d/m/Y'),
             'note' => $item['note'] ?? '',
             'is_new' => !empty($item['is_new']),
@@ -470,6 +480,24 @@ require __DIR__ . '/../templates/header.php';
                 </a>
             </div>
         <?php endif; ?>
+        <?php 
+        $pendingRegsCount = ActivityManager::getPendingRegistrationsCount();
+        if ($pendingRegsCount > 0): ?>
+            <div style="background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 12px; padding: 14px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 12px rgba(37,99,235,0.08);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">📋</span>
+                    <div>
+                        <strong style="color: #1e40af; font-size: 0.95rem;">Đăng Ký Ca Mới Chờ Duyệt:</strong>
+                        <span style="color: #1e3a8a; font-size: 0.88rem; margin-left: 4px;">
+                            Hiện có <strong><?= $pendingRegsCount ?></strong> đơn đăng ký ca trực mới đang chờ Ban Chỉ Huy xét duyệt.
+                        </span>
+                    </div>
+                </div>
+                <a href="/phe_duyet_ca.php?status=pending" style="background: #2563eb; color: #ffffff; text-decoration: none; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(37,99,235,0.3);">
+                    Vào Duyệt Ca Ngay &rarr;
+                </a>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 
     <!-- =========================================================================
@@ -523,8 +551,10 @@ require __DIR__ . '/../templates/header.php';
                     <div>
                         <select id="my_status_filter" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #f8fafc;">
                             <option value="all">-- Tất Cả Trạng Thái --</option>
-                            <option value="confirmed">Đã Xác Nhận / Tham Gia</option>
+                            <option value="approved">Đã Được Phê Duyệt</option>
+                            <option value="pending">Chờ BCH Phê Duyệt</option>
                             <option value="absent">Đã Báo Bận / Vắng</option>
+                            <option value="rejected">Đã Từ Chối</option>
                             <option value="new">Mới Đăng Ký</option>
                         </select>
                     </div>
@@ -556,17 +586,19 @@ require __DIR__ . '/../templates/header.php';
                     <table class="duty-table-modern" id="my_activities_table" style="width: 100%; border-collapse: collapse;">
                         <thead>
                             <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-                                <th style="width: 32%; padding: 14px 18px; text-align: left;">Mã & Tên Hoạt Động</th>
-                                <th style="width: 18%; padding: 14px 16px; text-align: left;">Thời Gian & Phiên</th>
-                                <th style="width: 20%; padding: 14px 16px; text-align: left;">Địa Điểm & Điểm Tập Kết</th>
-                                <th style="width: 16%; padding: 14px 16px; text-align: left;">Chỉ Huy Phụ Trách</th>
-                                <th style="width: 14%; padding: 14px 18px; text-align: right;">Trạng Thái & Thao Tác</th>
+                                <th style="width: 28%; padding: 14px 18px; text-align: left;">Mã & Tên Hoạt Động</th>
+                                <th style="width: 17%; padding: 14px 16px; text-align: left;">Thời Gian & Phiên</th>
+                                <th style="width: 18%; padding: 14px 16px; text-align: left;">Địa Điểm & Điểm Tập Kết</th>
+                                <th style="width: 14%; padding: 14px 16px; text-align: left;">Chỉ Huy Phụ Trách</th>
+                                <th style="width: 23%; min-width: 230px; padding: 14px 18px; text-align: right; white-space: nowrap;">Trạng Thái & Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($myUnifiedActivities as $act): 
                                 $isAbsent = ($act['status'] === 'absent');
                                 $isCancelled = ($act['status'] === 'cancelled');
+                                $isPending = ($act['status'] === 'pending');
+                                $isRejected = ($act['status'] === 'rejected');
                                 $isOnline = ($act['source'] === 'online');
                             ?>
                                 <tr class="my-activity-row" 
@@ -578,7 +610,7 @@ require __DIR__ . '/../templates/header.php';
                                     style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;">
                                     
                                     <!-- CỘT 1: MÃ & TÊN HOẠT ĐỘNG -->
-                                    <td style="padding: 14px 18px;">
+                                    <td style="padding: 14px 18px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                                             <span class="t-shift-badge" style="background: <?= $isOnline ? '#eff6ff' : '#ecfdf5' ?>; color: <?= $isOnline ? '#1d4ed8' : '#047857' ?>; border: 1px solid <?= $isOnline ? '#bfdbfe' : '#a7f3d0' ?>;">
                                                 <?= htmlspecialchars($act['code']) ?>
@@ -625,7 +657,7 @@ require __DIR__ . '/../templates/header.php';
                                     </td>
 
                                     <!-- CỘT 2: THỜI GIAN & PHIÊN HOẠT ĐỘNG -->
-                                    <td style="padding: 14px 16px;">
+                                    <td style="padding: 14px 16px; vertical-align: middle;">
                                         <strong style="color: #1e293b; font-size: 0.88rem; display: block;">
                                             <?= htmlspecialchars($act['day_label']) ?>
                                         </strong>
@@ -635,7 +667,7 @@ require __DIR__ . '/../templates/header.php';
                                     </td>
 
                                     <!-- CỘT 3: ĐỊA ĐIỂM & ĐIỂM TẬP KẾT -->
-                                    <td style="padding: 14px 16px;">
+                                    <td style="padding: 14px 16px; vertical-align: middle;">
                                         <div style="color: #334155; font-size: 0.88rem; font-weight: 500;">
                                             <?= htmlspecialchars($act['location']) ?>
                                         </div>
@@ -645,7 +677,7 @@ require __DIR__ . '/../templates/header.php';
                                     </td>
 
                                     <!-- CỘT 4: CHỈ HUY PHỤ TRÁCH -->
-                                    <td style="padding: 14px 16px;">
+                                    <td style="padding: 14px 16px; vertical-align: middle;">
                                         <strong style="color: #1e293b; font-size: 0.88rem; display: block;">
                                             <?= htmlspecialchars($act['leader']) ?>
                                         </strong>
@@ -655,56 +687,134 @@ require __DIR__ . '/../templates/header.php';
                                     </td>
 
                                     <!-- CỘT 5: TRẠNG THÁI & THAO TÁC -->
-                                    <td style="padding: 14px 18px; text-align: right;">
+                                    <td style="padding: 14px 18px; text-align: right; vertical-align: middle; white-space: nowrap;">
                                         <?php 
                                         $actJson = htmlspecialchars(json_encode($act, JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
                                         $isPendingAbsence = ($act['status'] === 'pending_absence');
+                                        $shiftKey = $act['raw_shift_id'] ?? $act['code'] ?? '';
+                                        $isReplaced = false;
+                                        $isApprovedAbsence = false;
+                                        $myVolId = $currentUser['id'] ?? '';
+                                        $myVolName = Auth::lower(trim($currentUser['name'] ?? ''));
+
+                                        if (!empty($shiftKey) && isset($dutySchedules[$shiftKey])) {
+                                            foreach ($dutySchedules[$shiftKey]['assigned_volunteers'] as $asv) {
+                                                if (!empty($asv['replacement_for']) && (($myVolId !== '' && $asv['replacement_for'] === $myVolId) || ($myVolName !== '' && Auth::lower(trim($asv['replacement_for'])) === $myVolName))) {
+                                                    $isReplaced = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (isset($_SESSION['absence_requests']) && is_array($_SESSION['absence_requests'])) {
+                                            foreach ($_SESSION['absence_requests'] as $r) {
+                                                $matchShift = (($r['shift_id'] ?? '') === $shiftKey);
+                                                $matchVol = ($myVolName !== '' && mb_strtolower($r['volunteer_name'] ?? '') === $myVolName) ||
+                                                            ($myVolId !== '' && ($r['volunteer_id'] ?? '') === $myVolId);
+                                                if ($matchShift && $matchVol && ($r['status'] ?? '') === 'approved') {
+                                                    $isApprovedAbsence = true;
+                                                    if (!empty($r['coordinator_note']) && str_contains($r['coordinator_note'], 'Điều động')) {
+                                                        $isReplaced = true;
+                                                    }
+                                                    break;
+                                                }
+                                            }
+                                        }
                                         ?>
-                                        <div style="margin-bottom: 8px;">
-                                            <?php if ($isAbsent): ?>
-                                                <span class="t-status-tag" style="background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3;">
+
+                                        <?php if ($isPending): ?>
+                                            <!-- Trạng thái: Chờ BCH phê duyệt ca -->
+                                            <div style="display: inline-flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+                                                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; white-space: nowrap;">
+                                                    &#9203; CHỜ BCH PHÊ DUYỆT
+                                                </span>
+                                                <span style="font-size: 0.72rem; color: #b45309; font-weight: 600; white-space: nowrap;">(Đơn đang chờ thẩm định)</span>
+                                            </div>
+
+                                        <?php elseif ($isRejected): ?>
+                                            <!-- Trạng thái: Đã bị từ chối -->
+                                            <div style="display: inline-flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+                                                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; white-space: nowrap;">
+                                                    &#10005; ĐÃ TỪ CHỐI
+                                                </span>
+                                                <span style="font-size: 0.72rem; color: #991b1b; white-space: nowrap;">(Chưa đủ điều kiện)</span>
+                                            </div>
+
+                                        <?php elseif ($isPendingAbsence): ?>
+                                            <!-- Trạng thái: Chờ duyệt vắng -->
+                                            <div style="display: inline-flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+                                                <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap;">
+                                                    <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; white-space: nowrap;">
+                                                        &#9203; CHỜ BCH DUYỆT VẮNG
+                                                    </span>
+                                                    <form method="post" action="/lich_truc.php" onsubmit="return confirm('Bạn có chắc chắn muốn HỦY BÁO VẮNG và xác nhận tiếp tục tham gia hoạt động này không?');" style="margin: 0; display: inline-flex; align-items: center;">
+                                                        <input type="hidden" name="action" value="cancel_absence_request">
+                                                        <input type="hidden" name="shift_id" value="<?= htmlspecialchars($shiftKey) ?>">
+                                                        <input type="hidden" name="registration_id" value="<?= htmlspecialchars($act['source'] === 'online' ? $act['id'] : '') ?>">
+                                                        <input type="hidden" name="activity_title" value="<?= htmlspecialchars($act['title'] ?? '') ?>">
+                                                        <button type="submit" style="height: 30px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 12px; font-size: 12px; font-weight: 700; border-radius: 6px; background: #ecfdf5; color: #047857; border: 1.5px solid #10b981; cursor: pointer; white-space: nowrap; box-shadow: 0 1px 3px rgba(16,185,129,0.2);" title="Hủy báo vắng và khôi phục quyền tham gia">
+                                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                                                            <span>Hủy Báo Vắng</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                <span style="font-size: 0.72rem; color: #b45309; font-weight: 600; white-space: nowrap;">(Đơn đang chờ thẩm định)</span>
+                                            </div>
+
+                                        <?php elseif ($isAbsent && ($isReplaced || $isApprovedAbsence)): ?>
+                                            <!-- Trạng thái: Đã duyệt báo vắng (chỉ hiển thị Đã Báo Bận & Đã Được Phê Duyệt) -->
+                                            <div style="display: inline-flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+                                                <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: nowrap; white-space: nowrap;">
+                                                    <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; white-space: nowrap;">
+                                                        ĐÃ BÁO BẬN
+                                                    </span>
+                                                    <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; white-space: nowrap;">
+                                                        &#10003; ĐÃ ĐƯỢC PHÊ DUYỆT
+                                                    </span>
+                                                </div>
+                                                <?php if ($isReplaced): ?>
+                                                    <span style="font-size: 0.72rem; color: #64748b; font-style: italic; white-space: nowrap;">(Đã duyệt vắng · Không thể hủy)</span>
+                                                <?php endif; ?>
+                                            </div>
+
+                                        <?php elseif ($isAbsent): ?>
+                                            <!-- Trạng thái: Đã báo bận nhưng chưa có người thay thế -->
+                                            <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: nowrap; white-space: nowrap;">
+                                                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; white-space: nowrap;">
                                                     ĐÃ BÁO BẬN
                                                 </span>
-                                            <?php elseif ($isPendingAbsence): ?>
-                                                <span class="t-status-tag" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-weight: 800;">
-                                                    &#9203; CHỜ BCH PHÊ DUYỆT VẮNG
-                                                </span>
-                                            <?php elseif ($isCancelled): ?>
-                                                <span class="t-status-tag" style="background: #f1f5f9; color: #64748b;">
-                                                    ĐÃ HỦY
-                                                </span>
-                                            <?php else: ?>
-                                                <span class="t-status-tag tag-full">
-                                                    ĐÃ XÁC NHẬN
-                                                </span>
-                                            <?php endif; ?>
-                                        </div>
-
-                                        <!-- CÁC NÚT THAO TÁC -->
-                                        <?php if (!$isAbsent && !$isCancelled && !$isPendingAbsence): ?>
-                                            <button type="button" class="t-btn-action t-btn-warn" onclick='openAbsenceRequestModal(<?= $actJson ?>)' style="font-size: 0.82rem; padding: 5px 12px; font-weight: 700; border-radius: 6px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; cursor: pointer;" title="Báo bận / Xin phép vắng mặt gửi Ban Chỉ Huy phê duyệt">
-                                                &#9888; Xin Phép Vắng
-                                            </button>
-                                        <?php elseif ($isPendingAbsence || $isAbsent): ?>
-                                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
-                                                <form method="post" action="/lich_truc.php" onsubmit="return confirm('Bạn có chắc chắn muốn HỦY BÁO VẮNG và xác nhận tiếp tục tham gia hoạt động này không?');" style="margin: 0;">
+                                                <form method="post" action="/lich_truc.php" onsubmit="return confirm('Bạn có chắc chắn muốn HỦY BÁO VẮNG và xác nhận tiếp tục tham gia hoạt động này không?');" style="margin: 0; display: inline-flex; align-items: center;">
                                                     <input type="hidden" name="action" value="cancel_absence_request">
-                                                    <input type="hidden" name="shift_id" value="<?= htmlspecialchars($act['raw_shift_id'] ?? $act['code'] ?? '') ?>">
+                                                    <input type="hidden" name="shift_id" value="<?= htmlspecialchars($shiftKey) ?>">
                                                     <input type="hidden" name="registration_id" value="<?= htmlspecialchars($act['source'] === 'online' ? $act['id'] : '') ?>">
                                                     <input type="hidden" name="activity_title" value="<?= htmlspecialchars($act['title'] ?? '') ?>">
-                                                    <button type="submit" style="font-size: 0.8rem; padding: 5px 12px; font-weight: 700; border-radius: 6px; background: #ecfdf5; color: #047857; border: 1.5px solid #10b981; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 3px rgba(16,185,129,0.2);" title="Hủy báo vắng và khôi phục quyền tham gia">
+                                                    <button type="submit" style="height: 30px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 12px; font-size: 12px; font-weight: 700; border-radius: 6px; background: #ecfdf5; color: #047857; border: 1.5px solid #10b981; cursor: pointer; white-space: nowrap; box-shadow: 0 1px 3px rgba(16,185,129,0.2);" title="Hủy báo vắng và khôi phục quyền tham gia">
                                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
                                                         <span>Hủy Báo Vắng</span>
                                                     </button>
                                                 </form>
-                                                <?php if ($isPendingAbsence): ?>
-                                                    <span style="font-size: 0.72rem; color: #b45309; font-weight: 600;">(Đơn đang chờ BCH thẩm định)</span>
-                                                <?php endif; ?>
                                             </div>
+
+                                        <?php elseif ($isCancelled): ?>
+                                            <!-- Trạng thái: Đã hủy -->
+                                            <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: nowrap; white-space: nowrap;">
+                                                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #f1f5f9; color: #64748b; white-space: nowrap;">
+                                                    ĐÃ HỦY
+                                                </span>
+                                                <span style="font-size: 0.78rem; color: #94a3b8; font-style: italic; white-space: nowrap;">
+                                                    Không có thao tác
+                                                </span>
+                                            </div>
+
                                         <?php else: ?>
-                                            <span style="font-size: 0.78rem; color: #94a3b8; font-style: italic;">
-                                                Không có thao tác
-                                            </span>
+                                            <!-- Trạng thái: Đã được phê duyệt tham gia -->
+                                            <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: nowrap; white-space: nowrap;">
+                                                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 20px; font-size: 11.5px; font-weight: 800; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; white-space: nowrap;">
+                                                    &#10003; ĐÃ ĐƯỢC PHÊ DUYỆT
+                                                </span>
+                                                <button type="button" class="t-btn-action t-btn-warn" onclick='openAbsenceRequestModal(<?= $actJson ?>)' style="height: 30px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 12px; font-size: 12px; font-weight: 700; border-radius: 6px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; cursor: pointer; white-space: nowrap; box-shadow: 0 1px 3px rgba(225,29,72,0.12);" title="Báo bận / Xin phép vắng mặt gửi Ban Chỉ Huy phê duyệt">
+                                                    &#9888; Xin Phép Vắng
+                                                </button>
+                                            </div>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -940,7 +1050,9 @@ document.addEventListener('DOMContentLoaded', function() {
             var matchSearch = (query === '' || searchData.indexOf(query) !== -1);
             
             var matchStatus = true;
-            if (statusVal === 'confirmed') matchStatus = (rStatus === 'confirmed');
+            if (statusVal === 'approved' || statusVal === 'confirmed') matchStatus = (rStatus === 'confirmed' || rStatus === 'approved');
+            else if (statusVal === 'pending') matchStatus = (rStatus === 'pending');
+            else if (statusVal === 'rejected') matchStatus = (rStatus === 'rejected');
             else if (statusVal === 'absent') matchStatus = (rStatus === 'absent' || rStatus === 'cancelled');
             else if (statusVal === 'new') matchStatus = rIsNew;
 
@@ -1426,8 +1538,8 @@ function escapeHtml(str) {
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button type="button" onclick="closeAbsenceRequestModal()" style="padding: 9px 18px; border: 1px solid #cbd5e1; background: #ffffff; border-radius: 8px; font-size: 13px; cursor: pointer;">
-                    Hủy Bỏ
+                <button type="button" onclick="closeAbsenceRequestModal()" style="padding: 9px 18px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; font-weight: 600; border-radius: 8px; font-size: 13px; cursor: pointer;">
+                    Đóng
                 </button>
                 <button type="submit" id="btn_submit_absence" style="padding: 9px 22px; border: none; background: #dc2626; color: #ffffff; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(220,38,38,0.3);">
                     Gửi Đơn Xin Phép Vắng

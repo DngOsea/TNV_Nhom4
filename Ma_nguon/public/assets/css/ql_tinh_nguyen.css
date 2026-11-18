@@ -571,12 +571,27 @@ a:hover {
 }
 
 .user-position-tag {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--primary-green-dark);
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 1.5px 8px;
+    border-radius: 9999px;
+    margin-top: 2px;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.user-position-tag.tag-coordinator {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.user-position-tag.tag-volunteer {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
 }
 
 .caret-down {
@@ -899,10 +914,10 @@ a:hover {
     width: 100%;
     height: 480px;
     overflow: hidden;
-    border-radius: var(--radius-lg);
-    margin: 24px 0;
-    box-shadow: var(--shadow-lg);
-    background-color: #0f172a;
+    border-radius: 0;
+    margin: 0 0 28px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    background-color: #edf5fd;
 }
 
 .slide_banner {
@@ -926,7 +941,7 @@ a:hover {
     background-size: contain !important;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: #0b1329;
+    background-color: #edf5fd;
     position: relative;
 }
 
@@ -1065,7 +1080,7 @@ a:hover {
     background: linear-gradient(90deg, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.6) 55%, transparent 100%);
     display: flex;
     align-items: center;
-    padding-left: 60px;
+    padding-left: clamp(24px, 7vw, 120px);
 }
 
 .noi_dung_slide {
@@ -1083,6 +1098,18 @@ a:hover {
     border-radius: var(--radius-full);
     letter-spacing: 1px;
     margin-bottom: 14px;
+}
+
+.huy_hieu_slide.huy_hieu_crimson {
+    background: #dc2626;
+}
+
+.huy_hieu_slide.huy_hieu_blue {
+    background: #2563eb;
+}
+
+.huy_hieu_slide.huy_hieu_purple {
+    background: #7c3aed;
 }
 
 .tieu_de_slide {
@@ -1154,11 +1181,11 @@ a:hover {
 }
 
 .nut_chuyen_trai {
-    left: 16px;
+    left: clamp(16px, 3vw, 40px);
 }
 
 .nut_chuyen_phai {
-    right: 16px;
+    right: clamp(16px, 3vw, 40px);
 }
 
 .cac_cham_dieu_khien {
@@ -1276,15 +1303,22 @@ a:hover {
 /* 5 Category Cards Grid */
 .category-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 1100px) {
+    .category-cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+    }
 }
 
 .category-card {
     background: #ffffff;
     border: 1px solid var(--cat-border, var(--border-light));
     border-radius: var(--radius-md);
-    padding: 20px;
+    padding: 16px;
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
@@ -1299,12 +1333,12 @@ a:hover {
     top: 0;
     left: 0;
     width: 100%;
-    height: 3px;
+    height: 3.5px;
     background: var(--cat-accent, #059669);
 }
 
 .category-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-md);
     border-color: var(--cat-accent);
 }
@@ -1313,7 +1347,30 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 10px;
+}
+
+.category-card-img-wrap {
+    width: 100%;
+    height: 125px;
+    border-radius: 8px;
+    overflow: hidden;
     margin-bottom: 12px;
+    background: var(--cat-bg, #f1f5f9);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.category-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+}
+
+.category-card:hover .category-card-img {
+    transform: scale(1.05);
 }
 
 .cat-code-badge {
@@ -1332,36 +1389,40 @@ a:hover {
 }
 
 .cat-title {
-    font-size: 1.05rem;
+    font-size: 0.96rem;
     font-weight: 700;
     color: var(--text-heading);
     margin: 0 0 6px;
     line-height: 1.35;
+    min-height: 2.7em;
 }
 
 .cat-slogan {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-style: italic;
     color: var(--cat-accent, #059669);
-    font-weight: 500;
+    font-weight: 600;
     margin: 0 0 8px;
+    line-height: 1.35;
+    min-height: 2.7em;
 }
 
 .cat-desc {
-    font-size: 0.86rem;
+    font-size: 0.82rem;
     color: var(--text-body);
-    margin: 0 0 16px;
+    margin: 0 0 14px;
     flex-grow: 1;
-    line-height: 1.5;
+    line-height: 1.45;
 }
 
 .cat-action-link {
-    font-size: 0.84rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: var(--cat-accent, #059669);
     display: flex;
     align-items: center;
     gap: 4px;
+    margin-top: auto;
 }
 
 .cat-action-link:hover {
@@ -6874,21 +6935,28 @@ textarea:focus {
 }
 
 .roster-action-btns {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 6px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .btn-action-sm {
-    padding: 4px 9px;
+    height: 28px;
+    padding: 0 10px;
     font-size: 0.74rem;
     font-weight: 700;
     border-radius: 6px;
-    border: none;
     cursor: pointer;
     transition: all 0.15s ease;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    line-height: 1;
 }
 
 .btn-action-warn {
@@ -6902,13 +6970,16 @@ textarea:focus {
 }
 
 .btn-action-replace {
-    background: #f0fdf4;
-    color: #166534;
-    border: 1px solid #86efac;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-weight: 700;
 }
 
 .btn-action-replace:hover {
-    background: #dcfce7;
+    background: #dbeafe;
+    border-color: #93c5fd;
+    color: #1e40af;
 }
 
 .btn-action-del {
@@ -7217,189 +7288,6 @@ textarea:focus {
     color: #ffffff;
 }
 
-
-/* ==========================================================================
-   DROPDOWN MENU KHI TRỎ VÀO "HỒ SƠ CỦA TÔI" & CÁC MỤC ĐIỀU HƯỚNG (HOVER DROPDOWN)
-   ========================================================================== */
-.nav-item-dropdown-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-}
-
-.nav-dropdown-trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.nav-caret {
-    font-size: 0.72rem;
-    transition: transform 0.2s ease;
-}
-
-.nav-item-dropdown-wrap:hover .nav-caret {
-    transform: rotate(180deg);
-}
-
-.nav-sub-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 290px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow: 0 14px 35px -6px rgba(15, 23, 42, 0.18), 0 4px 10px rgba(0, 0, 0, 0.05);
-    padding: 8px;
-    z-index: 1060;
-    margin-top: 6px;
-    animation: navFadeSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Tạo cầu đệm chuột (bridge) để rê chuột mượt mà không bị mất menu */
-.nav-sub-dropdown::before {
-    content: "";
-    position: absolute;
-    top: -10px;
-    left: 0;
-    width: 100%;
-    height: 10px;
-}
-
-.nav-item-dropdown-wrap:hover .nav-sub-dropdown {
-    display: block;
-}
-
-@keyframes navFadeSlide {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.nav-sub-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    text-decoration: none;
-    color: #1e293b;
-    transition: all 0.15s ease;
-}
-
-.nav-sub-link:hover {
-    background: #ecfdf5;
-    color: #047857;
-    transform: translateX(3px);
-}
-
-.nav-sub-link:hover .sub-icon {
-    transform: scale(1.15);
-    background: #059669;
-    color: #ffffff;
-}
-
-.sub-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    background: #f1f5f9;
-    color: #059669;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    flex-shrink: 0;
-    transition: all 0.15s ease;
-}
-
-.sub-text {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-    line-height: 1.3;
-}
-
-.sub-text strong {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: inherit;
-}
-
-.sub-text small {
-    font-size: 0.73rem;
-    color: #64748b;
-    margin-top: 1px;
-}
-
-/* Profile Section Tabs Bar trong trang profile.php */
-.profile-nav-tabs-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 6px;
-    margin-bottom: 24px;
-    overflow-x: auto;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    position: sticky;
-    top: 75px;
-    z-index: 100;
-}
-
-.tab-profile-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 18px;
-    border-radius: 8px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #475569;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: all 0.18s ease;
-    border: 1px solid transparent;
-    cursor: pointer;
-    background: transparent;
-}
-
-.tab-profile-pill:hover {
-    color: #059669;
-    background: #f8fafc;
-}
-
-.tab-profile-pill.active {
-    background: #059669;
-    color: #ffffff;
-    font-weight: 700;
-    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
-}
-
-.tab-profile-pill .tab-badge-num {
-    background: rgba(0, 0, 0, 0.08);
-    color: inherit;
-    font-size: 0.72rem;
-    font-weight: 800;
-    padding: 1px 6px;
-    border-radius: 10px;
-}
-
-.tab-profile-pill.active .tab-badge-num {
-    background: rgba(255, 255, 255, 0.25);
-    color: #ffffff;
-}
-
-
 /* ==========================================================================
    FORM GRIDS & FIELD ITEMS (ENTERPRISE RESPONSIVE PROFILE & DIALOG FORMS)
    ========================================================================== */
@@ -7578,4 +7466,78 @@ textarea:focus {
     background: #f8fafc;
     border-color: #94a3b8;
     color: #0f172a;
+}
+
+/* ==========================================================================
+   CUSTOM CHECKBOX UI - ĐỊNH DẠNG Ô TICK CHỌN CHUYÊN NGHIỆP
+   ========================================================================== */
+input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    border: 1.8px solid #94a3b8;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-grid;
+    place-content: center;
+    vertical-align: middle;
+    position: relative;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input[type="checkbox"]:hover:not(:disabled) {
+    border-color: #245d78;
+    background-color: #f8fafc;
+    box-shadow: 0 0 0 3px rgba(36, 93, 120, 0.12);
+}
+
+input[type="checkbox"]:focus-visible {
+    outline: none;
+    border-color: #245d78;
+    box-shadow: 0 0 0 3px rgba(36, 93, 120, 0.25);
+}
+
+input[type="checkbox"]:checked {
+    background-color: #245d78;
+    border-color: #245d78;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.2 8.2L6.3 11.3L12.8 4.7' stroke='white' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 80% 80%;
+}
+
+input[type="checkbox"]:checked:hover:not(:disabled) {
+    background-color: #1a475d;
+    border-color: #1a475d;
+}
+
+input[type="checkbox"]:disabled {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+label:has(input[type="checkbox"]:checked) {
+    border-color: #059669 !important;
+    background-color: #ecfdf5 !important;
+}
+
+/* Bảo đảm màu chữ cho nút đóng / hủy trên các modal */
+button.btn-cancel,
+button[onclick*="close"],
+button[onclick*="Close"] {
+    color: #475569 !important;
+    font-weight: 600;
+}
+
+button.btn-cancel:hover,
+button[onclick*="close"]:hover,
+button[onclick*="Close"]:hover {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
 }

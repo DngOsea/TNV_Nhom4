@@ -1040,27 +1040,60 @@ class Database
             return;
         }
         try {
-            $sql = "
-            CREATE TABLE IF NOT EXISTS absence_requests (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                request_code VARCHAR(50) UNIQUE,
-                volunteer_id VARCHAR(50) NOT NULL,
-                volunteer_name VARCHAR(100) NOT NULL,
-                volunteer_phone VARCHAR(30) DEFAULT '',
-                shift_id VARCHAR(50) NOT NULL,
-                activity_title VARCHAR(255) NOT NULL,
-                event_date VARCHAR(100) NOT NULL,
-                event_time VARCHAR(100) DEFAULT '',
-                hours_prior REAL NOT NULL,
-                days_prior REAL NOT NULL,
-                reason TEXT NOT NULL,
-                detail_note TEXT DEFAULT '',
-                status VARCHAR(30) DEFAULT 'pending',
-                coordinator_note TEXT DEFAULT '',
-                reviewed_by VARCHAR(100) DEFAULT '',
-                reviewed_at TEXT DEFAULT '',
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP
-            );";
+            if ($this->driver === 'mysql') {
+                $sql = "
+                CREATE TABLE IF NOT EXISTS absence_requests (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    request_code VARCHAR(50) UNIQUE,
+                    volunteer_id VARCHAR(20) NOT NULL,
+                    project_id INT(11) DEFAULT NULL,
+                    shift_id VARCHAR(50) NOT NULL,
+                    volunteer_name VARCHAR(100) NOT NULL,
+                    volunteer_phone VARCHAR(30) DEFAULT '',
+                    activity_title VARCHAR(255) NOT NULL,
+                    event_date VARCHAR(100) NOT NULL,
+                    event_time VARCHAR(100) DEFAULT '',
+                    hours_prior DOUBLE NOT NULL DEFAULT 48,
+                    days_prior DOUBLE NOT NULL DEFAULT 2,
+                    reason TEXT NOT NULL,
+                    detail_note TEXT DEFAULT NULL,
+                    status VARCHAR(30) DEFAULT 'pending',
+                    replacement_volunteer_id VARCHAR(20) DEFAULT NULL,
+                    coordinator_note TEXT DEFAULT NULL,
+                    reviewed_by VARCHAR(100) DEFAULT '',
+                    reviewed_at VARCHAR(100) DEFAULT '',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_abs_status (status),
+                    CONSTRAINT fk_abs_shift FOREIGN KEY (shift_id) REFERENCES shifts(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                    CONSTRAINT fk_abs_volunteer FOREIGN KEY (volunteer_id) REFERENCES volunteers(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                    CONSTRAINT fk_abs_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                    CONSTRAINT fk_abs_replacement FOREIGN KEY (replacement_volunteer_id) REFERENCES volunteers(id) ON DELETE SET NULL ON UPDATE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+            } else {
+                $sql = "
+                CREATE TABLE IF NOT EXISTS absence_requests (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    request_code VARCHAR(50) UNIQUE,
+                    volunteer_id VARCHAR(50) NOT NULL,
+                    project_id INTEGER DEFAULT NULL,
+                    shift_id VARCHAR(50) NOT NULL,
+                    volunteer_name VARCHAR(100) NOT NULL,
+                    volunteer_phone VARCHAR(30) DEFAULT '',
+                    activity_title VARCHAR(255) NOT NULL,
+                    event_date VARCHAR(100) NOT NULL,
+                    event_time VARCHAR(100) DEFAULT '',
+                    hours_prior REAL NOT NULL,
+                    days_prior REAL NOT NULL,
+                    reason TEXT NOT NULL,
+                    detail_note TEXT DEFAULT '',
+                    status VARCHAR(30) DEFAULT 'pending',
+                    replacement_volunteer_id VARCHAR(50) DEFAULT NULL,
+                    coordinator_note TEXT DEFAULT '',
+                    reviewed_by VARCHAR(100) DEFAULT '',
+                    reviewed_at TEXT DEFAULT '',
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                );";
+            }
             $this->pdo->exec($sql);
         } catch (Throwable $e) {
             error_log("Database: initAbsenceRequestsTable error: " . $e->getMessage());
@@ -1118,14 +1151,58 @@ class Database
             ];
         }
 
+        $shiftId = (string)($data['shift_id'] ?? '');
+        $volId = (string)($data['volunteer_id'] ?? 'TNV-001');
+        $volName = (string)($data['volunteer_name'] ?? 'Tình Nguyện Viên');
+        $volPhone = (string)($data['volunteer_phone'] ?? '');
+        $actTitle = (string)($data['activity_title'] ?? 'Hoạt Động Tình Nguyện');
+        $projId = null;
+
+        // Nếu shift_id truyền vào là registration_code, truy vấn lấy shift_id và project_id thực tế
+        if ($this->isAvailable()) {
+            try {
+                if (str_starts_with($shiftId, 'REG-')) {
+                    $stmtReg = $this->pdo->prepare("SELECT shift_id, project_id, volunteer_id, volunteer_name, volunteer_phone FROM volunteer_registrations WHERE registration_code = ? LIMIT 1");
+                    $stmtReg->execute([$shiftId]);
+                    if ($rRow = $stmtReg->fetch()) {
+                        $shiftId = $rRow['shift_id'];
+                        $projId = (int)$rRow['project_id'];
+                        if (!empty($rRow['volunteer_id'])) $volId = $rRow['volunteer_id'];
+                        if (!empty($rRow['volunteer_name'])) $volName = $rRow['volunteer_name'];
+                        if (!empty($rRow['volunteer_phone'])) $volPhone = $rRow['volunteer_phone'];
+                    }
+                }
+
+                // Nếu chưa có projId, tìm từ bảng shifts
+                if (!$projId && !empty($shiftId)) {
+                    $stmtSh = $this->pdo->prepare("SELECT project_id FROM shifts WHERE id = ? LIMIT 1");
+                    $stmtSh->execute([$shiftId]);
+                    if ($shRow = $stmtSh->fetch()) {
+                        $projId = (int)$shRow['project_id'];
+                    }
+                }
+
+                // Đảm bảo volunteer_id tồn tại trong bảng volunteers
+                $chkVol = $this->pdo->prepare("SELECT id FROM volunteers WHERE id = ?");
+                $chkVol->execute([$volId]);
+                if (!$chkVol->fetch()) {
+                    $insV = $this->pdo->prepare("INSERT INTO volunteers (id, name, phone, role) VALUES (?, ?, ?, 'Tình Nguyện Viên')");
+                    $insV->execute([$volId, $volName, $volPhone]);
+                }
+            } catch (Throwable $e) {
+                error_log("Database: createAbsenceRequest prep error: " . $e->getMessage());
+            }
+        }
+
         $requestCode = 'ABS-' . strtoupper(substr(md5(uniqid('', true)), 0, 7));
         $record = [
             'request_code' => $requestCode,
-            'volunteer_id' => $data['volunteer_id'] ?? 'TNV-001',
-            'volunteer_name' => $data['volunteer_name'] ?? 'Tình Nguyện Viên',
-            'volunteer_phone' => $data['volunteer_phone'] ?? '',
-            'shift_id' => $data['shift_id'] ?? '',
-            'activity_title' => $data['activity_title'] ?? 'Hoạt Động Tình Nguyện',
+            'volunteer_id' => $volId,
+            'project_id' => $projId,
+            'volunteer_name' => $volName,
+            'volunteer_phone' => $volPhone,
+            'shift_id' => $shiftId,
+            'activity_title' => $actTitle,
             'event_date' => $eventDate,
             'event_time' => $eventTime,
             'hours_prior' => $hoursPrior,
@@ -1139,19 +1216,20 @@ class Database
             'created_at' => date('Y-m-d H:i:s'),
         ];
 
-        // Lưu vào SQLite
+        // Lưu vào CSDL
         if ($this->isAvailable()) {
             try {
                 $stmt = $this->pdo->prepare("
                     INSERT INTO absence_requests (
-                        request_code, volunteer_id, volunteer_name, volunteer_phone,
+                        request_code, volunteer_id, project_id, volunteer_name, volunteer_phone,
                         shift_id, activity_title, event_date, event_time,
                         hours_prior, days_prior, reason, detail_note, status, created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
                 ");
                 $stmt->execute([
                     $record['request_code'],
                     $record['volunteer_id'],
+                    $record['project_id'],
                     $record['volunteer_name'],
                     $record['volunteer_phone'],
                     $record['shift_id'],
@@ -1242,7 +1320,7 @@ class Database
     /**
      * Ban Chỉ Huy phê duyệt hoặc từ chối yêu cầu báo vắng
      */
-    public function reviewAbsenceRequest(int|string $requestIdOrCode, string $decision, string $coordinatorName, string $note = ''): bool
+    public function reviewAbsenceRequest(int|string $requestIdOrCode, string $decision, string $coordinatorName, string $note = '', ?string $replacementVolunteerId = null): bool
     {
         $status = ($decision === 'approved') ? 'approved' : 'rejected';
         $now = date('Y-m-d H:i:s');
@@ -1255,10 +1333,11 @@ class Database
                         status = ?,
                         coordinator_note = ?,
                         reviewed_by = ?,
-                        reviewed_at = ?
+                        reviewed_at = ?,
+                        replacement_volunteer_id = ?
                     WHERE id = ? OR request_code = ?
                 ");
-                $stmt->execute([$status, $note, $coordinatorName, $now, $requestIdOrCode, $requestIdOrCode]);
+                $stmt->execute([$status, $note, $coordinatorName, $now, $replacementVolunteerId, $requestIdOrCode, $requestIdOrCode]);
 
                 $selectStmt = $this->pdo->prepare("SELECT * FROM absence_requests WHERE id = ? OR request_code = ?");
                 $selectStmt->execute([$requestIdOrCode, $requestIdOrCode]);
@@ -1279,6 +1358,9 @@ class Database
                     $r['coordinator_note'] = $note;
                     $r['reviewed_by'] = $coordinatorName;
                     $r['reviewed_at'] = $now;
+                    if ($replacementVolunteerId) {
+                        $r['replacement_volunteer_id'] = $replacementVolunteerId;
+                    }
                     $affectedReq = $r;
                     break;
                 }
@@ -1291,6 +1373,20 @@ class Database
             $shiftId = $affectedReq['shift_id'];
             $vId = $affectedReq['volunteer_id'];
             $vName = $affectedReq['volunteer_name'];
+
+            // Cập nhật trong CSDL volunteer_registrations
+            if ($this->isAvailable()) {
+                try {
+                    $stmtReg = $this->pdo->prepare("
+                        UPDATE volunteer_registrations
+                        SET status = 'absent'
+                        WHERE shift_id = ? AND (volunteer_id = ? OR LOWER(volunteer_name) = LOWER(?))
+                    ");
+                    $stmtReg->execute([$shiftId, $vId, $vName]);
+                } catch (Throwable $e) {
+                    error_log("Database: update absent status error: " . $e->getMessage());
+                }
+            }
 
             // 1. Cập nhật trong btl_duty_schedule
             if (isset($_SESSION['btl_duty_schedule'][$shiftId])) {
@@ -1329,6 +1425,91 @@ class Database
         $now = date('Y-m-d H:i:s');
         $cancelledCount = 0;
 
+        // KIỂM TRA ĐIỀU KIỆN: Khi BCH đã phê duyệt báo vắng thành công VÀ phân công nhiệm vụ cho người khác, KHÔNG ĐƯỢC HỦY
+        $isReplaced = false;
+        $replacedName = '';
+
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            @session_start();
+        }
+
+        // 1. Kiểm tra trực tiếp trong CSDL MySQL xem đã có người thay thế chưa
+        if ($this->isAvailable()) {
+            try {
+                // Kiểm tra trong absence_requests
+                $stmtCheck = $this->pdo->prepare("
+                    SELECT ar.coordinator_note, ar.replacement_volunteer_id, v.name as replacement_name
+                    FROM absence_requests ar
+                    LEFT JOIN volunteers v ON ar.replacement_volunteer_id = v.id
+                    WHERE ar.shift_id = ? AND (LOWER(ar.volunteer_name) = LOWER(?) OR ar.volunteer_id = ?)
+                      AND ar.status = 'approved' AND (ar.replacement_volunteer_id IS NOT NULL OR ar.coordinator_note LIKE '%Điều động%')
+                    LIMIT 1
+                ");
+                $stmtCheck->execute([$shiftId, $volunteerName ?? '', $volunteerId ?? '']);
+                if ($row = $stmtCheck->fetch()) {
+                    $isReplaced = true;
+                    $replacedName = $row['replacement_name'] ?: '';
+                    if (empty($replacedName) && preg_match('/Điều động đồng chí\s+([^(]+)/u', $row['coordinator_note'] ?? '', $m)) {
+                        $replacedName = trim($m[1]);
+                    }
+                }
+
+                // Kiểm tra trong volunteer_registrations
+                if (!$isReplaced) {
+                    $stmtReg = $this->pdo->prepare("
+                        SELECT vr.volunteer_id, COALESCE(vr.volunteer_name, v.name) as rep_name
+                        FROM volunteer_registrations vr
+                        LEFT JOIN volunteers v ON vr.volunteer_id = v.id
+                        WHERE vr.shift_id = ? AND (vr.replacement_for = ? OR vr.role_in_shift LIKE CONCAT('%Thay cho ', ?, '%'))
+                        LIMIT 1
+                    ");
+                    $stmtReg->execute([$shiftId, $volunteerId ?? '', $volunteerId ?? '']);
+                    if ($rRow = $stmtReg->fetch()) {
+                        $isReplaced = true;
+                        $replacedName = $rRow['rep_name'] ?? '';
+                    }
+                }
+            } catch (Throwable $e) {
+                error_log("Database: cancelAbsenceRequest check error: " . $e->getMessage());
+            }
+        }
+
+        // 2. Kiểm tra trong danh sách nhân sự ca trực có người thay thế chưa
+        if (!$isReplaced && isset($_SESSION['btl_duty_schedule'][$shiftId]['assigned_volunteers'])) {
+            foreach ($_SESSION['btl_duty_schedule'][$shiftId]['assigned_volunteers'] as $asv) {
+                if (!empty($asv['replacement_for']) && (($volunteerId && $asv['replacement_for'] === $volunteerId) || ($volunteerName && mb_strtolower($asv['replacement_for']) === mb_strtolower($volunteerName)))) {
+                    $isReplaced = true;
+                    $replacedName = $asv['name'] ?? '';
+                    break;
+                }
+            }
+        }
+
+        // 3. Kiểm tra trong session absence_requests
+        if (!$isReplaced && isset($_SESSION['absence_requests']) && is_array($_SESSION['absence_requests'])) {
+            foreach ($_SESSION['absence_requests'] as $r) {
+                $matchShift = (($r['shift_id'] ?? '') === $shiftId);
+                $matchVol = empty($volunteerName) || 
+                            (mb_strtolower($r['volunteer_name'] ?? '') === mb_strtolower($volunteerName)) ||
+                            (!empty($volunteerId) && ($r['volunteer_id'] ?? '') === $volunteerId);
+                if ($matchShift && $matchVol && ($r['status'] ?? '') === 'approved' && !empty($r['coordinator_note']) && str_contains($r['coordinator_note'], 'Điều động')) {
+                    $isReplaced = true;
+                    if (preg_match('/Điều động đồng chí\s+([^(]+)/u', $r['coordinator_note'], $m)) {
+                        $replacedName = trim($m[1]);
+                    }
+                    break;
+                }
+            }
+        }
+
+        if ($isReplaced) {
+            return [
+                'success' => false,
+                'message' => 'Yêu cầu báo vắng đã được Ban Chỉ Huy phê duyệt và đã phân công nhân sự ' . ($replacedName ? "({$replacedName}) " : '') . 'thay thế nhiệm vụ. Bạn không được phép hủy báo vắng đối với ca trực này.',
+                'cancelled_count' => 0
+            ];
+        }
+
         if ($this->isAvailable()) {
             try {
                 // Hủy các đơn có shift_id tương ứng của TNV đó
@@ -1354,6 +1535,15 @@ class Database
                     $stmt->execute([$now, $shiftId]);
                     $cancelledCount = $stmt->rowCount();
                 }
+
+                // Khôi phục trạng thái trong volunteer_registrations
+                $stmtRegUpd = $this->pdo->prepare("
+                    UPDATE volunteer_registrations
+                    SET status = 'confirmed'
+                    WHERE shift_id = ? AND (LOWER(volunteer_name) = LOWER(?) OR volunteer_id = ?)
+                      AND status = 'absent'
+                ");
+                $stmtRegUpd->execute([$shiftId, $volunteerName ?? '', $volunteerId ?? '']);
             } catch (Throwable $e) {
                 error_log("Database: cancelAbsenceRequest error: " . $e->getMessage());
             }
@@ -1478,15 +1668,19 @@ class Database
             $shiftIds = array_keys($dutySchedules);
             if (empty($shiftIds)) return true;
 
-            // Xóa các phân công cũ của các ca này
+            // Xóa các phân công cũ của các ca này nhưng GIỮ NGUYÊN các đơn đăng ký trực tuyến (có registration_code)
             $inClause = implode(',', array_fill(0, count($shiftIds), '?'));
-            $deleteStmt = $this->pdo->prepare("DELETE FROM volunteer_registrations WHERE shift_id IN ($inClause)");
+            $deleteStmt = $this->pdo->prepare("
+                DELETE FROM volunteer_registrations 
+                WHERE shift_id IN ($inClause) 
+                  AND (registration_code IS NULL OR registration_code = '' OR role_in_shift != 'TNV Đăng Ký Trực Tuyến')
+            ");
             $deleteStmt->execute($shiftIds);
 
             // Chèn danh sách phân công mới
             $insertStmt = $this->pdo->prepare("
-                INSERT INTO volunteer_registrations (volunteer_id, project_id, shift_id, role_in_shift, status)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO volunteer_registrations (volunteer_id, project_id, shift_id, volunteer_name, volunteer_phone, volunteer_email, role_in_shift, replacement_for, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
 
             $updateShiftStmt = $this->pdo->prepare("
@@ -1504,8 +1698,9 @@ class Database
                     if (empty($vId)) continue;
                     $status = $v['status'] ?? 'confirmed';
                     $role = $v['role'] ?? 'TNV Thực Địa';
-                    if (!empty($v['replacement_for'])) {
-                        $role .= ' (Thay cho ' . $v['replacement_for'] . ')';
+                    $repFor = $v['replacement_for'] ?? null;
+                    if (!empty($repFor) && !str_contains($role, 'Thay cho')) {
+                        $role .= ' (Thay cho ' . $repFor . ')';
                     }
 
                     // Đảm bảo TNV tồn tại trong bảng volunteers
@@ -1529,7 +1724,11 @@ class Database
                         $vId,
                         $projId,
                         (string)$sId,
+                        $v['name'] ?? null,
+                        $v['phone'] ?? null,
+                        $v['email'] ?? null,
                         $role,
+                        $repFor,
                         $status
                     ]);
 
@@ -1559,8 +1758,10 @@ class Database
 
         try {
             $stmt = $this->pdo->query("
-                SELECT vr.id as reg_id, vr.volunteer_id, vr.project_id, vr.shift_id, vr.role_in_shift, vr.status,
-                       v.name as volunteer_name, v.skills as volunteer_skills, v.phone as volunteer_phone, v.email as volunteer_email
+                SELECT vr.id as reg_id, vr.volunteer_id, vr.project_id, vr.shift_id, vr.role_in_shift, vr.replacement_for, vr.status,
+                       COALESCE(vr.volunteer_name, v.name) as volunteer_name, v.skills as volunteer_skills,
+                       COALESCE(vr.volunteer_phone, v.phone) as volunteer_phone,
+                       COALESCE(vr.volunteer_email, v.email) as volunteer_email
                 FROM volunteer_registrations vr
                 LEFT JOIN volunteers v ON vr.volunteer_id = v.id
                 ORDER BY vr.shift_id, vr.id
@@ -1577,6 +1778,12 @@ class Database
                     $schedule[$sId] = [];
                 }
                 $skills = json_decode((string)($r['volunteer_skills'] ?? '[]'), true) ?: [];
+
+                $repFor = $r['replacement_for'] ?? null;
+                if (empty($repFor) && preg_match('/\(Thay cho\s+([^)]+)\)/i', (string)($r['role_in_shift'] ?? ''), $m)) {
+                    $repFor = trim($m[1]);
+                }
+
                 $schedule[$sId][] = [
                     'id' => $r['volunteer_id'],
                     'name' => $r['volunteer_name'] ?? $r['volunteer_id'],
@@ -1585,6 +1792,7 @@ class Database
                     'role' => $r['role_in_shift'] ?? 'TNV Thực Địa',
                     'phone' => $r['volunteer_phone'] ?? '',
                     'email' => $r['volunteer_email'] ?? '',
+                    'replacement_for' => $repFor,
                 ];
             }
             return $schedule;
@@ -1604,16 +1812,31 @@ class Database
         }
 
         try {
-            $vId = $regData['user_id'] ?? ('TNV-ONLINE-' . rand(100, 999));
-            $vName = $regData['user_name'] ?? 'Tình Nguyện Viên';
-            $vEmail = $regData['user_email'] ?? '';
-            $vPhone = $regData['user_phone'] ?? '';
-            $projId = (int)($regData['activity_id'] ?? 101);
+            $regCode = $regData['registration_id'] ?? $regData['registration_code'] ?? ('REG-' . strtoupper(substr(md5(uniqid('', true)), 0, 8)));
+            $vId = $regData['user_id'] ?? $regData['volunteer_id'] ?? ('TNV-ONLINE-' . rand(100, 999));
+            $vName = $regData['user_name'] ?? $regData['volunteer_name'] ?? 'Tình Nguyện Viên';
+            $vEmail = $regData['user_email'] ?? $regData['volunteer_email'] ?? '';
+            $vPhone = $regData['user_phone'] ?? $regData['volunteer_phone'] ?? '';
+            $projId = (int)($regData['activity_id'] ?? $regData['project_id'] ?? 101);
             $shiftId = (string)($regData['shift_id'] ?? 'CA-01');
-            $role = 'TNV Đăng Ký Trực Tuyến';
-            $status = $regData['status'] ?? 'confirmed';
+            $role = $regData['role_in_shift'] ?? 'TNV Đăng Ký Trực Tuyến';
+            $status = $regData['status'] ?? 'pending';
+            $note = $regData['note'] ?? '';
+            $coordNote = $regData['coordinator_note'] ?? '';
+            $revBy = $regData['reviewed_by'] ?? '';
+            $revAt = $regData['reviewed_at'] ?? '';
 
-            // Đảm bảo TNV tồn tại trong bảng volunteers
+            // 1. Đảm bảo ca trực tồn tại trong bảng shifts
+            $this->ensureShiftExists($shiftId, $regData);
+
+            // 2. Đảm bảo project_id hợp lệ
+            $chkProj = $this->pdo->prepare("SELECT id FROM projects WHERE id = ?");
+            $chkProj->execute([$projId]);
+            if (!$chkProj->fetch()) {
+                $projId = self::mapShiftToProjectId($shiftId);
+            }
+
+            // 3. Đảm bảo TNV tồn tại trong bảng volunteers
             $chkVol = $this->pdo->prepare("SELECT id FROM volunteers WHERE id = ? OR email = ?");
             $chkVol->execute([$vId, $vEmail]);
             $existing = $chkVol->fetch();
@@ -1627,24 +1850,227 @@ class Database
                 $insVol->execute([$vId, $vName, $vEmail, $vPhone, $role]);
             }
 
-            // Ghi vào volunteer_registrations
+            // 4. Ghi hoặc cập nhật vào volunteer_registrations
             $insReg = $this->pdo->prepare("
-                INSERT INTO volunteer_registrations (volunteer_id, project_id, shift_id, role_in_shift, status)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO volunteer_registrations (
+                    registration_code, volunteer_id, project_id, shift_id,
+                    volunteer_name, volunteer_phone, volunteer_email,
+                    role_in_shift, status, note, coordinator_note, reviewed_by, reviewed_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                    volunteer_name = VALUES(volunteer_name),
+                    volunteer_phone = VALUES(volunteer_phone),
+                    volunteer_email = VALUES(volunteer_email),
+                    status = VALUES(status),
+                    note = VALUES(note),
+                    coordinator_note = VALUES(coordinator_note),
+                    reviewed_by = VALUES(reviewed_by),
+                    reviewed_at = VALUES(reviewed_at)
             ");
-            $insReg->execute([$vId, $projId, $shiftId, $role, $status]);
+            $insReg->execute([
+                $regCode, $vId, $projId, $shiftId,
+                $vName, $vPhone, $vEmail,
+                $role, $status, $note, $coordNote, $revBy, $revAt
+            ]);
 
-            // Cập nhật số lượng đăng ký của dự án và ca trực
-            $this->pdo->prepare("UPDATE projects SET registered = registered + 1 WHERE id = ?")->execute([$projId]);
-            $this->pdo->prepare("UPDATE shifts SET registered = registered + 1 WHERE id = ?")->execute([$shiftId]);
-            $this->pdo->prepare("UPDATE projects SET status = 'full' WHERE id = ? AND registered >= capacity")->execute([$projId]);
-
-            // Đồng bộ dữ liệu ra tập tin volunteer_data.php
-            $this->syncToVolunteerDataFile();
+            // Chỉ cập nhật số lượng đăng ký khi đã được phê duyệt hoặc xác nhận
+            if ($status === 'approved' || $status === 'confirmed') {
+                $this->pdo->prepare("UPDATE projects SET registered = registered + 1 WHERE id = ?")->execute([$projId]);
+                $this->pdo->prepare("UPDATE shifts SET registered = registered + 1 WHERE id = ?")->execute([$shiftId]);
+                $this->pdo->prepare("UPDATE projects SET status = 'full' WHERE id = ? AND registered >= capacity")->execute([$projId]);
+                $this->syncToVolunteerDataFile();
+            }
 
             return true;
         } catch (Throwable $e) {
             error_log("Database: recordRegistration error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * BAN CHỈ HUY PHÊ DUYỆT HOẶC TỪ CHỐI ĐĂNG KÝ CA TRỰC TRỰC TUYẾN
+     */
+    public function reviewShiftRegistration(string $regCodeOrId, string $decision, string $coordinatorName, string $note = ''): bool
+    {
+        if (!$this->isAvailable()) {
+            return false;
+        }
+
+        try {
+            $status = ($decision === 'approved' || $decision === 'confirmed') ? 'approved' : 'rejected';
+            $now = date('Y-m-d H:i:s');
+
+            $stmt = $this->pdo->prepare("SELECT * FROM volunteer_registrations WHERE registration_code = ? OR id = ?");
+            $stmt->execute([$regCodeOrId, $regCodeOrId]);
+            $reg = $stmt->fetch();
+            if (!$reg) {
+                return false;
+            }
+
+            $oldStatus = $reg['status'];
+            $projId = (int)$reg['project_id'];
+            $shiftId = (string)$reg['shift_id'];
+
+            $upd = $this->pdo->prepare("
+                UPDATE volunteer_registrations
+                SET status = ?, coordinator_note = ?, reviewed_by = ?, reviewed_at = ?
+                WHERE registration_code = ? OR id = ?
+            ");
+            $upd->execute([$status, $note, $coordinatorName, $now, $regCodeOrId, $regCodeOrId]);
+
+            // Cập nhật số lượng đăng ký trong shifts và projects
+            if ($oldStatus !== 'approved' && $status === 'approved') {
+                $this->pdo->prepare("UPDATE shifts SET registered = registered + 1 WHERE id = ?")->execute([$shiftId]);
+                $this->pdo->prepare("UPDATE projects SET registered = registered + 1 WHERE id = ?")->execute([$projId]);
+            } elseif ($oldStatus === 'approved' && $status !== 'approved') {
+                $this->pdo->prepare("UPDATE shifts SET registered = GREATEST(0, registered - 1) WHERE id = ?")->execute([$shiftId]);
+                $this->pdo->prepare("UPDATE projects SET registered = GREATEST(0, registered - 1) WHERE id = ?")->execute([$projId]);
+            }
+
+            return true;
+        } catch (Throwable $e) {
+            error_log("Database: reviewShiftRegistration error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * LẤY TOÀN BỘ DANH SÁCH ĐĂNG KÝ CA PHỤC VỤ BAN CHỈ HUY XÉT DUYỆT (TỪ CSDL)
+     */
+    public function getShiftRegistrations(?string $status = null): array
+    {
+        if (!$this->isAvailable()) {
+            return [];
+        }
+
+        try {
+            $sql = "
+                SELECT 
+                    vr.id,
+                    vr.registration_code,
+                    vr.volunteer_id,
+                    vr.project_id,
+                    vr.shift_id,
+                    COALESCE(vr.volunteer_name, v.name, 'Tình Nguyện Viên') AS volunteer_name,
+                    COALESCE(vr.volunteer_phone, v.phone, '') AS volunteer_phone,
+                    COALESCE(vr.volunteer_email, v.email, '') AS volunteer_email,
+                    vr.role_in_shift,
+                    vr.status,
+                    vr.note,
+                    vr.coordinator_note,
+                    vr.reviewed_by,
+                    vr.reviewed_at,
+                    vr.registered_at,
+                    p.title AS project_title,
+                    p.category,
+                    p.category_name,
+                    p.location,
+                    p.meeting_point,
+                    p.leader_name,
+                    p.leader_phone,
+                    s.day_name,
+                    s.shift_name,
+                    s.time_range,
+                    s.skill_req
+                FROM volunteer_registrations vr
+                LEFT JOIN projects p ON vr.project_id = p.id
+                LEFT JOIN shifts s ON vr.shift_id = s.id
+                LEFT JOIN volunteers v ON vr.volunteer_id = v.id
+                WHERE vr.registration_code IS NOT NULL
+                ORDER BY vr.id DESC
+            ";
+            $rows = $this->pdo->query($sql)->fetchAll();
+            $results = [];
+            foreach ($rows as $r) {
+                $itemStatus = $r['status'] ?? 'pending';
+                if ($status !== null && $status !== '' && $status !== 'all') {
+                    if ($status === 'approved') {
+                        if (!in_array($itemStatus, ['approved', 'confirmed'], true)) continue;
+                    } elseif ($itemStatus !== $status) {
+                        continue;
+                    }
+                }
+
+                $regCode = $r['registration_code'] ?: ('REG-' . $r['id']);
+                $results[] = [
+                    'registration_id' => $regCode,
+                    'user_id' => $r['volunteer_id'],
+                    'user_name' => $r['volunteer_name'],
+                    'user_email' => $r['volunteer_email'],
+                    'user_phone' => $r['volunteer_phone'],
+                    'activity_id' => (int)$r['project_id'],
+                    'activity_title' => $r['project_title'] ?? ('Dự Án #' . $r['project_id']),
+                    'category' => $r['category'] ?? 'thuc_te_moi_truong',
+                    'category_name' => $r['category_name'] ?? 'Hoạt Động Tình Nguyện',
+                    'location' => $r['location'] ?? 'Tại thực địa',
+                    'meeting_point' => $r['meeting_point'] ?? 'Tại thực địa',
+                    'leader_name' => $r['leader_name'] ?? 'Ban Chỉ Huy',
+                    'leader_phone' => $r['leader_phone'] ?? '0912.456.789',
+                    'day_label' => $r['day_name'] ?? 'Ngày hoạt động',
+                    'day_name' => $r['day_name'] ?? 'Ngày hoạt động',
+                    'shift_id' => $r['shift_id'],
+                    'shift_name' => $r['shift_name'] ?? $r['shift_id'],
+                    'time_range' => $r['time_range'] ?? '08:00 – 12:00',
+                    'skill_req' => $r['skill_req'] ?? '',
+                    'note' => $r['note'] ?? '',
+                    'registered_at' => $r['registered_at'] ? date('d/m/Y H:i', strtotime($r['registered_at'])) : date('d/m/Y H:i'),
+                    'status' => $itemStatus,
+                    'coordinator_note' => $r['coordinator_note'] ?? '',
+                    'reviewed_by' => $r['reviewed_by'] ?? '',
+                    'reviewed_at' => $r['reviewed_at'] ?? '',
+                    'is_new' => false,
+                ];
+            }
+            return $results;
+        } catch (Throwable $e) {
+            error_log("Database: getShiftRegistrations error: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * LẤY CÁC CA TRỰC ĐÃ ĐĂNG KÝ CỦA TÌNH NGUYỆN VIÊN TỪ CSDL
+     */
+    public function getUserShiftRegistrations(string $userEmail = '', string $userName = '', string $userId = ''): array
+    {
+        $all = $this->getShiftRegistrations();
+        if (empty($userEmail) && empty($userName) && empty($userId)) {
+            return $all;
+        }
+
+        $eLower = strtolower(trim($userEmail));
+        $nLower = strtolower(trim($userName));
+        $uId = trim($userId);
+
+        $filtered = [];
+        foreach ($all as $item) {
+            $iEmail = strtolower(trim($item['user_email'] ?? ''));
+            $iName = strtolower(trim($item['user_name'] ?? ''));
+            $iId = trim($item['user_id'] ?? '');
+
+            if (($eLower !== '' && $iEmail === $eLower) ||
+                ($nLower !== '' && $iName === $nLower) ||
+                ($uId !== '' && $iId === $uId)) {
+                $filtered[] = $item;
+            }
+        }
+        return $filtered;
+    }
+
+    /**
+     * CẬP NHẬT TRẠNG THÁI ĐĂNG KÝ TRỰC TUYẾN
+     */
+    public function updateRegistrationStatus(string $regCodeOrId, string $newStatus = 'absent'): bool
+    {
+        if (!$this->isAvailable()) {
+            return false;
+        }
+        try {
+            $stmt = $this->pdo->prepare("UPDATE volunteer_registrations SET status = ? WHERE registration_code = ? OR id = ?");
+            return $stmt->execute([$newStatus, $regCodeOrId, $regCodeOrId]);
+        } catch (Throwable $e) {
+            error_log("Database: updateRegistrationStatus error: " . $e->getMessage());
             return false;
         }
     }

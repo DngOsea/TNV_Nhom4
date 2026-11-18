@@ -35,7 +35,7 @@ input, select, button { font: inherit; }
 input:not([type="hidden"]):not([type="checkbox"]), select { display: block; width: 100%; min-width: 0; min-height: 52px; margin: 0; padding: 12px 16px; color: var(--on-surface); background: var(--surface); border: 1px solid var(--outline); border-radius: 4px; font-weight: 400; }
 input:focus-visible, select:focus-visible { outline-offset: 1px; }
 input[aria-invalid="true"] { border-color: var(--error); }
-input[type="checkbox"] { width: 20px; height: 20px; margin: 0; accent-color: var(--primary); flex-shrink: 0; }
+input[type="checkbox"] { width: 18px; height: 18px; margin: 0; flex-shrink: 0; }
 button, .filled-button { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 48px; padding: 12px 24px; border: 1px solid transparent; border-radius: 24px; color: var(--on-primary); background: var(--primary); font-weight: 600; text-decoration: none; cursor: pointer; }
 button:hover, .filled-button:hover { background: #194c65; }
 button:active, .filled-button:active { background: #123e54; }

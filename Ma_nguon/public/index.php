@@ -6,6 +6,7 @@ $allActivities = $volunteerData['activities'];
 
 require __DIR__ . '/../templates/header.php';
 ?>
+</main>
 
 <!-- ========================================================
      1. BANNER HERO TỔNG QUAN
@@ -43,8 +44,8 @@ require __DIR__ . '/../templates/header.php';
                     Huy động thanh niên tình nguyện ra quân dọn sạch kênh rạch ô nhiễm và gieo mầm 10.000 cây đước chắn sóng bảo vệ môi trường.
                 </p>
                 <div class="cum_nut_slide">
-                    <a href="/hoat_dong.php" class="btn-primary nut_cta_lon">Xem Danh Sách Hoạt Động</a>
-                    <a href="/hoat_dong.php" class="btn-detail nut_cta_trang">Đăng Ký Ca Làm Việc</a>
+                    <a href="/hoat_dong.php?cat=thuc_te_moi_truong" class="btn-primary nut_cta_lon">Xem Danh Sách Hoạt Động</a>
+                    <a href="/dang_ky_ca.php?event_id=101" class="btn-detail nut_cta_trang">Đăng Ký Ca Làm Việc</a>
                 </div>
             </div>
         </div>
@@ -60,8 +61,42 @@ require __DIR__ . '/../templates/header.php';
                     Tiếp nhận hàng ngàn đơn vị máu cứu người và trao gửi 1.500 suất cơm nóng nghĩa tình mỗi tuần đến những hoàn cảnh khó khăn.
                 </p>
                 <div class="cum_nut_slide">
-                    <a href="/lich_truc.php" class="btn-primary nut_cta_lon">Xem Lịch Trực Thực Địa</a>
-                    <a href="/hoat_dong.php" class="btn-detail nut_cta_trang">Đăng Ký Ca Đa Ngày</a>
+                    <a href="/hoat_dong.php?cat=hien_mau_y_te" class="btn-primary nut_cta_lon">Xem Lịch Trực Thực Địa</a>
+                    <a href="/dang_ky_ca.php?event_id=201" class="btn-detail nut_cta_trang">Đăng Ký Hiến Máu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: TIẾP SỨC MÙA THI -->
+    <div class="slide_banner" style="background-image: url('/assets/images/banner_tnv_3.jpg');">
+        <div class="lop_phu_slide">
+            <div class="noi_dung_slide">
+                <span class="huy_hieu_slide huy_hieu_blue">TIẾP SỨC SĨ TỬ</span>
+                <h1 class="tieu_de_slide">Tiếp Sức Mùa Thi — Đồng Hành Cùng Sĩ Tử 2026</h1>
+                <p class="mo_ta_slide">
+                    Đội hình thanh niên tình nguyện hỗ trợ phân luồng giao thông, phát nước uống, đồ ăn nhẹ và đưa đón thí sinh miễn phí tại các điểm thi tốt nghiệp.
+                </p>
+                <div class="cum_nut_slide">
+                    <a href="/hoat_dong.php?cat=tiep_suc_giao_duc" class="btn-primary nut_cta_lon">Xem Đội Hình Mùa Thi</a>
+                    <a href="/dang_ky_ca.php?event_id=301" class="btn-detail nut_cta_trang">Đăng Ký Tham Gia Ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: CHĂM SÓC YÊU THƯƠNG -->
+    <div class="slide_banner" style="background-image: url('/assets/images/banner_tnv_4.jpg');">
+        <div class="lop_phu_slide">
+            <div class="noi_dung_slide">
+                <span class="huy_hieu_slide huy_hieu_purple">CHĂM SÓC YÊU THƯƠNG</span>
+                <h1 class="tieu_de_slide">Mái Ấm Tuổi Già — Ấm Áp Tình Thương Cộng Đồng</h1>
+                <p class="mo_ta_slide">
+                    Chăm sóc, thăm khám sức khỏe cho cụ già neo đơn tại viện dưỡng lão và mang đến niềm vui, hơi ấm gia đình cho trẻ em có hoàn cảnh khó khăn.
+                </p>
+                <div class="cum_nut_slide">
+                    <a href="/hoat_dong.php?cat=cham_soc_yeu_thuong" class="btn-primary nut_cta_lon">Xem Hoạt Động Xã Hội</a>
+                    <a href="/dang_ky_ca.php?event_id=501" class="btn-detail nut_cta_trang">Đăng Ký Ca Trực</a>
                 </div>
             </div>
         </div>
@@ -76,8 +111,12 @@ require __DIR__ . '/../templates/header.php';
         <span class="cham_chuyen_slide active"></span>
         <span class="cham_chuyen_slide"></span>
         <span class="cham_chuyen_slide"></span>
+        <span class="cham_chuyen_slide"></span>
+        <span class="cham_chuyen_slide"></span>
     </div>
 </section>
+
+<main id="main" tabindex="-1">
 
 <!-- ========================================================
      2. DẢI THỐNG KÊ TỔNG QUAN
@@ -123,14 +162,27 @@ require __DIR__ . '/../templates/header.php';
     </div>
 
     <div class="category-cards-grid">
+        <?php 
+            $categoryImages = [
+                'thuc_te_moi_truong' => '/assets/images/categories/cat_moi_truong.jpg',
+                'hien_mau_y_te' => '/assets/images/categories/cat_hien_mau.jpg',
+                'tiep_suc_giao_duc' => '/assets/images/categories/cat_giao_duc.jpg',
+                'cuu_tro_an_sinh' => '/assets/images/categories/cat_cuu_tro.jpg',
+                'cham_soc_yeu_thuong' => '/assets/images/categories/cat_cham_soc.jpg',
+            ];
+        ?>
         <?php foreach ($categories as $catKey => $cat): ?>
             <?php 
                 $catCount = count(array_filter($allActivities, fn($a) => $a['category'] === $catKey));
+                $catImg = $categoryImages[$catKey] ?? '/assets/images/categories/cat_moi_truong.jpg';
             ?>
             <div class="category-card" style="--cat-accent: <?= $cat['color'] ?>; --cat-bg: <?= $cat['bg_color'] ?>; --cat-border: <?= $cat['border_color'] ?>;">
                 <div class="category-card-top">
                     <span class="cat-code-badge">[<?= htmlspecialchars($cat['code'] ?? 'TNV') ?>]</span>
                     <span class="cat-count-badge"><?= $catCount ?> hoạt động</span>
+                </div>
+                <div class="category-card-img-wrap">
+                    <img src="<?= htmlspecialchars($catImg) ?>" alt="<?= htmlspecialchars($cat['name']) ?>" class="category-card-img" loading="lazy">
                 </div>
                 <h3 class="cat-title"><?= htmlspecialchars($cat['name']) ?></h3>
                 <p class="cat-slogan">"<?= htmlspecialchars($cat['slogan']) ?>"</p>
@@ -144,7 +196,7 @@ require __DIR__ . '/../templates/header.php';
 
     <div style="text-align: center; margin-top: 30px;">
         <a href="/hoat_dong.php" class="btn-primary" style="padding: 11px 26px; font-weight: 700; border-radius: 6px; display: inline-block;">
-            Xem Toàn Bộ <?= count($allActivities) ?> Chiến Dịch Tình Nguyện &rarr;
+            Xem Toàn Bộ Chiến Dịch &rarr;
         </a>
     </div>
 </section>

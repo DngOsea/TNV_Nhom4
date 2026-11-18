@@ -77,7 +77,7 @@ foreach ($activitiesList as $act) {
             'badge' => $meta['badge'],
             'badge_class' => $meta['badge_class'],
             'text' => $meta['prefix'] . ' Đang cần gấp <strong>' . $deficit . ' tình nguyện viên</strong> ' . $meta['focus'] . '.',
-            'link' => '/hoat_dong.php?event_id=' . $actId,
+            'link' => '/dang_ky_ca.php?event_id=' . $actId,
             'cta' => $meta['cta'] . ' &rarr;'
         ];
     } else {
@@ -88,7 +88,7 @@ foreach ($activitiesList as $act) {
             'badge' => 'ĐANG MỞ ĐĂNG KÝ',
             'badge_class' => 'badge-open',
             'text' => 'Chiến dịch <strong>' . htmlspecialchars(trim($shortTitle)) . '</strong> còn tiếp nhận <strong>' . $deficit . ' chỉ tiêu</strong>.',
-            'link' => '/hoat_dong.php?event_id=' . $actId,
+            'link' => '/dang_ky_ca.php?event_id=' . $actId,
             'cta' => 'Đăng ký tham gia &rarr;'
         ];
     }
@@ -124,14 +124,14 @@ $topAnnouncements[] = [
 <script src="/assets/js/volunteer_portal.js?v=<?= time() ?>" defer></script>
 <script src="/assets/js/banner_chuyen_dong.js?v=<?= time() ?>" defer></script>
 <style>
-/* TỐI ƯU GIAO DIỆN NAVBAR KHÔNG BỊ TRÀN VIEWPORT */
+/* TỐI ƯU GIAO DIỆN NAVBAR TRẢI ĐỀU NỘI DUNG */
 body { overflow-x: hidden !important; }
 .site-header-pro { width: 100% !important; overflow-x: clip !important; }
-.site-header-pro .header-container { padding: 6px 14px !important; gap: 8px !important; max-width: 100% !important; box-sizing: border-box !important; overflow-x: clip !important; }
-.site-header-pro .brand-link { flex-shrink: 0 !important; gap: 8px !important; }
-.site-header-pro .brand-title { font-size: 1.02rem !important; }
-.site-header-pro .main-nav-pro { margin: 0 4px !important; gap: 4px !important; justify-content: center !important; flex: 1 !important; min-width: 0 !important; flex-wrap: nowrap !important; }
-.site-header-pro .nav-item { padding: 6px 8px !important; font-size: 0.84rem !important; flex-shrink: 0 !important; white-space: nowrap !important; }
+.site-header-pro .header-container { padding: 8px 24px !important; gap: 16px !important; max-width: 100% !important; box-sizing: border-box !important; }
+.site-header-pro .brand-link { flex-shrink: 0 !important; gap: 10px !important; }
+.site-header-pro .brand-title { font-size: 1.05rem !important; }
+.site-header-pro .main-nav-pro { margin: 0 20px !important; gap: 12px !important; justify-content: space-evenly !important; flex: 1 !important; min-width: 0 !important; }
+.site-header-pro .nav-item { padding: 8px 16px !important; font-size: 0.95rem !important; font-weight: 600 !important; white-space: nowrap !important; }
 .site-header-pro .header-user-zone { flex-shrink: 0 !important; margin-left: auto !important; }
 .site-header-pro .user-profile-badge { padding: 4px 10px !important; gap: 6px !important; }
 .site-header-pro .user-name { max-width: 130px !important; font-size: 0.84rem !important; }
@@ -232,12 +232,19 @@ body { overflow-x: hidden !important; }
                 </div>
 
                 <div class="nav-item-dropdown-wrap">
-                    <a href="/phan_cong.php" class="nav-item nav-item-bch <?= in_array($currentPath, ['/phan_cong.php', '/phe_duyet_vang.php', '/admin_import.php', '/doi_soat_thuat_toan.php', '/tao_su_kien.php', '/chinh_sua_du_an.php'], true) ? 'active' : '' ?>">
+                    <a href="/phan_cong.php" class="nav-item nav-item-bch <?= in_array($currentPath, ['/phan_cong.php', '/phe_duyet_ca.php', '/phe_duyet_vang.php', '/admin_import.php', '/doi_soat_thuat_toan.php', '/tao_su_kien.php', '/chinh_sua_du_an.php'], true) ? 'active' : '' ?>">
                         <span>Điều Phối</span>
                         <span class="nav-bch-pill">BCH</span>
                         <span class="nav-caret">&#9662;</span>
                     </a>
                     <div class="nav-sub-dropdown" role="menu">
+                        <a href="/phe_duyet_ca.php" class="nav-sub-link <?= $currentPath === '/phe_duyet_ca.php' ? 'active' : '' ?>">
+                            <span class="sub-icon chip-sapphire" style="background: #eff6ff; color: #2563eb;">&#9745;</span>
+                            <div class="sub-text">
+                                <strong>Duyệt Đăng Ký Ca</strong>
+                                <small>Xét duyệt ca TNV đăng ký mới</small>
+                            </div>
+                        </a>
                         <a href="/phan_cong.php" class="nav-sub-link">
                             <span class="sub-icon chip-ruby">&#9881;</span>
                             <div class="sub-text">
@@ -358,7 +365,7 @@ body { overflow-x: hidden !important; }
                     </div>
                     <div class="user-meta">
                         <strong class="user-name"><?= htmlspecialchars($currentUser['name']) ?></strong>
-                        <span class="user-position-tag" style="<?= Auth::isCoordinator() ? 'background:#dc2626; color:#ffffff;' : '' ?>">
+                        <span class="user-position-tag <?= Auth::isCoordinator() ? 'tag-coordinator' : 'tag-volunteer' ?>">
                             <?= Auth::isCoordinator() ? 'Ban Chỉ Huy' : 'Tình Nguyện Viên' ?>
                         </span>
                     </div>
@@ -398,6 +405,17 @@ body { overflow-x: hidden !important; }
 
                         <div class="dropdown-links">
                             <?php if (Auth::isCoordinator()): ?>
+                                <a href="/phe_duyet_ca.php" class="dropdown-link-item" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: inline-flex; align-items: center; gap: 10px;">
+                                        <span class="dropdown-icon-chip" style="background: #eff6ff; color: #2563eb;">&#9745;</span>
+                                        <span class="dropdown-link-label">Duyệt Đăng Ký Ca</span>
+                                    </div>
+                                    <?php 
+                                    $pendingShiftRegsCount = ActivityManager::getPendingRegistrationsCount();
+                                    if ($pendingShiftRegsCount > 0): ?>
+                                        <span style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 800; box-shadow: 0 2px 6px rgba(37,99,235,0.35);"><?= $pendingShiftRegsCount ?></span>
+                                    <?php endif; ?>
+                                </a>
                                 <a href="/phan_cong.php" class="dropdown-link-item">
                                     <span class="dropdown-icon-chip chip-ruby">&#9881;</span>
                                     <span class="dropdown-link-label">Phân Công Ca Trực</span>

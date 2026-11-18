@@ -201,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'title' => 'Từ Chối Thao Tác Báo Vắng',
                     'content' => 'Tài khoản Tình Nguyện Viên chỉ có quyền báo vắng cho ca trực của chính bản thân mình.',
                 ];
-                header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+                header('Location: /phan_cong.php?open_roster=' . urlencode($shiftId));
                 exit;
             }
         }
@@ -221,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             unset($v);
         }
         $db->saveDutySchedule($dutySchedules);
-        header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+        header('Location: /phan_cong.php?open_roster=' . urlencode($shiftId));
         exit;
     }
 
@@ -283,36 +283,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             fn($v) => $v['id'] !== $absentVId && $v['status'] !== 'absent'
         );
 
-        // Thẩm định ràng buộc theo chuẩn rubric thuật toán
-        $validation = AssignmentEngine::validateReassignment(
-            $newVolunteer,
-            $targetShift,
-            $activeAssigned,
-            $volunteerOtherShifts
-        );
-
-        if (!$validation['valid']) {
+        if ($newVId === $absentVId) {
             $_SESSION['flash_msg'] = [
-                'type' => 'danger',
-                'title' => 'Yêu Cầu Thay Thế Bị Từ Chối',
-                'content' => $validation['message'],
+                'type' => 'warning',
+                'title' => 'Trùng Nhân Sự',
+                'content' => 'Vui lòng chọn một tình nguyện viên khác để thay thế.',
             ];
-            header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+            header('Location: /phan_cong.php?open_roster=' . urlencode($shiftId));
             exit;
         }
 
+        foreach ($activeAssigned as $exist) {
+            if ($exist['id'] === $newVId) {
+                $_SESSION['flash_msg'] = [
+                    'type' => 'warning',
+                    'title' => 'Nhân Sự Đã Có Mặt',
+                    'content' => 'Tình nguyện viên ' . htmlspecialchars($newVolunteer['name']) . ' đã có mặt trong ca trực này.',
+                ];
+                header('Location: /phan_cong.php?open_roster=' . urlencode($shiftId));
+                exit;
+            }
+        }
+
         // Hợp lệ -> Thay thế thành công
-        $absentName = '';
+        $targetName = '';
         foreach ($dutySchedules[$shiftId]['assigned_volunteers'] as $idx => $v) {
             if ($v['id'] === $absentVId) {
-                $absentName = $v['name'];
+                $targetName = $v['name'];
+                $oldRole = $v['role'] ?? 'TNV Thực Địa';
                 $dutySchedules[$shiftId]['assigned_volunteers'][$idx] = [
                     'id' => $newVolunteer['id'],
                     'name' => $newVolunteer['name'],
                     'skills' => $newVolunteer['skills'] ?? [],
                     'status' => 'confirmed',
-                    'role' => 'TNV Bổ Sung Thay Thế',
-                    'replacement_for' => $absentName,
+                    'role' => $oldRole,
+                    'replacement_for' => $targetName,
                 ];
                 break;
             }
@@ -320,11 +325,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $_SESSION['flash_msg'] = [
             'type' => 'success',
-            'title' => 'Điều Phối Nhân Sự Thành Công',
-            'content' => 'Đã phân công đồng chí ' . htmlspecialchars($newVolunteer['name']) . ' tiếp nhận nhiệm vụ thay cho ' . htmlspecialchars($absentName) . ' tại ca ' . $shiftId . '.',
+            'title' => 'Thay Thế Nhân Sự Thành Công',
+            'content' => 'Đã thay thế đồng chí ' . htmlspecialchars($newVolunteer['name']) . ' [' . htmlspecialchars($newVolunteer['id']) . '] vào vị trí của ' . htmlspecialchars($targetName) . ' tại ca ' . htmlspecialchars($shiftId) . '.',
         ];
         $db->saveDutySchedule($dutySchedules);
-        header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+        header('Location: /phan_cong.php?open_roster=' . urlencode($shiftId));
         exit;
     }
 
@@ -351,9 +356,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // 6. THÊM TÌNH NGUYỆN VIÊN VÀO CA TRỰC (TÍNH NĂNG MỚI THEO YÊU CẦU BAN CHỈ HUY)
+    // 6. THÊM TÌNH NGUYỆN VIÊN VÀO CA TRỰC (BAN CHỈ HUY ĐIỀU ĐỘNG)
     if ($action === 'add_volunteer_to_shift') {
+        $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+            || (isset($_POST['is_ajax']) && $_POST['is_ajax'] === '1');
+
         if (!Auth::isCoordinator()) {
+            if ($isAjax) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => false, 'message' => 'Chỉ Người Điều Phối mới có quyền bổ sung nhân sự vào ca trực.']);
+                exit;
+            }
             $_SESSION['flash_msg'] = [
                 'type' => 'danger',
                 'title' => 'Từ Chối Quyền Truy Cập',
@@ -384,10 +397,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (!$targetShift || !$newVolunteer || !isset($dutySchedules[$shiftId])) {
+            $msg = 'Không tìm thấy ca trực hoặc nhân sự được chọn.';
+            if ($isAjax) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['success' => false, 'message' => $msg]);
+                exit;
+            }
             $_SESSION['flash_msg'] = [
                 'type' => 'danger',
                 'title' => 'Lỗi Xử Lý Dữ Liệu',
-                'content' => 'Không tìm thấy ca trực hoặc nhân sự được chọn.',
+                'content' => $msg,
             ];
             header('Location: /phan_cong.php');
             exit;
@@ -395,52 +414,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Kiểm tra xem đã có trong ca chưa
         foreach ($dutySchedules[$shiftId]['assigned_volunteers'] as $existing) {
-            if ($existing['id'] === $newVId && $existing['status'] !== 'absent') {
+            if ($existing['id'] === $newVId && ($existing['status'] ?? '') !== 'absent') {
+                $msg = 'Tình nguyện viên ' . htmlspecialchars($newVolunteer['name']) . ' hiện đã có mặt trong ca trực này.';
+                if ($isAjax) {
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode(['success' => false, 'message' => $msg]);
+                    exit;
+                }
                 $_SESSION['flash_msg'] = [
                     'type' => 'warning',
                     'title' => 'Nhân Sự Đã Có Mặt',
-                    'content' => 'Tình nguyện viên ' . htmlspecialchars($newVolunteer['name']) . ' hiện đã được phân công trong ca trực này.',
+                    'content' => $msg,
                 ];
-                header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+                header('Location: /phan_cong.php?open_roster=' . urlencode($shiftId));
                 exit;
             }
         }
 
-        // Kiểm tra trùng lịch các ca khác
-        $volunteerOtherShifts = [];
-        foreach ($dutySchedules as $sItem) {
-            if ($sItem['id'] === $shiftId) continue;
-            foreach ($sItem['assigned_volunteers'] as $v) {
-                if ($v['id'] === $newVId && $v['status'] !== 'absent') {
-                    $volunteerOtherShifts[] = $sItem;
-                }
-            }
-        }
-
-        $activeAssigned = array_filter(
-            $dutySchedules[$shiftId]['assigned_volunteers'],
-            fn($v) => $v['status'] !== 'absent'
-        );
-
-        // Thẩm định nghiêm ngặt theo thuật toán
-        $validation = AssignmentEngine::validateReassignment(
-            $newVolunteer,
-            $targetShift,
-            $activeAssigned,
-            $volunteerOtherShifts
-        );
-
-        if (!$validation['valid']) {
-            $_SESSION['flash_msg'] = [
-                'type' => 'danger',
-                'title' => 'Yêu Cầu Bổ Sung Bị Từ Chối',
-                'content' => $validation['message'],
-            ];
-            header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
-            exit;
-        }
-
-        // Hợp lệ -> Thêm vào ca
+        // Hợp lệ -> Thêm vào ca trực
         $dutySchedules[$shiftId]['assigned_volunteers'][] = [
             'id' => $newVolunteer['id'],
             'name' => $newVolunteer['name'],
@@ -450,13 +441,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'replacement_for' => null,
         ];
 
+        $succMsg = 'Đã thêm đồng chí ' . htmlspecialchars($newVolunteer['name']) . ' [' . htmlspecialchars($newVolunteer['id']) . '] vào ca ' . htmlspecialchars($shiftId) . ' với vai trò: ' . htmlspecialchars($role) . '.';
+        $db->saveDutySchedule($dutySchedules);
+
+        if ($isAjax) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => true,
+                'message' => $succMsg,
+                'assigned_volunteers' => $dutySchedules[$shiftId]['assigned_volunteers'],
+                'needed_count' => (int)$dutySchedules[$shiftId]['needed_count'],
+            ]);
+            exit;
+        }
+
         $_SESSION['flash_msg'] = [
             'type' => 'success',
             'title' => 'Bổ Sung Nhân Sự Thành Công',
-            'content' => 'Đã thêm đồng chí ' . htmlspecialchars($newVolunteer['name']) . ' vào ca ' . htmlspecialchars($shiftId) . ' với vai trò: ' . htmlspecialchars($role) . '.',
+            'content' => $succMsg,
         ];
-        $db->saveDutySchedule($dutySchedules);
-        header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+        header('Location: /phan_cong.php?open_roster=' . urlencode($shiftId));
         exit;
     }
 
@@ -490,7 +494,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             unset($v);
         }
         $db->saveDutySchedule($dutySchedules);
-        header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+        header('Location: /phan_cong.php?open_roster=' . urlencode($shiftId));
         exit;
     }
 
@@ -526,7 +530,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
         }
         $db->saveDutySchedule($dutySchedules);
-        header('Location: /phan_cong.php#shift-row-' . urlencode($shiftId));
+        header('Location: /phan_cong.php?open_roster=' . urlencode($shiftId));
         exit;
     }
 }
@@ -621,6 +625,27 @@ require __DIR__ . '/../templates/header.php';
         </div>
     <?php endif; ?>
 
+    <!-- CẢNH BÁO ĐƠN ĐĂNG KÝ CA MỚI CHỜ DUYỆT -->
+    <?php 
+    require_once __DIR__ . '/../src/ActivityManager.php';
+    $pendingShiftCount = ActivityManager::getPendingRegistrationsCount();
+    if ($pendingShiftCount > 0): ?>
+        <div style="background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 12px rgba(37,99,235,0.08);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 24px;">📋</span>
+                <div>
+                    <strong style="color: #1e40af; font-size: 0.95rem;">Đăng Ký Ca Mới Chờ Duyệt:</strong>
+                    <span style="color: #1e3a8a; font-size: 0.88rem; margin-left: 4px;">
+                        Có <strong><?= $pendingShiftCount ?></strong> đơn đăng ký ca trực từ TNV đang chờ Ban Chỉ Huy xét duyệt vào ca.
+                    </span>
+                </div>
+            </div>
+            <a href="/phe_duyet_ca.php?status=pending" style="background: #2563eb; color: #ffffff; text-decoration: none; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(37,99,235,0.3);">
+                Duyệt Ca Mới &rarr;
+            </a>
+        </div>
+    <?php endif; ?>
+
     <!-- CẢNH BÁO YÊU CẦU BÁO VẮNG CHỜ DUYỆT TỪ TNV -->
     <?php 
     require_once __DIR__ . '/../src/Database.php';
@@ -651,6 +676,12 @@ require __DIR__ . '/../templates/header.php';
             </span>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <a href="/phe_duyet_ca.php" class="btn-action-pro" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                <span>&#9745; Duyệt Đăng Ký Ca</span>
+                <?php if ($pendingShiftCount > 0): ?>
+                    <span style="background: #2563eb; color: #ffffff; padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 800;"><?= $pendingShiftCount ?></span>
+                <?php endif; ?>
+            </a>
             <a href="/phe_duyet_vang.php" class="btn-action-pro" style="background: #fffbeb; border: 1.5px solid #fde68a; color: #b45309; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
                 <span>&#9203; Duyệt Báo Vắng</span>
                 <?php if ($pendingAbsenceCount > 0): ?>
@@ -1077,7 +1108,7 @@ require __DIR__ . '/../templates/header.php';
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        + Thêm Người
+                        Thêm Người
                     </button>
 
                     <button type="button" class="btn-roster-action btn-export-csv" onclick="exportRosterToCSV()" title="Tải danh sách điểm danh dạng bảng CSV">
@@ -1178,11 +1209,11 @@ require __DIR__ . '/../templates/header.php';
                 <table class="roster-modal-table" id="roster_volunteers_table">
                     <thead>
                         <tr>
-                            <th style="width: 6%;">STT</th>
-                            <th style="width: 32%;">Tình Nguyện Viên</th>
-                            <th style="width: 22%;">Vai Trò / Nhiệm Vụ</th>
-                            <th style="width: 18%;">Kỹ Năng</th>
-                            <th style="width: 22%; text-align: right;">Thao Tác Điều Động</th>
+                            <th style="width: 5%;">STT</th>
+                            <th style="width: 28%;">Tình Nguyện Viên</th>
+                            <th style="width: 21%;">Vai Trò / Nhiệm Vụ</th>
+                            <th style="width: 17%;">Kỹ Năng</th>
+                            <th style="width: 29%; text-align: right;">Thao Tác Điều Động</th>
                         </tr>
                     </thead>
                     <tbody id="roster_modal_tbody">
@@ -1226,7 +1257,7 @@ require __DIR__ . '/../templates/header.php';
             <div class="modal-body" style="padding: 20px 24px; max-height: 72vh; overflow-y: auto;">
                 <div class="modal-meta-box" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
                     <div>Ca trực: <strong id="modalShiftName" style="color: #0369a1;">...</strong></div>
-                    <div>Nhân sự báo vắng: <strong id="modalAbsentVName" class="text-danger" style="color: #dc2626;">...</strong></div>
+                    <div>Nhân sự cần thay thế: <strong id="modalAbsentVName" class="text-danger" style="color: #dc2626;">...</strong></div>
                 </div>
 
                 <!-- KHU VỰC BỘ LỌC KỸ NĂNG THÔNG MINH DÀNH CHO NGƯỜI ĐIỀU PHỐI -->
@@ -1379,6 +1410,7 @@ require __DIR__ . '/../templates/header.php';
 // =========================================================================
 // JAVASCRIPT ĐIỀU HÀNH LỰC LƯỢNG CA TRỰC (HÌNH CON MẮT & MODAL ROSTER)
 // =========================================================================
+var allDutySchedulesMap = <?= json_encode($dutySchedules, JSON_UNESCAPED_UNICODE) ?>;
 var currentRosterShiftData = null;
 
 function escapeHtml(str) {
@@ -1487,11 +1519,18 @@ function renderRosterTable(volunteers) {
         var tdActions = document.createElement('td');
         tdActions.style.textAlign = 'right';
 
-        var actionsHtml = '<div class="roster-action-btns" style="justify-content:flex-end;">';
+        var actionsHtml = '<div class="roster-action-btns" style="justify-content:flex-end; gap:6px;">';
+
+        // Nút Thay Người (luôn hiển thị cho mọi tình nguyện viên)
+        actionsHtml += `
+            <button type="button" class="btn-action-sm btn-action-replace" onclick="closeShiftRosterModal(); openReplaceModal('${escapeHtml(currentRosterShiftData.id)}', '${escapeHtml(currentRosterShiftData.shift_name)}', '${escapeHtml(v.id)}', '${escapeHtml(v.name)}')" title="Thay thế nhân sự này">
+                Thay Người
+            </button>
+        `;
 
         if (!isAbsent) {
             actionsHtml += `
-                <form method="POST" action="/phan_cong.php" style="margin:0; display:inline-block;" onsubmit="return confirm('Xác nhận báo vắng cho đồng chí ${escapeHtml(v.name)}?')">
+                <form method="POST" action="/phan_cong.php" style="margin:0; display:inline-flex; align-items:center;" onsubmit="return confirm('Xác nhận báo vắng cho đồng chí ${escapeHtml(v.name)}?')">
                     <input type="hidden" name="action" value="report_absent">
                     <input type="hidden" name="shift_id" value="${escapeHtml(currentRosterShiftData.id)}">
                     <input type="hidden" name="volunteer_id" value="${escapeHtml(v.id)}">
@@ -1500,17 +1539,11 @@ function renderRosterTable(volunteers) {
                     </button>
                 </form>
             `;
-        } else {
-            actionsHtml += `
-                <button type="button" class="btn-action-sm btn-action-replace" onclick="closeShiftRosterModal(); openReplaceModal('${escapeHtml(currentRosterShiftData.id)}', '${escapeHtml(currentRosterShiftData.shift_name)}', '${escapeHtml(v.id)}', '${escapeHtml(v.name)}')">
-                    Thay Người
-                </button>
-            `;
         }
 
         // Nút Xóa khỏi ca
         actionsHtml += `
-            <form method="POST" action="/phan_cong.php" style="margin:0; display:inline-block;" onsubmit="return confirm('Bạn có chắc chắn muốn rút đồng chí ${escapeHtml(v.name)} ra khỏi ca trực này?')">
+            <form method="POST" action="/phan_cong.php" style="margin:0; display:inline-flex; align-items:center;" onsubmit="return confirm('Bạn có chắc chắn muốn rút đồng chí ${escapeHtml(v.name)} ra khỏi ca trực này?')">
                 <input type="hidden" name="action" value="remove_volunteer_from_shift">
                 <input type="hidden" name="shift_id" value="${escapeHtml(currentRosterShiftData.id)}">
                 <input type="hidden" name="volunteer_id" value="${escapeHtml(v.id)}">
@@ -1557,6 +1590,69 @@ document.addEventListener('DOMContentLoaded', function() {
                 noAlert.style.display = (visible === 0 && q !== '') ? 'block' : 'none';
             }
         });
+    }
+
+    // Xử lý Thêm Tình Nguyện Viên tức thời qua AJAX & Đồng bộ giao diện
+    var addForm = document.getElementById('form_add_volunteer_to_shift');
+    if (addForm) {
+        addForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(addForm);
+            formData.append('is_ajax', '1');
+
+            var btnSubmit = addForm.querySelector('button[type="submit"]');
+            var originalText = btnSubmit ? btnSubmit.textContent : '';
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = 'Đang lưu...';
+            }
+
+            fetch('/phan_cong.php', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = originalText;
+                }
+                if (data.success) {
+                    if (currentRosterShiftData) {
+                        currentRosterShiftData.assigned_volunteers = data.assigned_volunteers;
+                        renderRosterTable(data.assigned_volunteers);
+                        var activeCount = (data.assigned_volunteers || []).filter(function(v){ return v.status !== 'absent'; }).length;
+                        document.getElementById('roster_modal_capacity_text').textContent = activeCount + ' / ' + data.needed_count + ' TNV (Chỉ tiêu: ' + data.needed_count + ')';
+                        
+                        // Cập nhật số quân số trên bảng danh sách ca trực bên ngoài
+                        var rowBadge = document.querySelector('#shift-row-' + currentRosterShiftData.id + ' .roster-count-label');
+                        if (rowBadge) {
+                            rowBadge.innerHTML = '<strong>' + activeCount + '/' + data.needed_count + '</strong> TNV';
+                        }
+                    }
+                    toggleAddVolunteerForm(false);
+                    var vSel = document.getElementById('add_vol_select');
+                    if (vSel) vSel.value = '';
+                } else {
+                    alert(data.message || 'Không thể bổ sung nhân sự vào ca trực.');
+                }
+            })
+            .catch(function() {
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = originalText;
+                }
+                addForm.submit();
+            });
+        });
+    }
+
+    // Tự động mở lại modal ca trực nếu có tham số open_roster trên URL
+    var urlParams = new URLSearchParams(window.location.search);
+    var openRosterId = urlParams.get('open_roster');
+    if (openRosterId && allDutySchedulesMap && allDutySchedulesMap[openRosterId]) {
+        openShiftRosterModal(allDutySchedulesMap[openRosterId]);
     }
 });
 
@@ -1632,6 +1728,9 @@ function openReplaceModal(shiftId, shiftName, absentVId, absentVName) {
 
 function closeReplaceModal() {
     document.getElementById('replaceModal').style.display = 'none';
+    if (currentRosterShiftData) {
+        document.getElementById('shift_roster_modal').style.display = 'flex';
+    }
 }
 
 function selectQuickTest(vId) {

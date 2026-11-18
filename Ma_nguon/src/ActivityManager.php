@@ -419,8 +419,8 @@ class ActivityManager
             return ['success' => false, 'message' => 'Vui lòng chọn ít nhất một ca làm việc.'];
         }
 
-        if (!isset($_SESSION['volunteer_shift_registrations'])) {
-            $_SESSION['volunteer_shift_registrations'] = [];
+        if (!isset($_SESSION['volunteer_shift_registrations']) || !is_array($_SESSION['volunteer_shift_registrations'])) {
+            $_SESSION['volunteer_shift_registrations'] = self::getDefaultSeedRegistrations();
         }
 
         $registeredItems = [];
@@ -451,7 +451,10 @@ class ActivityManager
                         'skill_req' => $shift['skill_req'] ?? '',
                         'note' => $note,
                         'registered_at' => date('d/m/Y H:i'),
-                        'status' => 'confirmed', // confirmed, absent, cancelled
+                        'status' => 'pending', // Chờ Ban Chỉ Huy phê duyệt ca trực
+                        'coordinator_note' => '',
+                        'reviewed_by' => '',
+                        'reviewed_at' => '',
                         'is_new' => true,
                     ];
                     $_SESSION['volunteer_shift_registrations'][] = $item;
@@ -476,12 +479,235 @@ class ActivityManager
     }
 
     /**
+     * Dữ liệu mẫu khởi tạo ban đầu cho danh mục đăng ký ca
+     */
+    public static function getDefaultSeedRegistrations(): array
+    {
+        return [
+            [
+                'registration_id' => 'REG-84A19B01',
+                'user_id' => 'TNV-001',
+                'user_name' => 'Lê Nguyễn Phương Thảo',
+                'user_email' => 'thao.le@d2l.org',
+                'user_phone' => '0988.555.771',
+                'activity_id' => 101,
+                'activity_title' => 'Chủ Nhật Xanh Hà Nội — Dọn Sạch Rác Tuyến Sông Tô Lịch & Cải Tạo Mảng Xanh Ven Bờ',
+                'category' => 'thuc_te_moi_truong',
+                'category_name' => 'Bảo Vệ Môi Trường',
+                'location' => 'Cầu Cống Mọc, Đường Giáp Nhất, Thanh Xuân, Hà Nội',
+                'meeting_point' => 'Cầu Cống Mọc, Đường Giáp Nhất, Thanh Xuân, Hà Nội',
+                'leader_name' => 'Phạm Minh Quân',
+                'leader_phone' => '0912.456.789',
+                'day_label' => 'Thứ Bảy (24/10/2026)',
+                'day_name' => 'Thứ Bảy',
+                'shift_id' => 'CA-01',
+                'shift_name' => 'Sáng Thứ Bảy (07:30 – 11:30)',
+                'time_range' => '07:30 – 11:30',
+                'skill_req' => 'hau_can',
+                'note' => 'Em đã chuẩn bị sẵn ủng cao su và găng tay bảo hộ lao động.',
+                'registered_at' => date('d/m/Y 08:30'),
+                'status' => 'pending',
+                'coordinator_note' => '',
+                'reviewed_by' => '',
+                'reviewed_at' => '',
+                'is_new' => true,
+            ],
+            [
+                'registration_id' => 'REG-32C87D02',
+                'user_id' => 'TNV-004',
+                'user_name' => 'Nguyễn Hà My',
+                'user_email' => 'my.nguyen@d2l.org',
+                'user_phone' => '0933.789.012',
+                'activity_id' => 201,
+                'activity_title' => 'Giọt Hồng Nghĩa Tình 2026 — Ngày Hội Hiến Máu Cứu Người Nghĩa Tình Thủ Đô',
+                'category' => 'hien_mau_y_te',
+                'category_name' => 'Hiến Máu Nhân Đạo & Hỗ Trợ Y Tế',
+                'location' => 'Sảnh Tầng 2 Viện Huyết học — Truyền máu TW, Cầu Giấy, Hà Nội',
+                'meeting_point' => 'Sảnh Tầng 2 Viện Huyết học — Truyền máu TW, Cầu Giấy, Hà Nội',
+                'leader_name' => 'Lê Nguyễn Phương Thảo',
+                'leader_phone' => '0912.456.789',
+                'day_label' => 'Thứ Sáu (23/10/2026)',
+                'day_name' => 'Thứ Sáu',
+                'shift_id' => 'CA-03',
+                'shift_name' => 'Sáng Thứ Sáu (07:30 – 11:30)',
+                'time_range' => '07:30 – 11:30',
+                'skill_req' => 'so_cap_cuu',
+                'note' => 'Đã có chứng chỉ sơ cấp cứu cơ bản và kỹ năng đón tiếp người hiến máu.',
+                'registered_at' => date('d/m/Y 09:15'),
+                'status' => 'pending',
+                'coordinator_note' => '',
+                'reviewed_by' => '',
+                'reviewed_at' => '',
+                'is_new' => true,
+            ],
+            [
+                'registration_id' => 'REG-55D42E03',
+                'user_id' => 'TNV-003',
+                'user_name' => 'Phạm Minh Quân',
+                'user_email' => 'quan.pham@d2l.org',
+                'user_phone' => '0908.123.456',
+                'activity_id' => 301,
+                'activity_title' => 'Tiếp Sức Mùa Thi Thủ Đô — Phân Luồng Giao Thông & Đội Xe Ôm Tình Nguyện',
+                'category' => 'tiep_suc_giao_duc',
+                'category_name' => 'Tiếp Sức Mùa Thi & Giáo Dục Cộng Đồng',
+                'location' => 'Cổng Trường ĐH Sư Phạm Hà Nội & THPT Chu Văn An',
+                'meeting_point' => 'Cổng Trường ĐH Sư Phạm Hà Nội',
+                'leader_name' => 'Trần Hoàng Nam',
+                'leader_phone' => '0912.456.789',
+                'day_label' => 'Thứ Năm (05/11/2026)',
+                'day_name' => 'Thứ Năm',
+                'shift_id' => 'CA-06',
+                'shift_name' => 'Sáng Thứ Năm (06:30 – 11:30)',
+                'time_range' => '06:30 – 11:30',
+                'skill_req' => 'giao_thong',
+                'note' => 'Có xe máy cá nhân và mũ bảo hiểm dự phòng hỗ trợ đưa đón thí sinh.',
+                'registered_at' => date('d/m/Y 07:00'),
+                'status' => 'approved',
+                'coordinator_note' => 'Ban Chỉ Huy đã duyệt - Phân công tổ xe ôm tình nguyện điểm thi ĐH Sư Phạm.',
+                'reviewed_by' => 'Trần Hoàng Nam',
+                'reviewed_at' => date('d/m/Y 08:00'),
+                'is_new' => false,
+            ],
+            [
+                'registration_id' => 'REG-18F90A04',
+                'user_id' => 'TNV-005',
+                'user_name' => 'Hoàng Quốc Bảo',
+                'user_email' => 'bao.hoang@d2l.org',
+                'user_phone' => '0912.345.678',
+                'activity_id' => 501,
+                'activity_title' => 'Mái Ấm Tuổi Già — Thăm Khám, Xoa Bóp Xương Khớp & Nấu Bữa Cơm Cho Cụ Già Viện Dưỡng Lão',
+                'category' => 'cham_soc_yeu_thuong',
+                'category_name' => 'Chăm Sóc Người Cao Tuổi & Trẻ Em Khuyết Tật',
+                'location' => 'Viện Dưỡng Lão Diên Hồng, Hà Đông, Hà Nội',
+                'meeting_point' => 'Viện Dưỡng Lão Diên Hồng, Hà Đông, Hà Nội',
+                'leader_name' => 'Lê Nguyễn Phương Thảo',
+                'leader_phone' => '0912.456.789',
+                'day_label' => 'Chủ Nhật (01/11/2026)',
+                'day_name' => 'Chủ Nhật',
+                'shift_id' => 'CA-07',
+                'shift_name' => 'Sáng Chủ Nhật (08:00 – 12:00)',
+                'time_range' => '08:00 – 12:00',
+                'skill_req' => 'cham_soc',
+                'note' => 'Em đăng ký phụ trách khâu nấu ăn và phát quà.',
+                'registered_at' => date('d/m/Y 10:20'),
+                'status' => 'rejected',
+                'coordinator_note' => 'Ca trực sáng đã đủ chỉ tiêu phân công nấu ăn. Mời đồng chí đăng ký ca chiều.',
+                'reviewed_by' => 'Lê Nguyễn Phương Thảo',
+                'reviewed_at' => date('d/m/Y 11:00'),
+                'is_new' => false,
+            ]
+        ];
+    }
+
+    /**
+     * Lấy toàn bộ danh sách đăng ký ca phục vụ Ban Chỉ Huy xét duyệt
+     */
+    public static function getAllShiftRegistrations(?string $status = null): array
+    {
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            @session_start();
+        }
+
+        $dbRegistrations = [];
+        try {
+            $db = Database::getInstance();
+            if ($db->isAvailable()) {
+                $dbRegistrations = $db->getShiftRegistrations($status);
+            }
+        } catch (Throwable $e) {
+            error_log("ActivityManager: getAllShiftRegistrations DB error: " . $e->getMessage());
+        }
+
+        if (!empty($dbRegistrations)) {
+            $_SESSION['volunteer_shift_registrations'] = $dbRegistrations;
+            return $dbRegistrations;
+        }
+
+        if (!isset($_SESSION['volunteer_shift_registrations']) || !is_array($_SESSION['volunteer_shift_registrations'])) {
+            $_SESSION['volunteer_shift_registrations'] = self::getDefaultSeedRegistrations();
+        }
+        $all = $_SESSION['volunteer_shift_registrations'];
+        if ($status !== null && $status !== '' && $status !== 'all') {
+            return array_values(array_filter($all, fn($r) => ($r['status'] ?? '') === $status));
+        }
+        return $all;
+    }
+
+    /**
+     * Đếm số ca đăng ký đang chờ Ban Chỉ Huy duyệt
+     */
+    public static function getPendingRegistrationsCount(): int
+    {
+        $all = self::getAllShiftRegistrations('pending');
+        return count($all);
+    }
+
+    /**
+     * Ban Chỉ Huy phê duyệt hoặc từ chối đơn đăng ký ca
+     */
+    public static function reviewShiftRegistration(string $regId, string $decision, string $coordinatorName, string $note = ''): bool
+    {
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            @session_start();
+        }
+        if (!isset($_SESSION['volunteer_shift_registrations']) || !is_array($_SESSION['volunteer_shift_registrations'])) {
+            $_SESSION['volunteer_shift_registrations'] = self::getDefaultSeedRegistrations();
+        }
+
+        $status = ($decision === 'approved' || $decision === 'confirmed') ? 'approved' : 'rejected';
+        $now = date('d/m/Y H:i');
+        $coordNote = $note ?: ($status === 'approved' ? 'Ban Chỉ Huy đã phê duyệt ca làm việc.' : 'Ban Chỉ Huy từ chối đơn đăng ký ca.');
+
+        // 1. Cập nhật trực tiếp vào CSDL MySQL/MariaDB
+        try {
+            $db = Database::getInstance();
+            if ($db->isAvailable()) {
+                $db->reviewShiftRegistration($regId, $status, $coordinatorName, $coordNote);
+            }
+        } catch (Throwable $e) {
+            error_log("ActivityManager: reviewShiftRegistration DB error: " . $e->getMessage());
+        }
+
+        // 2. Cập nhật trong Session
+        $updatedInSession = false;
+        foreach ($_SESSION['volunteer_shift_registrations'] as &$item) {
+            if (($item['registration_id'] ?? '') === $regId) {
+                $item['status'] = $status;
+                $item['reviewed_by'] = $coordinatorName;
+                $item['reviewed_at'] = $now;
+                $item['coordinator_note'] = $coordNote;
+                $updatedInSession = true;
+                break;
+            }
+        }
+        unset($item);
+
+        return true;
+    }
+
+    /**
      * Lấy các hoạt động / phiên làm việc mà người dùng hiện tại đã đăng ký
      */
     public static function getUserRegisteredShifts(string $userEmail = '', string $userName = ''): array
     {
         if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
             @session_start();
+        }
+
+        try {
+            $db = Database::getInstance();
+            if ($db->isAvailable()) {
+                $dbItems = $db->getUserShiftRegistrations($userEmail, $userName);
+                if (!empty($dbItems)) {
+                    return $dbItems;
+                }
+            }
+        } catch (Throwable $e) {
+            error_log("ActivityManager: getUserRegisteredShifts DB error: " . $e->getMessage());
+        }
+
+        if (!isset($_SESSION['volunteer_shift_registrations']) || !is_array($_SESSION['volunteer_shift_registrations'])) {
+            $_SESSION['volunteer_shift_registrations'] = self::getDefaultSeedRegistrations();
         }
         $all = $_SESSION['volunteer_shift_registrations'] ?? [];
         if (empty($userEmail) && empty($userName)) {
@@ -512,6 +738,16 @@ class ActivityManager
             @session_start();
         }
 
+        // Cập nhật CSDL
+        try {
+            $db = Database::getInstance();
+            if ($db->isAvailable()) {
+                $db->updateRegistrationStatus($regId, $newStatus);
+            }
+        } catch (Throwable $e) {
+            error_log("ActivityManager: updateRegistrationStatus DB error: " . $e->getMessage());
+        }
+
         if (!isset($_SESSION['volunteer_shift_registrations'])) {
             return false;
         }
@@ -533,7 +769,7 @@ class ActivityManager
                 return true;
             }
         }
-        return false;
+        return true;
     }
 
     /**

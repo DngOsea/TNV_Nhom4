@@ -1,17 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// Polyfill an toàn nếu môi trường máy chủ Linux/WSL thiếu ext-mbstring
-if (!function_exists('mb_stripos')) {
-    function mb_stripos(string $haystack, string $needle, int $offset = 0, ?string $encoding = null) {
-        if (function_exists('mb_strtolower')) {
-            $h = mb_strtolower($haystack, $encoding ?? 'UTF-8');
-            $n = mb_strtolower($needle, $encoding ?? 'UTF-8');
-            return function_exists('mb_strpos') ? mb_strpos($h, $n, $offset, $encoding) : strpos($h, $n, $offset);
-        }
-        return stripos($haystack, $needle, $offset);
-    }
-}
+require_once __DIR__ . '/Input.php';
 
 /**
  * MODULE QUẢN LÝ ĐỊA BÀN & ĐỊA ĐIỂM HOẠT ĐỘNG (D2L LOCATION MANAGER)
