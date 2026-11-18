@@ -43,8 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($loi)) {
         // Tài khoản đăng ký mới luôn luôn là Tình Nguyện Viên Thực Địa
-        $_SESSION['user'] = [
-            'id' => 'USR-' . rand(500, 999),
+        $newVolId = 'TNV-' . rand(500, 999);
+        $userSession = [
+            'id' => $newVolId,
             'name' => $ho_ten,
             'email' => $email,
             'role' => $vi_tri,
@@ -58,6 +59,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'joined_date' => date('d/m/Y'),
             'phone' => $phone
         ];
+        $_SESSION['user'] = $userSession;
+
+        // Lưu trực tiếp tài khoản mới vào bảng volunteers trong CSDL (MySQL / SQLite)
+        require_once __DIR__ . '/../src/Database.php';
+        try {
+            $db = Database::getInstance();
+            if ($db->isAvailable()) {
+                $pdo = $db->getPdo();
+                if ($db->getDriver() === 'mysql') {
+                    $pdo->prepare("
+                        INSERT INTO volunteers (id, name, email, phone, organization, role, skills)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                        ON DUPLICATE KEY UPDATE
+                            name = VALUES(name), phone = VALUES(phone), organization = VALUES(organization), role = VALUES(role)
+                    ")->execute([
+                        $newVolId,
+                        $ho_ten,
+                        $email,
+                        $phone ?: '0900000000',
+                        $unit ?: 'Đội Tình Nguyện D2L',
+                        $vi_tri,
+                        json_encode(['co_ban'], JSON_UNESCAPED_UNICODE)
+                    ]);
+                } else {
+                    $pdo->prepare("
+                        INSERT OR REPLACE INTO volunteers (id, name, email, phone, organization, role, skills)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    ")->execute([
+                        $newVolId,
+                        $ho_ten,
+                        $email,
+                        $phone ?: '0900000000',
+                        $unit ?: 'Đội Tình Nguyện D2L',
+                        $vi_tri,
+                        json_encode(['co_ban'], JSON_UNESCAPED_UNICODE)
+                    ]);
+                }
+            }
+        } catch (Throwable $e) {
+            error_log("dang_ky_tk: insert volunteer error: " . $e->getMessage());
+        }
 
         $_SESSION['flash_message'] = 'Chào mừng ' . $ho_ten . ' đã đăng ký tài khoản thành công! Bạn có thể xem ca trực hoặc hoàn thiện hồ sơ.';
 

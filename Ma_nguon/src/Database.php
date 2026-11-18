@@ -1425,6 +1425,32 @@ class Database
                         WHERE shift_id = ? AND (volunteer_id = ? OR volunteer_id IN (SELECT id FROM volunteers WHERE LOWER(name) = LOWER(?)))
                     ");
                     $stmtReg->execute([$shiftId, $vId, $vName]);
+
+                    // Nếu có người thay thế, đồng bộ ngay lập tức vào bảng volunteer_registrations
+                    if (!empty($replacementVolunteerId)) {
+                        $projId = (int)($affectedReq['project_id'] ?? 101);
+                        $vRepStmt = $this->pdo->prepare("SELECT name, phone, email FROM volunteers WHERE id = ?");
+                        $vRepStmt->execute([$replacementVolunteerId]);
+                        $vRepData = $vRepStmt->fetch();
+                        $repName = $vRepData['name'] ?? 'TNV Thay Thế';
+                        $repPhone = $vRepData['phone'] ?? '';
+                        $repEmail = $vRepData['email'] ?? '';
+
+                        $stmtInsertRep = $this->pdo->prepare("
+                            INSERT INTO volunteer_registrations (volunteer_id, project_id, shift_id, volunteer_name, volunteer_phone, volunteer_email, role_in_shift, replacement_for, status)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmed')
+                        ");
+                        $stmtInsertRep->execute([
+                            $replacementVolunteerId,
+                            $projId,
+                            $shiftId,
+                            $repName,
+                            $repPhone,
+                            $repEmail,
+                            'TNV Thay Thế (' . $vId . ')',
+                            $vId
+                        ]);
+                    }
                 } catch (Throwable $e) {
                     error_log("Database: update absent status error: " . $e->getMessage());
                 }
@@ -1894,27 +1920,54 @@ class Database
             }
 
             // 4. Ghi hoặc cập nhật vào volunteer_registrations
-            $insReg = $this->pdo->prepare("
-                INSERT INTO volunteer_registrations (
-                    registration_code, volunteer_id, project_id, shift_id,
-                    volunteer_name, volunteer_phone, volunteer_email,
-                    role_in_shift, status, note, coordinator_note, reviewed_by, reviewed_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE
-                    volunteer_name = VALUES(volunteer_name),
-                    volunteer_phone = VALUES(volunteer_phone),
-                    volunteer_email = VALUES(volunteer_email),
-                    status = VALUES(status),
-                    note = VALUES(note),
-                    coordinator_note = VALUES(coordinator_note),
-                    reviewed_by = VALUES(reviewed_by),
-                    reviewed_at = VALUES(reviewed_at)
-            ");
-            $insReg->execute([
-                $regCode, $vId, $projId, $shiftId,
-                $vName, $vPhone, $vEmail,
-                $role, $status, $note, $coordNote, $revBy, $revAt
-            ]);
+            if ($this->driver === 'sqlite') {
+                $chkReg = $this->pdo->prepare("SELECT id FROM volunteer_registrations WHERE registration_code = ?");
+                $chkReg->execute([$regCode]);
+                if ($chkReg->fetch()) {
+                    $updReg = $this->pdo->prepare("
+                        UPDATE volunteer_registrations
+                        SET volunteer_name = ?, volunteer_phone = ?, volunteer_email = ?,
+                            status = ?, note = ?, coordinator_note = ?, reviewed_by = ?, reviewed_at = ?
+                        WHERE registration_code = ?
+                    ");
+                    $updReg->execute([$vName, $vPhone, $vEmail, $status, $note, $coordNote, $revBy, $revAt, $regCode]);
+                } else {
+                    $insReg = $this->pdo->prepare("
+                        INSERT INTO volunteer_registrations (
+                            registration_code, volunteer_id, project_id, shift_id,
+                            volunteer_name, volunteer_phone, volunteer_email,
+                            role_in_shift, status, note, coordinator_note, reviewed_by, reviewed_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ");
+                    $insReg->execute([
+                        $regCode, $vId, $projId, $shiftId,
+                        $vName, $vPhone, $vEmail,
+                        $role, $status, $note, $coordNote, $revBy, $revAt
+                    ]);
+                }
+            } else {
+                $insReg = $this->pdo->prepare("
+                    INSERT INTO volunteer_registrations (
+                        registration_code, volunteer_id, project_id, shift_id,
+                        volunteer_name, volunteer_phone, volunteer_email,
+                        role_in_shift, status, note, coordinator_note, reviewed_by, reviewed_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE
+                        volunteer_name = VALUES(volunteer_name),
+                        volunteer_phone = VALUES(volunteer_phone),
+                        volunteer_email = VALUES(volunteer_email),
+                        status = VALUES(status),
+                        note = VALUES(note),
+                        coordinator_note = VALUES(coordinator_note),
+                        reviewed_by = VALUES(reviewed_by),
+                        reviewed_at = VALUES(reviewed_at)
+                ");
+                $insReg->execute([
+                    $regCode, $vId, $projId, $shiftId,
+                    $vName, $vPhone, $vEmail,
+                    $role, $status, $note, $coordNote, $revBy, $revAt
+                ]);
+            }
 
             // Chỉ cập nhật số lượng đăng ký khi đã được phê duyệt hoặc xác nhận
             if ($status === 'approved' || $status === 'confirmed') {

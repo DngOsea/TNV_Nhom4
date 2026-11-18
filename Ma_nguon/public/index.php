@@ -1,8 +1,9 @@
 <?php
 require __DIR__ . '/../src/Input.php';
+require_once __DIR__ . '/../src/ActivityManager.php';
 $volunteerData = require __DIR__ . '/../data/volunteer_data.php';
 $categories = $volunteerData['categories'];
-$allActivities = $volunteerData['activities'];
+$allActivities = ActivityManager::getAllActivities();
 
 require __DIR__ . '/../templates/header.php';
 ?>

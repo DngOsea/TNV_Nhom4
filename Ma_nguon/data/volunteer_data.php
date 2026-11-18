@@ -83,7 +83,7 @@ return array (
       'location' => 'Dọc tuyến Sông Tô Lịch, Quận Cầu Giấy & Đống Đa, Hà Nội',
       'meeting_point' => 'Cầu Cống Mọc, Đường Giáp Nhất, Thanh Xuân, Hà Nội',
       'capacity' => 40,
-      'registered' => 32,
+      'registered' => 33,
       'leader_name' => 'Phạm Minh Quân',
       'leader_phone' => '0908.123.456',
       'shifts' => 
@@ -92,6 +92,9 @@ return array (
         1 => 'Ca Chiều (13:00 – 17:00)',
         2 => 'Ca Sáng (08:00 – 12:00)',
         3 => 'Ca Chiều (13:00 – 17:00)',
+        4 => 'Sáng Thứ Bảy (07:30 – 11:30)',
+        5 => 'Chiều Thứ Bảy (13:30 – 17:00)',
+        6 => 'Ca Trực TEST-WB-S1',
       ),
       'skills_needed' => 
       array (
@@ -134,6 +137,36 @@ return array (
               'capacity' => 20,
               'registered' => 12,
               'skill_req' => 'Phân loại rác, Bóc xóa quảng cáo rác',
+              'skill_group' => 'hau_can',
+            ),
+            2 => 
+            array (
+              'shift_id' => 'CA-01',
+              'shift_name' => 'Sáng Thứ Bảy (07:30 – 11:30)',
+              'time_range' => '07:30 – 11:30',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'hau_can',
+              'skill_group' => 'hau_can',
+            ),
+            3 => 
+            array (
+              'shift_id' => 'CA-02',
+              'shift_name' => 'Chiều Thứ Bảy (13:30 – 17:00)',
+              'time_range' => '13:30 – 17:00',
+              'capacity' => 15,
+              'registered' => 1,
+              'skill_req' => 'hau_can',
+              'skill_group' => 'hau_can',
+            ),
+            4 => 
+            array (
+              'shift_id' => 'TEST-WB-S1',
+              'shift_name' => 'Ca Trực TEST-WB-S1',
+              'time_range' => '08:00 - 12:00',
+              'capacity' => 15,
+              'registered' => 3,
+              'skill_req' => 'Theo phân công',
               'skill_group' => 'hau_can',
             ),
           ),
@@ -314,6 +347,7 @@ return array (
       array (
         0 => 'Ca Sáng (06:00 – 12:00)',
         1 => 'Ca Chiều (12:30 – 16:00)',
+        2 => 'Sáng Thứ Bảy (06:00 – 12:00)',
       ),
       'skills_needed' => 
       array (
@@ -357,6 +391,16 @@ return array (
               'capacity' => 20,
               'registered' => 20,
               'skill_req' => 'Đóng bao & Vận chuyển lên xe rác',
+              'skill_group' => 'hau_can',
+            ),
+            2 => 
+            array (
+              'shift_id' => 'CA-11',
+              'shift_name' => 'Sáng Thứ Bảy (06:00 – 12:00)',
+              'time_range' => '06:00 – 12:00',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'hau_can',
               'skill_group' => 'hau_can',
             ),
           ),
@@ -729,6 +773,9 @@ return array (
         0 => 'Ca Chiều Tập Huấn (14:00 – 17:30)',
         1 => 'Ca Sáng Chính Hội (06:30 – 12:00)',
         2 => 'Ca Chiều Hậu Cần (13:00 – 17:00)',
+        3 => 'Sáng Thứ Sáu (07:30 – 11:30)',
+        4 => 'Sáng Thứ Bảy (07:30 – 11:30)',
+        5 => 'Chiều Thứ Bảy (13:30 – 17:00)',
       ),
       'skills_needed' => 
       array (
@@ -766,6 +813,16 @@ return array (
               'skill_req' => 'Tập huấn sơ cấp cứu & Hậu cần sắp bàn',
               'skill_group' => 'y_te',
             ),
+            1 => 
+            array (
+              'shift_id' => 'CA-03',
+              'shift_name' => 'Sáng Thứ Sáu (07:30 – 11:30)',
+              'time_range' => '07:30 – 11:30',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'so_cap_cuu',
+              'skill_group' => 'y_te',
+            ),
           ),
         ),
         1 => 
@@ -795,6 +852,26 @@ return array (
               'registered' => 11,
               'skill_req' => 'Cấp phát giấy chứng nhận, Tiếp đón',
               'skill_group' => 'dieu_phoi',
+            ),
+            2 => 
+            array (
+              'shift_id' => 'CA-04',
+              'shift_name' => 'Sáng Thứ Bảy (07:30 – 11:30)',
+              'time_range' => '07:30 – 11:30',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'so_cap_cuu',
+              'skill_group' => 'y_te',
+            ),
+            3 => 
+            array (
+              'shift_id' => 'CA-10',
+              'shift_name' => 'Chiều Thứ Bảy (13:30 – 17:00)',
+              'time_range' => '13:30 – 17:00',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'so_cap_cuu',
+              'skill_group' => 'y_te',
             ),
           ),
         ),
@@ -1357,6 +1434,8 @@ return array (
         1 => 'Ca Chiều Hỗ Trợ Xe Máy (13:30 – 17:30)',
         2 => 'Ca Sáng Thi Chính Thức (06:00 – 11:30)',
         3 => 'Ca Chiều Giữ Trật Tự (13:00 – 17:30)',
+        4 => 'Sáng Chủ Nhật (06:30 – 11:30)',
+        5 => 'Chiều Thứ Bảy (13:30 – 17:30)',
       ),
       'skills_needed' => 
       array (
@@ -1404,6 +1483,16 @@ return array (
               'skill_req' => 'Đội xe máy tình nguyện đưa đón sĩ tử',
               'skill_group' => 'dieu_phoi',
             ),
+            2 => 
+            array (
+              'shift_id' => 'CA-06',
+              'shift_name' => 'Sáng Chủ Nhật (06:30 – 11:30)',
+              'time_range' => '06:30 – 11:30',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'giao_thong',
+              'skill_group' => 'dieu_phoi',
+            ),
           ),
         ),
         1 => 
@@ -1432,6 +1521,16 @@ return array (
               'capacity' => 20,
               'registered' => 16,
               'skill_req' => 'Giữ trật tự khu vực thi & Hướng dẫn phụ huynh',
+              'skill_group' => 'dieu_phoi',
+            ),
+            2 => 
+            array (
+              'shift_id' => 'CA-09',
+              'shift_name' => 'Chiều Thứ Bảy (13:30 – 17:30)',
+              'time_range' => '13:30 – 17:30',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'giao_thong',
               'skill_group' => 'dieu_phoi',
             ),
           ),
@@ -1990,6 +2089,8 @@ return array (
       array (
         0 => 'Ca Sáng Nấu Nướng (07:30 – 12:00)',
         1 => 'Ca Chiều Phát Cơm (14:30 – 18:30)',
+        2 => 'Tối Thứ Bảy (18:00 – 21:30)',
+        3 => 'Sáng Chủ Nhật (07:00 – 11:30)',
       ),
       'skills_needed' => 
       array (
@@ -2035,6 +2136,36 @@ return array (
               'registered' => 8,
               'skill_req' => 'Đóng hộp, Phát phiếu & Giữ khoảng cách trật tự',
               'skill_group' => 'dieu_phoi',
+            ),
+            2 => 
+            array (
+              'shift_id' => 'CA-05',
+              'shift_name' => 'Tối Thứ Bảy (18:00 – 21:30)',
+              'time_range' => '18:00 – 21:30',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'nau_an',
+              'skill_group' => 'hau_can',
+            ),
+          ),
+        ),
+        1 => 
+        array (
+          'day_code' => 'day_2',
+          'day_name' => 'Chủ Nhật',
+          'date_string' => 'Thứ Bảy hàng tuần',
+          'full_label' => 'Chủ Nhật (Thứ Bảy hàng tuần)',
+          'shifts' => 
+          array (
+            0 => 
+            array (
+              'shift_id' => 'CA-08',
+              'shift_name' => 'Sáng Chủ Nhật (07:00 – 11:30)',
+              'time_range' => '07:00 – 11:30',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'nau_an',
+              'skill_group' => 'hau_can',
             ),
           ),
         ),
@@ -2585,6 +2716,8 @@ return array (
       array (
         0 => 'Ca Sáng Chăm Sóc Sức Khỏe (08:00 – 12:00)',
         1 => 'Ca Chiều Giao Lưu Văn Nghệ (13:00 – 16:30)',
+        2 => 'Sáng Chủ Nhật (08:00 – 12:00)',
+        3 => 'Chiều Chủ Nhật (13:30 – 17:00)',
       ),
       'skills_needed' => 
       array (
@@ -2629,6 +2762,26 @@ return array (
               'registered' => 7,
               'skill_req' => 'Hát nhạc đỏ, Chơi cờ tướng & Đọc báo',
               'skill_group' => 'su_pham',
+            ),
+            2 => 
+            array (
+              'shift_id' => 'CA-07',
+              'shift_name' => 'Sáng Chủ Nhật (08:00 – 12:00)',
+              'time_range' => '08:00 – 12:00',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'cham_soc',
+              'skill_group' => 'y_te',
+            ),
+            3 => 
+            array (
+              'shift_id' => 'CA-12',
+              'shift_name' => 'Chiều Chủ Nhật (13:30 – 17:00)',
+              'time_range' => '13:30 – 17:00',
+              'capacity' => 15,
+              'registered' => 0,
+              'skill_req' => 'cham_soc',
+              'skill_group' => 'y_te',
             ),
           ),
         ),
